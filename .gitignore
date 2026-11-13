@@ -1,0 +1,23 @@
+# Rust / Cargo build artifacts
+app/target/
+app/shots/
+app/tools/
+**/*.rs.bk
+
+# Craft Anything workspace metadata, logs, and captures
+agent-session.jsonl
+build-activity.log
+craft.json
+feed.json
+usage.json
+capture/
+checks/
+inbox/
+investigation.cany/
+reference/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
