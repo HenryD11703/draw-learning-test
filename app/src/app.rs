@@ -3,8 +3,8 @@
 use crate::brush::{BrushKind, BrushPreset, presets};
 use crate::canvas::{Canvas, H, PAPER, W, to8};
 use crate::curve::Curve;
-use crate::grading::{Grade, grade_paint, grade_trace};
-use crate::lessons::{Exercise, Guide, Kind, Module, PaintTarget, modules, paint_target, starting_canvas};
+use crate::grading::{Grade, grade_copy, grade_paint, grade_perspective, grade_points, grade_trace};
+use crate::lessons::{Exercise, Guide, Kind, Module, PaintTarget, Scene, modules, paint_target, starting_canvas};
 use crate::pressure::{MouseMode, PressureSettings, SpeedSmoother, simulated};
 use crate::progress::Progress;
 use crate::smoothing::{PInfo, Segment, SmoothingType, Smoother};
@@ -75,6 +75,9 @@ pub struct TrazoApp {
     pub screenshot: Option<Screenshot>,
     frame: u64,
     persist: bool,
+    /// Modo demostración: los ejercicios se abren sin variación (semilla 0).
+    demo: bool,
+    seeds: u64,
 }
 
 impl TrazoApp {
@@ -109,7 +112,16 @@ impl TrazoApp {
             screenshot,
             frame: 0,
             persist,
+            demo: std::env::var_os("TRAZO_DEMO").is_some(),
+            seeds: 0,
         }
+    }
+
+    /// Semilla distinta de 0 para la variación de cada intento.
+    fn next_seed(&mut self) -> u64 {
+        self.seeds += 1;
+        let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos() as u64);
+        (t ^ self.seeds.wrapping_mul(0x9E37_79B9_7F4A_7C15)) | 1
     }
 
     fn now_ms(&self) -> f64 {
@@ -145,19 +157,31 @@ impl TrazoApp {
         None
     }
 
-    fn unlocked(&self, m: usize, e: usize) -> bool {
-        if self.progress.unlock_all {
-            return true;
-        }
-        let i = self.flat_index(m, e);
-        if i == 0 {
-            return true;
-        }
-        let (pm, pe) = self.by_flat(i - 1).unwrap();
-        self.progress.stars(&self.modules[pm].exercises[pe].id) > 0
+    /// Ejercicios del módulo con al menos una estrella.
+    fn module_done(&self, m: usize) -> usize {
+        self.modules[m].exercises.iter().filter(|e| self.progress.stars(&e.id) > 0).count()
+    }
+
+    /// Ejercicios con estrella que hacen falta en un módulo para abrir el siguiente (la mitad).
+    fn module_needed(&self, m: usize) -> usize {
+        self.modules[m].exercises.len().div_ceil(2)
+    }
+
+    /// Un módulo se abre al conseguir estrella en la mitad de los ejercicios del anterior.
+    /// Dentro de un módulo abierto, todos sus ejercicios están disponibles.
+    fn module_unlocked(&self, m: usize) -> bool {
+        self.progress.unlock_all || m == 0 || self.module_done(m - 1) >= self.module_needed(m - 1)
+    }
+
+    fn unlocked(&self, m: usize, _e: usize) -> bool {
+        self.module_unlocked(m)
     }
 
     fn open_exercise(&mut self, ctx: &egui::Context, m: usize, e: usize) {
+        // Cada intento es una variación nueva; en modo demostración, siempre la de referencia.
+        let seed = if self.demo { 0 } else { self.next_seed() };
+        let built = self.modules[m].exercises[e].build(seed);
+        self.modules[m].exercises[e].kind = built;
         let ex = self.modules[m].exercises[e].clone();
         self.screen = Screen::Exercise(m, e);
         self.grade = None;
@@ -185,7 +209,7 @@ impl TrazoApp {
                 let outline = ctx.load_texture("contorno", outline_image(&mask), TextureOptions::LINEAR);
                 self.paint_ref = Some(PaintRef { target: img, mask, kind: target, reference, outline });
             }
-            Kind::Trace { .. } => {
+            _ => {
                 self.canvas.reset_with(None);
                 self.paint_ref = None;
             }
@@ -200,8 +224,12 @@ impl TrazoApp {
 
     fn grade_now(&mut self) {
         let Some(ex) = self.current_exercise().cloned() else { return };
+        let strokes = &self.canvas.strokes;
         let g = match &ex.kind {
-            Kind::Trace { guides, tol } => grade_trace(&self.canvas.strokes, guides, *tol, self.smoother.opts.magnet),
+            Kind::Trace { guides, tol } => grade_trace(strokes, guides, *tol, self.smoother.opts.magnet),
+            Kind::Points { guides, tol } => grade_points(strokes, guides, *tol),
+            Kind::Copy { guides, tol } => grade_copy(strokes, guides, *tol),
+            Kind::Perspective(scene) => grade_perspective(strokes, scene),
             Kind::Paint { .. } => match &self.paint_ref {
                 Some(r) => grade_paint(&self.canvas, &r.target, &r.mask, r.kind),
                 None => return,
@@ -214,11 +242,9 @@ impl TrazoApp {
 
     fn next_exercise(&mut self, ctx: &egui::Context) {
         if let Screen::Exercise(m, e) = self.screen {
-            let i = self.flat_index(m, e) + 1;
-            if let Some((nm, ne)) = self.by_flat(i) {
-                self.open_exercise(ctx, nm, ne);
-            } else {
-                self.screen = Screen::Map;
+            match self.by_flat(self.flat_index(m, e) + 1) {
+                Some((nm, ne)) if self.unlocked(nm, ne) => self.open_exercise(ctx, nm, ne),
+                _ => self.screen = Screen::Map,
             }
         }
     }
@@ -252,9 +278,11 @@ impl TrazoApp {
     }
 
     fn guide_visible(&self) -> bool {
-        if !self.show_guide {
-            return false;
-        }
+        self.show_guide && self.memory_visible()
+    }
+
+    /// En los ejercicios de memoria, las ayudas solo se ven los primeros segundos.
+    fn memory_visible(&self) -> bool {
         match self.current_exercise().and_then(|e| e.memory) {
             Some(sec) => self.now_ms() - self.ex_started < sec as f64 * 1000.0,
             None => true,
@@ -365,19 +393,38 @@ impl TrazoApp {
         let Some(ex) = self.current_exercise().cloned() else { return };
         let brush = self.brushes[self.brush].clone();
         let mut t = self.now_ms();
+        // Recorre la polilínea con un pulso algo tembloroso.
+        let shaky = |pts: &[Pos2], pressure: Option<&Vec<f32>>| -> Vec<(Pos2, f32)> {
+            pts.iter()
+                .enumerate()
+                .map(|(i, p)| {
+                    let wob = (i as f32 * 0.7).sin() * 2.5 + (i as f32 * 2.3).cos() * 1.2;
+                    let pr = pressure.map_or(0.7, |pp| pp[i]);
+                    (*p + vec2(wob, -wob * 0.6), pr)
+                })
+                .collect()
+        };
         let strokes: Vec<Vec<(Pos2, f32)>> = match &ex.kind {
-            Kind::Trace { guides, .. } => guides
+            Kind::Trace { guides, .. } | Kind::Points { guides, .. } => guides.iter().map(|g| shaky(&g.pts, g.pressure.as_ref())).collect(),
+            Kind::Copy { guides, .. } => {
+                // Copia más pequeña y desplazada, como haría un alumno.
+                let c = pos2(W as f32 / 2.0, H as f32 / 2.0);
+                guides
+                    .iter()
+                    .map(|g| {
+                        let pts: Vec<Pos2> = g.pts.iter().map(|p| c + (*p - c) * 0.7 + vec2(-60.0, 30.0)).collect();
+                        shaky(&pts, None)
+                    })
+                    .collect()
+            }
+            Kind::Perspective(scene) => scene
+                .tasks
                 .iter()
-                .map(|g| {
-                    g.pts
-                        .iter()
-                        .enumerate()
-                        .map(|(i, p)| {
-                            let wob = (i as f32 * 0.7).sin() * 2.5 + (i as f32 * 2.3).cos() * 1.2;
-                            let pr = g.pressure.as_ref().map_or(0.7, |pp| pp[i]);
-                            (*p + vec2(wob, -wob * 0.6), pr)
-                        })
-                        .collect()
+                .map(|t| {
+                    let (a, b) = scene.target(t);
+                    let n = ((b - a).length() / 3.0).ceil().max(2.0) as usize;
+                    let pts: Vec<Pos2> = (0..=n).map(|i| a + (b - a) * (i as f32 / n as f32)).collect();
+                    shaky(&pts, None)
                 })
                 .collect(),
             Kind::Paint { .. } => (0..12)
@@ -488,7 +535,7 @@ impl TrazoApp {
                 ui.horizontal(|ui| {
                     ui.heading(RichText::new("Mapa de niveles").size(24.0).color(Color32::WHITE));
                     ui.add_space(16.0);
-                    ui.label("Completa cada ejercicio con al menos una estrella para desbloquear el siguiente.");
+                    ui.label("Consigue al menos una estrella en la mitad de los ejercicios de un módulo para abrir el siguiente.");
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         if ui.checkbox(&mut self.progress.unlock_all, "Desbloquear todo (modo profesor)").changed() {
                             self.save();
@@ -523,6 +570,13 @@ impl TrazoApp {
     fn module_card(&mut self, ui: &mut Ui, m: usize) -> Option<(usize, usize)> {
         let md = &self.modules[m];
         let accent = md.accent;
+        let unlocked = self.module_unlocked(m);
+        let status = if unlocked {
+            format!("{} de {} ejercicios con estrella", self.module_done(m), md.exercises.len())
+        } else {
+            let need = self.module_needed(m - 1) - self.module_done(m - 1);
+            format!("Bloqueado: consigue estrella en {need} ejercicio{} más del módulo {}", if need == 1 { "" } else { "s" }, m)
+        };
         let mut open = None;
         egui::Frame::new()
             .fill(Color32::from_rgb(42, 46, 50))
@@ -535,10 +589,11 @@ impl TrazoApp {
                     let (r, _) = ui.allocate_exact_size(vec2(6.0, 40.0), Sense::hover());
                     ui.painter().rect_filled(r, 3, accent);
                     ui.vertical(|ui| {
-                        ui.label(RichText::new(md.title).size(18.0).strong().color(Color32::WHITE));
+                        ui.label(RichText::new(format!("{}. {}", m + 1, md.title)).size(18.0).strong().color(Color32::WHITE));
                         ui.label(RichText::new(md.subtitle).color(Color32::from_gray(170)));
                     });
                 });
+                ui.label(RichText::new(status).small().color(if unlocked { Color32::from_gray(150) } else { GOLD }));
                 egui::CollapsingHeader::new(RichText::new("Lección").color(accent))
                     .id_salt(("leccion", m))
                     .show(ui, |ui| {
@@ -666,7 +721,7 @@ impl TrazoApp {
                     if let Some(ex) = self.current_exercise().cloned() {
                         let Screen::Exercise(m, e) = self.screen else { return };
                         let accent = self.modules[m].accent;
-                        ui.label(RichText::new(self.modules[m].title).small().color(accent));
+                        ui.label(RichText::new(format!("{}. {}", m + 1, self.modules[m].title)).small().color(accent));
                         ui.label(RichText::new(format!("Ejercicio {} · {}", e + 1, ex.title)).size(19.0).strong().color(Color32::WHITE));
                         ui.add_space(4.0);
                         ui.label(RichText::new(ex.goal).color(Color32::from_gray(220)));
@@ -681,6 +736,12 @@ impl TrazoApp {
                         ui.add_space(6.0);
                         krita_box(ui, ex.krita_tip);
                         ui.add_space(8.0);
+                        if let Kind::Copy { guides, .. } = &ex.kind {
+                            section(ui, "Referencia");
+                            draw_reference(ui, guides);
+                            ui.add_space(8.0);
+                        }
+                        // La guía magnética solo tiene sentido cuando se calca.
                         self.smoothing_ui(ui, matches!(ex.kind, Kind::Trace { .. }));
                         ui.add_space(8.0);
                         self.pressure_meter(ui);
@@ -692,13 +753,18 @@ impl TrazoApp {
                             ui.add(egui::Image::new((r.reference.id(), size)).corner_radius(6));
                             ui.add_space(8.0);
                         }
+                        let toggle = match &ex.kind {
+                            Kind::Trace { .. } if ex.memory.is_none() => Some("Mostrar guía"),
+                            Kind::Perspective(s) if s.hints && ex.memory.is_none() => Some("Mostrar ayuda"),
+                            _ => None,
+                        };
                         ui.horizontal(|ui| {
                             let calif = egui::Button::new(RichText::new("Calificar").size(16.0).strong().color(Color32::BLACK)).fill(ACCENT);
                             if ui.add_sized([130.0, 34.0], calif).clicked() {
                                 self.grade_now();
                             }
-                            if matches!(ex.kind, Kind::Trace { .. }) && ex.memory.is_none() {
-                                ui.checkbox(&mut self.show_guide, "Mostrar guía");
+                            if let Some(label) = toggle {
+                                ui.checkbox(&mut self.show_guide, label);
                             }
                         });
                         let best = self.progress.results.get(&ex.id).copied();
@@ -816,10 +882,16 @@ impl TrazoApp {
             if let Some(r) = &self.paint_ref {
                 painter.image(r.outline.id(), rect, Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
             }
-            if self.guide_visible() {
-                if let Some(Exercise { kind: Kind::Trace { guides, .. }, .. }) = self.current_exercise() {
-                    let size = self.brushes[self.brush].size * self.canvas.size_mult;
-                    draw_guides(&painter, guides, rect, scale, size);
+            if let Some(ex) = self.current_exercise() {
+                let aids = self.memory_visible();
+                match &ex.kind {
+                    Kind::Trace { guides, .. } if self.guide_visible() => {
+                        let size = self.brushes[self.brush].size * self.canvas.size_mult;
+                        draw_guides(&painter, guides, rect, scale, size);
+                    }
+                    Kind::Points { guides, .. } if aids => draw_points(&painter, guides, rect, scale),
+                    Kind::Perspective(scene) => draw_scene(&painter, scene, rect, scale, aids, aids && self.show_guide && scene.hints),
+                    _ => {}
                 }
             }
             // Cursor del pincel y posición estabilizada.
@@ -1150,6 +1222,86 @@ fn draw_guides(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32, brus
                 p.arrow(*a, d.normalized() * 18.0, Stroke::new(2.0, Color32::from_rgb(90, 200, 110)));
             }
         }
+    }
+}
+
+const START_GREEN: Color32 = Color32::from_rgb(90, 200, 110);
+const INK: Color32 = Color32::from_rgb(45, 45, 52);
+const VP_RED: Color32 = Color32::from_rgb(220, 80, 70);
+
+/// Punto a punto: cada par de extremos con su número.
+fn draw_points(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32) {
+    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+    for (i, g) in guides.iter().enumerate() {
+        let (Some(a), Some(b)) = (g.pts.first(), g.pts.last()) else { continue };
+        for q in [to(*a), to(*b)] {
+            p.circle_filled(q, 6.0, START_GREEN);
+            p.circle_stroke(q, 6.0, Stroke::new(1.5, Color32::from_rgb(30, 90, 45)));
+            p.text(q + vec2(9.0, -9.0), Align2::LEFT_BOTTOM, (i + 1).to_string(), FontId::proportional(14.0), INK);
+        }
+    }
+}
+
+/// Escena en perspectiva: horizonte, puntos de fuga, líneas dadas, puntos de salida y ayuda.
+fn draw_scene(p: &egui::Painter, s: &Scene, rect: Rect, scale: f32, aids: bool, hints: bool) {
+    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+    if aids {
+        if let Some(h) = s.horizon {
+            let y = to(pos2(0.0, h)).y;
+            if y >= rect.min.y && y <= rect.max.y {
+                p.line_segment([pos2(rect.min.x, y), pos2(rect.max.x, y)], Stroke::new(1.5, Color32::from_rgb(120, 140, 170)));
+                // A un cuarto del ancho: los puntos de fuga suelen estar en los extremos o en el centro.
+                p.text(pos2(rect.min.x + rect.width() * 0.25, y - 3.0), Align2::CENTER_BOTTOM, "Horizonte", FontId::proportional(12.0), Color32::from_rgb(90, 110, 140));
+            }
+        }
+        let inner = rect.shrink(16.0);
+        for (i, vp) in s.vps.iter().enumerate() {
+            let label = format!("PF{}", i + 1);
+            let q = to(*vp);
+            if rect.contains(q) {
+                p.circle_stroke(q, 7.0, Stroke::new(2.0, VP_RED));
+                p.line_segment([q - vec2(10.0, 0.0), q + vec2(10.0, 0.0)], Stroke::new(1.5, VP_RED));
+                p.line_segment([q - vec2(0.0, 10.0), q + vec2(0.0, 10.0)], Stroke::new(1.5, VP_RED));
+                p.text(q + vec2(10.0, 8.0), Align2::LEFT_TOP, label, FontId::proportional(13.0), VP_RED);
+            } else {
+                // Fuera del lienzo: flecha en el borde apuntando hacia él.
+                let c = inner.clamp(q);
+                let d = (q - c).normalized() * 14.0;
+                p.arrow(c - d, d, Stroke::new(2.5, VP_RED));
+                let anchor = if c.y < rect.center().y { Align2::CENTER_TOP } else { Align2::CENTER_BOTTOM };
+                let off = if c.y < rect.center().y { vec2(0.0, 20.0) } else { vec2(0.0, -20.0) };
+                p.text(c + off, anchor, format!("{label} (fuera)"), FontId::proportional(12.0), VP_RED);
+            }
+        }
+    }
+    for g in &s.given {
+        let pts: Vec<Pos2> = g.pts.iter().map(|q| to(*q)).collect();
+        p.add(Shape::line(pts, Stroke::new(2.5, INK)));
+    }
+    if hints {
+        let col = Color32::from_rgba_unmultiplied(70, 150, 230, 120);
+        for t in &s.tasks {
+            let (a, b) = s.target(t);
+            p.add(Shape::dashed_line(&[to(a), to(b)], Stroke::new(2.0, col), 8.0, 5.0));
+        }
+    }
+    for t in &s.tasks {
+        let q = to(t.from);
+        p.circle_filled(q, 5.0, START_GREEN);
+        p.circle_stroke(q, 5.0, Stroke::new(1.2, Color32::from_rgb(30, 90, 45)));
+    }
+}
+
+/// Miniatura de la referencia para los ejercicios de copia.
+fn draw_reference(ui: &mut Ui, guides: &[Guide]) {
+    let w = ui.available_width();
+    let (r, _) = ui.allocate_exact_size(vec2(w, w * H as f32 / W as f32), Sense::hover());
+    let p = ui.painter_at(r);
+    p.rect_filled(r, 6, Color32::from_rgb(248, 247, 242));
+    let s = w / W as f32;
+    for g in guides {
+        let pts: Vec<Pos2> = g.pts.iter().map(|q| r.min + q.to_vec2() * s).collect();
+        p.add(Shape::line(pts, Stroke::new(1.8, INK)));
     }
 }
 

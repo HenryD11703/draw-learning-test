@@ -1,0 +1,122 @@
+{
+  "id": "formas",
+  "title": "Formas",
+  "subtitle": "Construye objetos con formas simples",
+  "lesson": "Todo dibujo complejo se arma con cajas, cilindros y esferas. Aquí repasarás formas básicas, las verás en volumen y aprenderás a copiarlas de una referencia. Dibuja también las líneas \"ocultas\": te ayudan a entender el volumen.\n\nEn los ejercicios de copia no hay guía en el lienzo: dibuja donde quieras y del tamaño que quieras. Se califica la forma y las proporciones, no la posición.",
+  "accent": [200, 130, 255],
+  "exercises": [
+    {
+      "id": "m4e1",
+      "title": "Cuadrados",
+      "goal": "Cada lado de un trazo. Intenta que las esquinas cierren.",
+      "krita_tip": "En Krita, mantener Mayús mientras dibujas con la herramienta Rectángulo hace un cuadrado; aquí es a mano alzada.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 12 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[140, 180], [400, 180], [400, 440], [140, 440]], "closed": true },
+          { "shape": "poly", "pts": [[560, 200], [800, 200], [800, 440], [560, 440]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m4e2",
+      "title": "Triángulo y estrella",
+      "goal": "Repasa el triángulo y la estrella sin levantar el lápiz en cada lado.",
+      "krita_tip": "Las formas cerradas se pueden rellenar en Krita con la herramienta Relleno (tecla F).",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 25, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[250, 140], [410, 470], [90, 470]], "closed": true },
+          { "shape": "star", "c": [660, 320], "r_out": 200, "r_in": 80 }
+        ]
+      }
+    },
+    {
+      "id": "m4e3",
+      "title": "Cubo en perspectiva",
+      "goal": "Dibuja las aristas del cubo, incluidas las de atrás.",
+      "krita_tip": "La herramienta de Asistentes de Krita tiene un asistente de Perspectiva que dirige tus líneas al punto de fuga.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.1] },
+      "kind": {
+        "type": "trace",
+        "tol": 11,
+        "guides": [
+          { "shape": "poly", "pts": [[300, 260], [520, 260], [520, 480], [300, 480]], "closed": true },
+          { "shape": "poly", "pts": [[420, 170], [640, 170], [640, 390], [420, 390]], "closed": true },
+          { "shape": "line", "a": [300, 260], "b": [420, 170] },
+          { "shape": "line", "a": [520, 260], "b": [640, 170] },
+          { "shape": "line", "a": [520, 480], "b": [640, 390] },
+          { "shape": "line", "a": [300, 480], "b": [420, 390] }
+        ]
+      }
+    },
+    {
+      "id": "m4e4",
+      "title": "Cilindro",
+      "goal": "Dos elipses y dos lados. Haz la elipse de abajo completa, aunque no se vea.",
+      "krita_tip": "Para dibujos limpios en Krita: boceto en una capa con baja opacidad y línea final en otra capa.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "ellipse", "c": [480, 170], "rx": 150, "ry": 50 },
+          { "shape": "ellipse", "c": [480, 470], "rx": 150, "ry": 50 },
+          { "shape": "line", "a": [330, 170], "b": [330, 470] },
+          { "shape": "line", "a": [630, 170], "b": [630, 470] }
+        ]
+      }
+    },
+    {
+      "id": "m4e5",
+      "title": "Copia: casita",
+      "goal": "Copia la casita de la referencia en cualquier parte del lienzo y del tamaño que quieras. Fíjate en las proporciones: cuánto mide el tejado frente a la pared.",
+      "krita_tip": "En Krita, la herramienta de imagen de referencia pone una imagen flotante sobre el lienzo para copiarla sin mezclarla con tu dibujo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1], "rotate": 6 },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[330, 290], [630, 290], [630, 520], [330, 520]], "closed": true },
+          { "shape": "poly", "pts": [[300, 300], [480, 140], [660, 300]] },
+          { "shape": "poly", "pts": [[400, 520], [400, 410], [470, 410], [470, 520]] },
+          { "shape": "poly", "pts": [[530, 340], [590, 340], [590, 400], [530, 400]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m4e6",
+      "title": "Copia: taza",
+      "goal": "Copia la taza: elipse de arriba, lados, fondo curvo y asa. Mide primero lo ancha que es frente a lo alta.",
+      "krita_tip": "Para comprobar proporciones en Krita, voltea la vista con M: los errores saltan a la vista.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1], "rotate": 6 },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "ellipse", "c": [440, 210], "rx": 130, "ry": 40 },
+          { "shape": "line", "a": [310, 210], "b": [330, 470] },
+          { "shape": "line", "a": [570, 210], "b": [550, 470] },
+          { "shape": "ellipse", "c": [440, 470], "rx": 110, "ry": 34, "a1": 180 },
+          { "shape": "bezier", "p": [[568, 260], [690, 250], [690, 420], [556, 410]] }
+        ]
+      }
+    }
+  ]
+}

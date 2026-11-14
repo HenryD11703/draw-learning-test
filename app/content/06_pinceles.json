@@ -1,0 +1,71 @@
+{
+  "id": "pinceles",
+  "title": "Los pinceles de Krita",
+  "subtitle": "Lápiz, tinta, rotulador, aerógrafo y borrador",
+  "lesson": "Krita trae decenas de pinceles agrupados por letra: a) borradores, b) básicos, c) lápices, d) tintas, e) rotuladores, i) húmedos… Cada uno responde a la presión de forma distinta. En este módulo usarás uno en cada ejercicio para aprender cuándo conviene cada cual.\n\nEn Krita, los pinceles están en el acoplable Preajustes de pincel (F6 abre su menú emergente) y se editan con F5.",
+  "accent": [255, 110, 140],
+  "exercises": [
+    {
+      "id": "m5e1",
+      "title": "Lápiz: rayado",
+      "goal": "Rellena cada franja con líneas paralelas. Presión suave arriba, fuerte abajo.",
+      "krita_tip": "c) Pencil-2 tiene grano de papel; la opacidad sube con la presión. Es ideal para el boceto inicial.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "color": [0.18, 0.18, 0.2],
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 10,
+        "guides": [{ "shape": "lines", "a": [200, 160], "b": [320, 480], "step": [40, 0], "count": 14 }]
+      }
+    },
+    {
+      "id": "m5e2",
+      "title": "Tinta: flor",
+      "goal": "Entinta la flor con el fineliner. Trazos seguros, sin repasar.",
+      "krita_tip": "d) Ink-2 Fineliner: tamaño casi constante (la presión solo baja hasta el 75 %) y adelgaza con la velocidad.",
+      "brush": "fineliner",
+      "smoothing": "Estabilizador",
+      "vary": { "shift": 20, "rotate": 30 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "circle", "c": [480, 280], "r": 40 },
+          { "shape": "petals", "c": [480, 280], "inner": 40, "outer": 150, "count": 6 },
+          { "shape": "bezier", "p": [[480, 430], [470, 480], [500, 540], [480, 600]] }
+        ]
+      }
+    },
+    {
+      "id": "m5e3",
+      "title": "Rotulador: rellenar",
+      "goal": "Rellena la hoja sin salirte. Verás que los cruces de trazos se oscurecen.",
+      "krita_tip": "e) Marker: la opacidad tiene un tope por trazo. En Krita, activa Bloquear alfa en la capa para no salirte del dibujo.",
+      "brush": "marcador",
+      "smoothing": "Basico",
+      "color": [0.2, 0.45, 0.85],
+      "kind": { "type": "paint", "target": "Silhouette" }
+    },
+    {
+      "id": "m5e4",
+      "title": "Aerógrafo: degradado",
+      "goal": "Haz un degradado de oscuro (izquierda) a claro (derecha) dentro del rectángulo.",
+      "krita_tip": "b) Airbrush Soft acumula color al pasar. En Krita también tienes la herramienta Degradado (tecla G) para fondos.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [0.1, 0.1, 0.12],
+      "kind": { "type": "paint", "target": "Gradient" }
+    },
+    {
+      "id": "m5e5",
+      "title": "Borrador: limpieza",
+      "goal": "Borra todas las manchas del rectángulo.",
+      "krita_tip": "En Krita, la tecla E pone el pincel actual en modo borrador; púlsala otra vez para volver a pintar.",
+      "brush": "borrador",
+      "smoothing": "Basico",
+      "kind": { "type": "paint", "target": "Cleanup" }
+    }
+  ]
+}
