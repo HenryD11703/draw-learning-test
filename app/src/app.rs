@@ -1,4 +1,7 @@
-//! Ventana principal: inicio, mapa de niveles, ejercicios, lienzo libre, presión y guía de Krita.
+//! Ventana principal: inicio, mapa de niveles, ejercicios, lienzo libre, estudio con referencia,
+//! diario, presión y guía de Krita.
+
+mod study_ui;
 
 use crate::brush::{BrushKind, BrushPreset, presets};
 use crate::canvas::{Canvas, H, PAPER, W, to8};
@@ -9,13 +12,16 @@ use crate::painting::PaintMode;
 use crate::pressure::{MouseMode, PressureSettings, SpeedSmoother, simulated};
 use crate::progress::Progress;
 use crate::smoothing::{PInfo, Segment, SmoothingType, Smoother};
+use crate::study::Topic;
 use crate::theme::{self, Btn, Icon};
 use crate::view::{View, Xf};
 use egui::{
     Align2, Color32, ColorImage, Event, FontId, Pos2, Rect, RichText, Sense, Shape, Stroke, StrokeKind, TextureHandle, TextureOptions, Ui,
     pos2, vec2,
 };
+use std::collections::HashMap;
 use std::sync::Arc;
+use study_ui::{DiaryItem, StudyState};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
@@ -41,8 +47,18 @@ enum Screen {
     Gallery,
     Exercise(usize, usize),
     Free,
+    Study,
+    Diary,
     Pressure,
     Guide,
+}
+
+/// Cada modo con lienzo tiene el suyo: al cambiar de modo, el anterior espera aparcado.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+enum Slot {
+    Exercise,
+    Free,
+    Study,
 }
 
 struct PaintRef {
@@ -106,13 +122,17 @@ pub struct TrazoApp {
     last_area: Rect,
     grid: bool,
     thirds: bool,
-    /// El lienzo del otro modo: si `canvas` es el de los ejercicios, aquí espera el libre, y al revés.
-    stash: Canvas,
-    canvas_is_free: bool,
+    /// Los lienzos de los otros modos, aparcados mientras se usa `canvas`.
+    parked: HashMap<Slot, Canvas>,
+    canvas_slot: Slot,
     /// Imagen de referencia del lienzo libre (se carga arrastrando un archivo a la ventana).
     reference: Option<TextureHandle>,
     gallery: Vec<GalleryItem>,
     session: Option<Session>,
+    study: StudyState,
+    diary: Vec<DiaryItem>,
+    diary_loaded: bool,
+    diary_filter: Option<Topic>,
 }
 
 /// Un dibujo guardado, con su miniatura cuando ya se cargó.
@@ -175,11 +195,15 @@ impl TrazoApp {
             last_area: Rect::from_min_size(pos2(0.0, 0.0), vec2(W as f32, H as f32)),
             grid: false,
             thirds: false,
-            stash: Canvas::new_free(),
-            canvas_is_free: false,
+            parked: HashMap::new(),
+            canvas_slot: Slot::Exercise,
             reference: None,
             gallery: Vec::new(),
             session: None,
+            study: StudyState::default(),
+            diary: Vec::new(),
+            diary_loaded: false,
+            diary_filter: None,
         }
     }
 
@@ -279,7 +303,7 @@ impl TrazoApp {
         let built = self.modules[m].exercises[e].build(seed);
         self.modules[m].exercises[e].kind = built;
         let ex = self.modules[m].exercises[e].clone();
-        self.use_canvas(false);
+        self.use_canvas(Slot::Exercise);
         self.screen = Screen::Exercise(m, e);
         self.grade = None;
         self.clear_result();
@@ -315,17 +339,23 @@ impl TrazoApp {
         }
     }
 
-    /// Pone en `canvas` el lienzo libre o el de los ejercicios, sin perder el otro.
-    fn use_canvas(&mut self, free: bool) {
-        if self.canvas_is_free != free {
-            std::mem::swap(&mut self.canvas, &mut self.stash);
-            self.canvas_is_free = free;
-            self.canvas.mark_all();
+    /// Pone en `canvas` el lienzo de un modo y aparca el que estaba, sin perderlo.
+    fn use_canvas(&mut self, slot: Slot) {
+        if self.canvas_slot == slot {
+            return;
         }
+        let next = self.parked.remove(&slot).unwrap_or_else(|| match slot {
+            Slot::Exercise => Canvas::new(),
+            Slot::Free | Slot::Study => Canvas::new_free(),
+        });
+        let prev = std::mem::replace(&mut self.canvas, next);
+        self.parked.insert(self.canvas_slot, prev);
+        self.canvas_slot = slot;
+        self.canvas.mark_all();
     }
 
     fn open_free(&mut self) {
-        self.use_canvas(true);
+        self.use_canvas(Slot::Free);
         self.screen = Screen::Free;
         self.grade = None;
         self.clear_result();
@@ -584,6 +614,8 @@ impl TrazoApp {
                 Ok("mapa") => self.screen = Screen::Map,
                 Ok("galeria") => self.screen = Screen::Gallery,
                 Ok("sesion") => self.start_session(ctx, 5, 60.0),
+                Ok("diario") => self.screen = Screen::Diary,
+                Ok("estudio") => self.demo_study(ctx),
                 _ => {}
             }
             // TRAZO_VISTA=giro o espejo: vista girada (y volteada) para comprobar la transformación.
@@ -711,7 +743,7 @@ impl TrazoApp {
             self.toggle_eraser();
         }
         // Vista del lienzo: solo en las pantallas con lienzo.
-        if !matches!(self.screen, Screen::Exercise(..) | Screen::Free) {
+        if !matches!(self.screen, Screen::Exercise(..) | Screen::Free | Screen::Study) {
             return;
         }
         let (mirror, zin, zout, fit, left, right, straight) = ctx.input(|i| {
@@ -778,6 +810,8 @@ impl TrazoApp {
                         (Screen::Home, Icon::Home, "Inicio"),
                         (Screen::Map, Icon::Map, "Niveles"),
                         (Screen::Free, Icon::Brush, "Lienzo libre"),
+                        (Screen::Study, Icon::Copy, "Estudio"),
+                        (Screen::Diary, Icon::Check, "Diario"),
                         (Screen::Gallery, Icon::Image, "Galería"),
                         (Screen::Pressure, Icon::Pressure, "Presión"),
                         (Screen::Guide, Icon::Book, "Guía de Krita"),
@@ -790,6 +824,7 @@ impl TrazoApp {
                         if theme::button(ui, Some(icon), label, if selected { Btn::Selected } else { Btn::Ghost }).clicked() {
                             match s {
                                 Screen::Free => self.open_free(),
+                                Screen::Study => self.open_study(),
                                 other => self.screen = other,
                             }
                         }
@@ -848,6 +883,16 @@ impl TrazoApp {
                         }
                     }
                     ui.add_space(20.0);
+                    theme::section(ui, "Estudia del natural");
+                    ui.columns(2, |cols| {
+                        if action_card(&mut cols[0], Icon::Copy, "Estudio con referencia", "Dibuja a partir de una foto, compárala con tu dibujo y critícalo tú mismo.").clicked() {
+                            go = Some(Screen::Study);
+                        }
+                        if action_card(&mut cols[1], Icon::Check, "Diario de estudios", "Tus estudios con su referencia, tu autocrítica y lo que querías mejorar.").clicked() {
+                            go = Some(Screen::Diary);
+                        }
+                    });
+                    ui.add_space(20.0);
                     theme::section(ui, "Practica a tu aire");
                     ui.columns(4, |cols| {
                         if action_card(&mut cols[0], Icon::Brush, "Lienzo libre", "Dibuja sin guías, con capas, referencia y rejilla.").clicked() {
@@ -874,6 +919,7 @@ impl TrazoApp {
         } else if let Some(s) = go {
             match s {
                 Screen::Free => self.open_free(),
+                Screen::Study => self.open_study(),
                 s => self.screen = s,
             }
         }
@@ -1102,7 +1148,7 @@ impl TrazoApp {
                             self.canvas.undo();
                         }
                     });
-                    let clear_label = if self.screen == Screen::Free { "Vaciar la capa" } else { "Borrar todo" };
+                    let clear_label = if matches!(self.screen, Screen::Free | Screen::Study) { "Vaciar la capa" } else { "Borrar todo" };
                     if theme::button_ex(ui, Some(Icon::Trash), clear_label, Btn::Outline, w, true).clicked() {
                         if let Some(r) = &self.paint_ref {
                             let start = r.start.clone();
@@ -1584,6 +1630,16 @@ impl TrazoApp {
         let Some(f) = files.first() else { return };
         let img = image::open(f.path()).ok().or_else(|| f.bytes().ok().and_then(|b| image::load_from_memory(&b).ok()));
         let now = self.now_ms();
+        if self.screen == Screen::Study {
+            match img {
+                Some(img) => {
+                    self.set_study_reference(ctx, img);
+                    self.message = Some(("Referencia del estudio cargada.".into(), now));
+                }
+                None => self.message = Some(("No pude abrir ese archivo como imagen (usa PNG o JPG).".into(), now)),
+            }
+            return;
+        }
         match img {
             Some(img) => {
                 // Limitar el tamaño de la textura: la referencia se ve pequeña en el panel.
@@ -2364,6 +2420,7 @@ impl eframe::App for TrazoApp {
         self.demo_step(&ctx);
         self.check_timer();
         self.session_step(&ctx);
+        self.study_step();
         self.handle_drops(&ctx);
         self.shortcuts(&ctx);
         self.top_bar(ui);
@@ -2372,6 +2429,8 @@ impl eframe::App for TrazoApp {
             Screen::Map => self.map_screen(ui),
             Screen::Gallery => self.gallery_screen(ui),
             Screen::Exercise(..) | Screen::Free => self.exercise_or_free_screen(ui),
+            Screen::Study => self.study_screen(ui),
+            Screen::Diary => self.diary_screen(ui),
             Screen::Pressure => self.pressure_screen(ui),
             Screen::Guide => self.guide_screen(ui),
         }
@@ -2379,7 +2438,9 @@ impl eframe::App for TrazoApp {
             || self.session.is_some()
             || self.gallery.iter().any(|g| g.tex.is_none() && !g.failed) && self.screen == Screen::Gallery
             || self.current_exercise().is_some_and(|e| e.memory.is_some())
-            || (self.time_limit().is_some() && !self.time_up);
+            || (self.time_limit().is_some() && !self.time_up)
+            || self.screen == Screen::Study && (self.study.timer.is_some() || self.study.blink || self.message.is_some())
+            || self.screen == Screen::Diary && self.diary.iter().any(|d| d.draw_tex.is_none() && !d.failed);
         if let Some(shot) = &mut self.screenshot {
             ctx.request_repaint();
             if self.frame >= 120 && !shot.requested {
