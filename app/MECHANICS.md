@@ -129,6 +129,18 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
   sale de su punto (a menos de 2.5·tolerancia) en su dirección (menos de 15°). Puntería = `1 − distancia_media_al_punto
   / (2·tolerancia)`; completadas = media de `min(1, largo_cubierto / (0.8·largo_pedido))`.
   Total = `completadas^1.5 × (45 % convergencia + 30 % puntería + 25 % pulso)`.
+- Rayado: cada trazo de más de 8 px se ajusta a una recta y pertenece a la zona que contiene su centro.
+  En cada zona, las rectas se reparten en familias (una, o dos si es trama cruzada) según la dirección
+  pedida más cercana. Dirección = `1 − error_angular_medio / 12°`; regularidad = `1 − (cv − 0.2) / 0.6`,
+  con `cv` el coeficiente de variación de la separación entre rectas vecinas (dos rectas a menos de 2 px
+  cuentan como una); densidad = `1 − |ln(separación_mediana / separación_pedida)| / 0.6`; cobertura =
+  parte de una rejilla de 8 px dentro de la zona que tiene tinta a menos de `max(6, 0.75·separación)`;
+  contención = `1 − (parte de la tinta fuera de toda zona) / 0.3`. Las zonas pesan según su área.
+  Total = `25 % cobertura + min(1, cobertura / 0.6) × (25 % dirección + 20 % regularidad + 20 % densidad
+  + 10 % contención)`.
+- Ejercicios con tiempo límite (gesto): la cuenta empieza al abrir el ejercicio; al llegar a cero se
+  califica lo dibujado con el calificador de su tipo y no se aceptan trazos nuevos hasta Repetir.
+- Guías de contexto y ocultas (calcar): las de contexto no se califican; las ocultas sí, aunque no se vean.
 - Estrellas: 60 → 1, 75 → 2, 90 → 3. Un módulo se abre al conseguir al menos una estrella en la mitad
   (redondeada hacia arriba) de los ejercicios del anterior; dentro de un módulo abierto, todos los ejercicios
   están disponibles.

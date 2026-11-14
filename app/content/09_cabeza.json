@@ -1,0 +1,1106 @@
+{
+  "id": "cabeza",
+  "title": "La cabeza",
+  "subtitle": "El método de Loomis: esfera, línea central y tercios",
+  "lesson": "Basado en el método de Andrew Loomis («Drawing the Head and Hands»). La cabeza se construye a partir de una esfera:\n\n1. Una esfera, cortada por los lados (en la vista de perfil, el corte se ve como un óvalo).\n2. La línea central, que marca hacia dónde mira la cabeza.\n3. La línea de las cejas, que cruza la esfera por la mitad.\n4. El rostro en tres partes iguales: del nacimiento del pelo a las cejas, de las cejas a la base de la nariz y de ahí a la barbilla.\n5. Las orejas, entre la línea de las cejas y la de la nariz.\n\nLos números del lienzo indican el orden de construcción.",
+  "accent": [
+    230,
+    160,
+    110
+  ],
+  "exercises": [
+    {
+      "id": "hea01",
+      "title": "Esfera, línea central y cejas (con guía)",
+      "goal": "Repasa en orden: la esfera, la línea central y la línea de las cejas, que cruza la esfera justo por la mitad.",
+      "krita_tip": "En Krita, traza el círculo de Loomis con la herramienta Elipse (Mayús para que sea un círculo) en una capa de construcción.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea02",
+      "title": "Cabeza de frente (con guía)",
+      "goal": "Repasa la construcción completa en orden: esfera, línea central, cejas, base de la nariz y las dos líneas de la mandíbula hasta la barbilla.",
+      "krita_tip": "En Krita, traza el círculo de Loomis con la herramienta Elipse (Mayús para que sea un círculo) en una capa de construcción.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              430,
+              390
+            ],
+            "b": [
+              530,
+              390
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                300
+              ],
+              [
+                352,
+                430
+              ],
+              [
+                420,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                300
+              ],
+              [
+                608,
+                430
+              ],
+              [
+                540,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea03",
+      "title": "Los tres tercios",
+      "goal": "La esfera, la línea central y las cejas ya están. Dibuja la base de la nariz y la mandíbula: de las cejas a la nariz hay lo mismo que de la nariz a la barbilla.",
+      "krita_tip": "Comprueba los tercios en Krita con la herramienta Medir: los tres tramos deben dar casi lo mismo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140,
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              430,
+              390
+            ],
+            "b": [
+              530,
+              390
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                300
+              ],
+              [
+                352,
+                430
+              ],
+              [
+                420,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                300
+              ],
+              [
+                608,
+                430
+              ],
+              [
+                540,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ],
+            "role": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea04",
+      "title": "Rasgos en su sitio",
+      "goal": "Con la construcción ya hecha, coloca los rasgos: ojos justo bajo las cejas, la nariz hasta su línea, la boca a un tercio entre nariz y barbilla, y las orejas entre cejas y nariz.",
+      "krita_tip": "En Krita, dibuja los rasgos en una capa nueva encima de la construcción y luego oculta la de abajo.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140,
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              430,
+              390
+            ],
+            "b": [
+              530,
+              390
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                300
+              ],
+              [
+                352,
+                430
+              ],
+              [
+                420,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                300
+              ],
+              [
+                608,
+                430
+              ],
+              [
+                540,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              425,
+              282
+            ],
+            "rx": 34,
+            "ry": 11,
+            "role": "hidden"
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              535,
+              282
+            ],
+            "rx": 34,
+            "ry": 11,
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                468,
+                300
+              ],
+              [
+                455,
+                382
+              ],
+              [
+                480,
+                392
+              ],
+              [
+                505,
+                382
+              ],
+              [
+                492,
+                300
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "line",
+            "a": [
+              440,
+              445
+            ],
+            "b": [
+              520,
+              445
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                262
+              ],
+              [
+                312,
+                270
+              ],
+              [
+                312,
+                375
+              ],
+              [
+                348,
+                388
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                262
+              ],
+              [
+                648,
+                270
+              ],
+              [
+                648,
+                375
+              ],
+              [
+                612,
+                388
+              ]
+            ],
+            "role": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea05",
+      "title": "Cabeza de perfil (con guía)",
+      "goal": "Repasa en orden: la esfera, el óvalo del corte lateral, las líneas de cejas y central, el perfil del rostro y la oreja, detrás del centro de la esfera.",
+      "krita_tip": "De perfil, la oreja queda detrás de la mitad de la cabeza: es el error más común al dibujar perfiles.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              460,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              440,
+              250
+            ],
+            "rx": 80,
+            "ry": 105
+          },
+          {
+            "shape": "line",
+            "a": [
+              360,
+              250
+            ],
+            "b": [
+              600,
+              250
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              440,
+              145
+            ],
+            "b": [
+              440,
+              355
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                560,
+                140
+              ],
+              [
+                600,
+                250
+              ],
+              [
+                640,
+                380
+              ],
+              [
+                602,
+                392
+              ],
+              [
+                612,
+                440
+              ],
+              [
+                598,
+                518
+              ],
+              [
+                500,
+                500
+              ],
+              [
+                430,
+                380
+              ]
+            ]
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              425,
+              330
+            ],
+            "rx": 20,
+            "ry": 44
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea06",
+      "title": "Cabeza de tres cuartos (con guía)",
+      "goal": "La cabeza gira: la línea central se curva sobre la esfera y la de las cejas también. La mandíbula del lado lejano se acorta y la oreja visible se desplaza.",
+      "krita_tip": "Girar el lienzo en Krita ayuda poco aquí: lo que gira es la cabeza, así que fíjate en cómo se curvan las líneas.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              480,
+              250
+            ],
+            "rx": 60,
+            "ry": 140,
+            "a0": -90,
+            "a1": 90
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              480,
+              250
+            ],
+            "rx": 140,
+            "ry": 26,
+            "a0": 0,
+            "a1": 180
+          },
+          {
+            "shape": "line",
+            "a": [
+              500,
+              392
+            ],
+            "b": [
+              575,
+              386
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                352,
+                330
+              ],
+              [
+                372,
+                450
+              ],
+              [
+                460,
+                525
+              ],
+              [
+                540,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                612,
+                300
+              ],
+              [
+                612,
+                420
+              ],
+              [
+                588,
+                500
+              ],
+              [
+                540,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                360,
+                268
+              ],
+              [
+                328,
+                276
+              ],
+              [
+                328,
+                372
+              ],
+              [
+                362,
+                384
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea07",
+      "title": "Copia: construcción de frente",
+      "goal": "Copia la construcción de la cabeza de frente con sus rasgos. Mide primero: el ancho de la esfera frente al alto total hasta la barbilla.",
+      "krita_tip": "En Krita, traza el círculo de Loomis con la herramienta Elipse (Mayús para que sea un círculo) en una capa de construcción.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              430,
+              390
+            ],
+            "b": [
+              530,
+              390
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                300
+              ],
+              [
+                352,
+                430
+              ],
+              [
+                420,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                300
+              ],
+              [
+                608,
+                430
+              ],
+              [
+                540,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              425,
+              282
+            ],
+            "rx": 34,
+            "ry": 11
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              535,
+              282
+            ],
+            "rx": 34,
+            "ry": 11
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                468,
+                300
+              ],
+              [
+                455,
+                382
+              ],
+              [
+                480,
+                392
+              ],
+              [
+                505,
+                382
+              ],
+              [
+                492,
+                300
+              ]
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              440,
+              445
+            ],
+            "b": [
+              520,
+              445
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                262
+              ],
+              [
+                312,
+                270
+              ],
+              [
+                312,
+                375
+              ],
+              [
+                348,
+                388
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                262
+              ],
+              [
+                648,
+                270
+              ],
+              [
+                648,
+                375
+              ],
+              [
+                612,
+                388
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea08",
+      "title": "Copia: perfil",
+      "goal": "Copia la cabeza de perfil. Fíjate en cuánto sobresale la nariz respecto a la esfera y en dónde cae la oreja.",
+      "krita_tip": "En Krita, traza el círculo de Loomis con la herramienta Elipse (Mayús para que sea un círculo) en una capa de construcción.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              460,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              440,
+              250
+            ],
+            "rx": 80,
+            "ry": 105
+          },
+          {
+            "shape": "line",
+            "a": [
+              360,
+              250
+            ],
+            "b": [
+              600,
+              250
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              440,
+              145
+            ],
+            "b": [
+              440,
+              355
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                560,
+                140
+              ],
+              [
+                600,
+                250
+              ],
+              [
+                640,
+                380
+              ],
+              [
+                602,
+                392
+              ],
+              [
+                612,
+                440
+              ],
+              [
+                598,
+                518
+              ],
+              [
+                500,
+                500
+              ],
+              [
+                430,
+                380
+              ]
+            ]
+          },
+          {
+            "shape": "ellipse",
+            "c": [
+              425,
+              330
+            ],
+            "rx": 20,
+            "ry": 44
+          }
+        ]
+      }
+    },
+    {
+      "id": "hea09",
+      "title": "Cabeza de memoria",
+      "goal": "Mira la construcción seis segundos. Después, rehazla de memoria: esfera, línea central, cejas, nariz y mandíbula.",
+      "krita_tip": "Repetir la construcción de memoria hasta que salga sola es lo que hace útil el método de Loomis.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 6,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              250
+            ],
+            "r": 140
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              100
+            ],
+            "b": [
+              480,
+              545
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              340,
+              250
+            ],
+            "b": [
+              620,
+              250
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              430,
+              390
+            ],
+            "b": [
+              530,
+              390
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                345,
+                300
+              ],
+              [
+                352,
+                430
+              ],
+              [
+                420,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                615,
+                300
+              ],
+              [
+                608,
+                430
+              ],
+              [
+                540,
+                525
+              ],
+              [
+                480,
+                530
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

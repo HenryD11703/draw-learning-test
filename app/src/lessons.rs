@@ -13,6 +13,20 @@ pub struct Guide {
     pub pts: Vec<Pos2>,
     /// Presión objetivo en cada punto (0..1) si el ejercicio la califica.
     pub pressure: Option<Vec<f32>>,
+    pub role: Role,
+}
+
+/// Papel de una guía en un ejercicio de calcar.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Role {
+    /// Se ve y se califica.
+    #[default]
+    Trace,
+    /// Ya está dibujada: sirve de contexto y no se califica.
+    Context,
+    /// No se ve hasta calificar, pero se califica: hay que encontrarla.
+    Hidden,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Deserialize)]
@@ -36,7 +50,98 @@ pub enum Kind {
     Copy { guides: Vec<Guide>, tol: f32 },
     /// Horizonte, puntos de fuga y puntos de salida: trazar hacia donde corresponda.
     Perspective(Scene),
+    /// Rellenar zonas con líneas paralelas (rayado o trama cruzada) a una densidad dada.
+    Hatch { regions: Vec<Region>, tol: f32 },
     Paint { target: PaintTarget },
+}
+
+/// Zona de un ejercicio de rayado (polígono convexo).
+#[derive(Clone, Debug)]
+pub struct Region {
+    pub pts: Vec<Pos2>,
+    /// Dirección pedida en grados (0 = horizontal, 90 = vertical, 45 = «/»). `None`: la que quieras,
+    /// pero la misma en toda la zona.
+    pub angle: Option<f32>,
+    /// Separación pedida entre líneas, en px: menos separación = tono más oscuro.
+    pub spacing: f32,
+    /// Trama cruzada: una segunda familia de líneas a 90°.
+    pub cross: bool,
+    pub label: Option<String>,
+}
+
+impl Region {
+    pub fn contains(&self, p: Pos2) -> bool {
+        // Regla par-impar.
+        let mut inside = false;
+        let n = self.pts.len();
+        for i in 0..n {
+            let (a, b) = (self.pts[i], self.pts[(i + 1) % n]);
+            if (a.y > p.y) != (b.y > p.y) && p.x < a.x + (b.x - a.x) * (p.y - a.y) / (b.y - a.y) {
+                inside = !inside;
+            }
+        }
+        inside
+    }
+
+    /// Dirección unitaria de las líneas para un ángulo en grados (y hacia abajo en pantalla).
+    pub fn dir(angle: f32) -> Vec2 {
+        let a = angle.to_radians();
+        vec2(a.cos(), -a.sin())
+    }
+
+    /// Tramo de la recta que pasa por `p` en dirección `d` que queda dentro del polígono (convexo).
+    pub fn clip(&self, p: Pos2, d: Vec2) -> Option<(Pos2, Pos2)> {
+        let mut ts: Vec<f32> = Vec::new();
+        let n = self.pts.len();
+        for i in 0..n {
+            let (a, b) = (self.pts[i], self.pts[(i + 1) % n]);
+            let e = b - a;
+            let den = d.x * e.y - d.y * e.x;
+            if den.abs() < 1e-6 {
+                continue;
+            }
+            let w = a - p;
+            let t = (w.x * e.y - w.y * e.x) / den;
+            let s = (w.x * d.y - w.y * d.x) / den;
+            if (-1e-4..=1.0 + 1e-4).contains(&s) {
+                ts.push(t);
+            }
+        }
+        if ts.len() < 2 {
+            return None;
+        }
+        let lo = ts.iter().copied().fold(f32::MAX, f32::min);
+        let hi = ts.iter().copied().fold(f32::MIN, f32::max);
+        (hi - lo > 1.0).then(|| (p + d * lo, p + d * hi))
+    }
+
+    pub fn centroid(&self) -> Pos2 {
+        let s = self.pts.iter().fold(Vec2::ZERO, |a, p| a + p.to_vec2());
+        (s / self.pts.len().max(1) as f32).to_pos2()
+    }
+
+    /// Líneas ideales de la zona (las que dibujaría alguien que lo hace perfecto).
+    pub fn ideal_lines(&self) -> Vec<(Pos2, Pos2)> {
+        let base = self.angle.unwrap_or(45.0);
+        let mut angles = vec![base];
+        if self.cross {
+            angles.push(base + 90.0);
+        }
+        let c = self.centroid();
+        let reach = self.pts.iter().map(|p| (*p - c).length()).fold(0.0, f32::max);
+        let mut out = Vec::new();
+        for a in angles {
+            let d = Region::dir(a);
+            let nrm = vec2(-d.y, d.x);
+            let k = (reach / self.spacing).ceil() as i32;
+            for i in -k..=k {
+                if let Some(seg) = self.clip(c + nrm * (i as f32 * self.spacing), d) {
+                    out.push(seg);
+                }
+            }
+        }
+        out
+    }
 }
 
 /// Hacia dónde debe ir una línea en perspectiva.
@@ -110,6 +215,10 @@ pub struct Exercise {
     pub kind: Kind,
     /// Segundos que se ve la guía antes de ocultarse (ejercicios de memoria).
     pub memory: Option<f32>,
+    /// Numerar las guías en el lienzo para indicar el orden de construcción.
+    pub numbered: bool,
+    /// Segundos para hacer el ejercicio (gestos): al acabar se califica y se bloquea el lienzo.
+    pub time_limit: Option<f32>,
     pub spec: KindSpec,
     pub vary: Vary,
 }

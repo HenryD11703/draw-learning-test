@@ -1,0 +1,947 @@
+{
+  "id": "manos",
+  "title": "Las manos",
+  "subtitle": "La mano en bloques, proporción y arcos de los nudillos",
+  "lesson": "Basado en Andrew Loomis («Drawing the Head and Hands»). La mano se simplifica en bloques: la palma como una caja algo trapezoidal y cada dedo como tres segmentos (el pulgar, como tres desde la muñeca).\n\n• El dedo corazón mide más o menos lo mismo que la palma.\n• El índice y el anular llegan a la uña del corazón; el meñique, a su última articulación.\n• Las articulaciones de los dedos forman arcos, no líneas rectas: los nudillos van en curva.\n\nUsa tu propia mano como modelo: es el que siempre tienes a mano.",
+  "accent": [
+    200,
+    170,
+    120
+  ],
+  "exercises": [
+    {
+      "id": "han01",
+      "title": "La mano en bloques (con guía)",
+      "goal": "Repasa la mano en orden: la palma, el pulgar y los cuatro dedos, cada uno como tres segmentos.",
+      "krita_tip": "Tu propia mano es el mejor modelo: en Krita, ponle una foto con la herramienta de imagen de referencia y copia sus bloques.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": {
+        "shift": 30,
+        "rotate": 10
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                410,
+                330
+              ],
+              [
+                550,
+                320
+              ],
+              [
+                560,
+                470
+              ],
+              [
+                420,
+                490
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                415,
+                450
+              ],
+              [
+                360,
+                400
+              ],
+              [
+                330,
+                350
+              ],
+              [
+                320,
+                310
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                430,
+                328
+              ],
+              [
+                425,
+                260
+              ],
+              [
+                422,
+                220
+              ],
+              [
+                420,
+                190
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                470,
+                325
+              ],
+              [
+                470,
+                245
+              ],
+              [
+                470,
+                200
+              ],
+              [
+                470,
+                165
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                510,
+                322
+              ],
+              [
+                515,
+                250
+              ],
+              [
+                517,
+                210
+              ],
+              [
+                519,
+                180
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                545,
+                321
+              ],
+              [
+                555,
+                265
+              ],
+              [
+                560,
+                235
+              ],
+              [
+                563,
+                210
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "han02",
+      "title": "Largo de los dedos",
+      "goal": "La palma y el pulgar ya están. Dibuja los cuatro dedos: el corazón tan largo como la palma, índice y anular hasta su uña y el meñique hasta su última articulación.",
+      "krita_tip": "Mide en Krita con la herramienta Medir: el dedo corazón y la palma deberían dar casi lo mismo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                410,
+                330
+              ],
+              [
+                550,
+                320
+              ],
+              [
+                560,
+                470
+              ],
+              [
+                420,
+                490
+              ]
+            ],
+            "closed": true,
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                415,
+                450
+              ],
+              [
+                360,
+                400
+              ],
+              [
+                330,
+                350
+              ],
+              [
+                320,
+                310
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                430,
+                328
+              ],
+              [
+                425,
+                260
+              ],
+              [
+                422,
+                220
+              ],
+              [
+                420,
+                190
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                470,
+                325
+              ],
+              [
+                470,
+                245
+              ],
+              [
+                470,
+                200
+              ],
+              [
+                470,
+                165
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                510,
+                322
+              ],
+              [
+                515,
+                250
+              ],
+              [
+                517,
+                210
+              ],
+              [
+                519,
+                180
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                545,
+                321
+              ],
+              [
+                555,
+                265
+              ],
+              [
+                560,
+                235
+              ],
+              [
+                563,
+                210
+              ]
+            ],
+            "role": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "han03",
+      "title": "Arcos de los nudillos",
+      "goal": "Con la mano ya dibujada, repasa los dos arcos que unen las articulaciones de los dedos. Fíjate en que no son rectas: se curvan como un abanico.",
+      "krita_tip": "Al dibujar manos en Krita, traza primero estos arcos en una capa de construcción: colocan todos los dedos de golpe.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                410,
+                330
+              ],
+              [
+                550,
+                320
+              ],
+              [
+                560,
+                470
+              ],
+              [
+                420,
+                490
+              ]
+            ],
+            "closed": true,
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                415,
+                450
+              ],
+              [
+                360,
+                400
+              ],
+              [
+                330,
+                350
+              ],
+              [
+                320,
+                310
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                430,
+                328
+              ],
+              [
+                425,
+                260
+              ],
+              [
+                422,
+                220
+              ],
+              [
+                420,
+                190
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                470,
+                325
+              ],
+              [
+                470,
+                245
+              ],
+              [
+                470,
+                200
+              ],
+              [
+                470,
+                165
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                510,
+                322
+              ],
+              [
+                515,
+                250
+              ],
+              [
+                517,
+                210
+              ],
+              [
+                519,
+                180
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                545,
+                321
+              ],
+              [
+                555,
+                265
+              ],
+              [
+                560,
+                235
+              ],
+              [
+                563,
+                210
+              ]
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                425,
+                260
+              ],
+              [
+                470,
+                245
+              ],
+              [
+                515,
+                250
+              ],
+              [
+                555,
+                265
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                422,
+                220
+              ],
+              [
+                470,
+                200
+              ],
+              [
+                517,
+                210
+              ],
+              [
+                560,
+                235
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "han04",
+      "title": "Copia: puño",
+      "goal": "Copia el puño: un bloque, el arco de los nudillos, los dedos doblados como franjas y el pulgar cruzando por delante.",
+      "krita_tip": "Tu propia mano es el mejor modelo: en Krita, ponle una foto con la herramienta de imagen de referencia y copia sus bloques.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                400,
+                280
+              ],
+              [
+                560,
+                270
+              ],
+              [
+                575,
+                420
+              ],
+              [
+                410,
+                440
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                400,
+                300
+              ],
+              [
+                440,
+                268
+              ],
+              [
+                520,
+                262
+              ],
+              [
+                565,
+                290
+              ]
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              440,
+              285
+            ],
+            "b": [
+              446,
+              430
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              482,
+              278
+            ],
+            "b": [
+              488,
+              426
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              522,
+              274
+            ],
+            "b": [
+              530,
+              422
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                402,
+                385
+              ],
+              [
+                452,
+                352
+              ],
+              [
+                522,
+                348
+              ]
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              432,
+              438
+            ],
+            "b": [
+              432,
+              560
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              552,
+              426
+            ],
+            "b": [
+              560,
+              550
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "han05",
+      "title": "Copia: mano que señala",
+      "goal": "Copia la mano que señala: la palma como bloque, el índice estirado y los demás dedos recogidos como curvas.",
+      "krita_tip": "Tu propia mano es el mejor modelo: en Krita, ponle una foto con la herramienta de imagen de referencia y copia sus bloques.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                380,
+                300
+              ],
+              [
+                500,
+                290
+              ],
+              [
+                510,
+                420
+              ],
+              [
+                390,
+                430
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "shape": "line",
+            "a": [
+              500,
+              296
+            ],
+            "b": [
+              690,
+              290
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              502,
+              322
+            ],
+            "b": [
+              690,
+              318
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                690,
+                290
+              ],
+              [
+                708,
+                292
+              ],
+              [
+                708,
+                316
+              ],
+              [
+                690,
+                318
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                505,
+                335
+              ],
+              [
+                565,
+                338
+              ],
+              [
+                565,
+                378
+              ],
+              [
+                508,
+                382
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                507,
+                382
+              ],
+              [
+                560,
+                385
+              ],
+              [
+                560,
+                415
+              ],
+              [
+                509,
+                418
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                392,
+                352
+              ],
+              [
+                452,
+                322
+              ],
+              [
+                512,
+                326
+              ]
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              395,
+              430
+            ],
+            "b": [
+              382,
+              560
+            ]
+          },
+          {
+            "shape": "line",
+            "a": [
+              505,
+              420
+            ],
+            "b": [
+              500,
+              560
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "han06",
+      "title": "Mano de memoria",
+      "goal": "Mira la mano en bloques ocho segundos. Después, dibújala de memoria: palma, pulgar y los cuatro dedos con sus largos.",
+      "krita_tip": "Dibujar la misma mano de memoria varias veces fija las proporciones mejor que copiarla muchas.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 8,
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                410,
+                330
+              ],
+              [
+                550,
+                320
+              ],
+              [
+                560,
+                470
+              ],
+              [
+                420,
+                490
+              ]
+            ],
+            "closed": true
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                415,
+                450
+              ],
+              [
+                360,
+                400
+              ],
+              [
+                330,
+                350
+              ],
+              [
+                320,
+                310
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                430,
+                328
+              ],
+              [
+                425,
+                260
+              ],
+              [
+                422,
+                220
+              ],
+              [
+                420,
+                190
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                470,
+                325
+              ],
+              [
+                470,
+                245
+              ],
+              [
+                470,
+                200
+              ],
+              [
+                470,
+                165
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                510,
+                322
+              ],
+              [
+                515,
+                250
+              ],
+              [
+                517,
+                210
+              ],
+              [
+                519,
+                180
+              ]
+            ]
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                545,
+                321
+              ],
+              [
+                555,
+                265
+              ],
+              [
+                560,
+                235
+              ],
+              [
+                563,
+                210
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

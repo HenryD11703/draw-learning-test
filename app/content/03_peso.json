@@ -1,8 +1,8 @@
 {
-  "id": "presion",
-  "title": "Control de presión",
-  "subtitle": "Grosor y peso de la línea con la presión del lápiz",
-  "lesson": "Con una tableta, la presión es tu herramienta expresiva: un mismo trazo puede empezar fino, engordar y terminar en punta. Krita lee la presión, la pasa por una curva global (Ajustes de tableta) y luego por la curva de cada pincel.\n\nLa guía muestra el grosor esperado. Si usas ratón, la app simula la presión con la velocidad (lento = más presión); puedes cambiarlo en Presión.",
+  "id": "peso",
+  "title": "Peso de línea",
+  "subtitle": "Presión, grosor y jerarquía de líneas",
+  "lesson": "Con una tableta, la presión es tu herramienta expresiva: un mismo trazo puede empezar fino, engordar y terminar en punta. Krita lee la presión, la pasa por una curva global (Ajustes de tableta) y luego por la curva de cada pincel.\n\nEl peso de línea también ordena el dibujo, como enseñan Drawabox y los manuales de entintado: el contorno exterior y lo que está cerca, más grueso; los detalles interiores y lo lejano, más fino. Así el dibujo se lee de un vistazo.\n\nLa guía muestra el grosor esperado. Si usas ratón, la app simula la presión con la velocidad (lento = más presión); puedes cambiarlo en Presión.",
   "accent": [255, 170, 70],
   "exercises": [
     {
@@ -81,6 +81,60 @@
           { "shape": "line", "a": [330, 320], "b": [470, 320], "pressure": { "const": 0.5 } },
           { "shape": "line", "a": [500, 320], "b": [640, 320], "pressure": { "const": 0.75 } },
           { "shape": "line", "a": [670, 320], "b": [810, 320], "pressure": { "const": 1.0 } }
+        ]
+      }
+    },
+    {
+      "id": "pes01",
+      "title": "Contorno grueso, interior fino",
+      "goal": "El contorno exterior del cubo va grueso y las aristas interiores, finas. Así el cubo se separa del fondo.",
+      "krita_tip": "Al entintar en Krita, muchos dibujantes repasan al final solo el contorno exterior con un pincel algo más grande.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.1] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "poly", "pts": [[300, 260], [420, 170], [640, 170], [640, 390], [520, 480], [300, 480]], "closed": true, "pressure": { "const": 0.9 } },
+          { "shape": "line", "a": [300, 260], "b": [520, 260], "pressure": { "const": 0.3 } },
+          { "shape": "line", "a": [520, 260], "b": [520, 480], "pressure": { "const": 0.3 } },
+          { "shape": "line", "a": [520, 260], "b": [640, 170], "pressure": { "const": 0.3 } }
+        ]
+      }
+    },
+    {
+      "id": "pes02",
+      "title": "Lo de delante, más grueso",
+      "goal": "El círculo está delante: su contorno va grueso y completo. El cuadrado queda detrás: más fino y cortado donde lo tapa el círculo.",
+      "krita_tip": "Cuando dos formas se tapan, en Krita conviene dibujarlas en capas distintas y borrar la parte oculta de la de atrás.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "circle", "c": [400, 380], "r": 170, "pressure": { "const": 0.9 } },
+          { "shape": "poly", "pts": [[420, 211], [420, 160], [760, 160], [760, 480], [537.5, 480]], "pressure": { "const": 0.3 } }
+        ]
+      }
+    },
+    {
+      "id": "pes03",
+      "title": "Cerca grueso, lejos fino",
+      "goal": "Tres círculos: el grande está cerca y va grueso; el pequeño, lejos y fino. El peso de línea refuerza la sensación de profundidad.",
+      "krita_tip": "En Krita, cambia el tamaño con [ y ] entre un círculo y otro, o deja que la presión lo haga por ti.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30 },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "circle", "c": [250, 420], "r": 150, "pressure": { "const": 0.95 } },
+          { "shape": "circle", "c": [560, 260], "r": 90, "pressure": { "const": 0.6 } },
+          { "shape": "circle", "c": [780, 140], "r": 50, "pressure": { "const": 0.3 } }
         ]
       }
     }

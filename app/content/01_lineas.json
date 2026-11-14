@@ -1,0 +1,250 @@
+{
+  "id": "lineas",
+  "title": "Líneas",
+  "subtitle": "Rectas y curvas seguras con el método fantasma",
+  "lesson": "Basado en el método fantasma de Drawabox (lección 1). Una línea segura se dibuja en tres pasos:\n\n1. Planifica: mira dónde empieza y dónde termina.\n2. Fantasmea: repite el movimiento en el aire, sin tocar, hasta que salga solo.\n3. Traza: un solo movimiento decidido, mirando el punto final y no la punta del lápiz.\n\nLas líneas largas se dibujan con el hombro, las medias con el codo y solo los detalles con la muñeca. Una línea algo desviada pero firme es mejor que una precisa y temblorosa: aquí el pulso cuenta tanto como la precisión.\n\nUsarás el pincel por defecto de Krita (b) Basic-5 Size) con el suavizado Básico, el mismo que trae Krita al instalarlo.",
+  "accent": [88, 166, 255],
+  "exercises": [
+    {
+      "id": "lin01",
+      "title": "Líneas superpuestas",
+      "goal": "Repasa cada línea tres o cuatro veces seguidas, sin parar entre pasadas. Las pasadas deben quedar unas encima de otras, no abiertas en abanico.",
+      "krita_tip": "Es el calentamiento de Drawabox y no necesita ninguna opción especial en Krita: hazlo unos minutos al empezar cada sesión.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 10 },
+      "kind": {
+        "type": "trace",
+        "tol": 10,
+        "guides": [
+          { "shape": "line", "a": [150, 140], "b": [500, 200] },
+          { "shape": "line", "a": [580, 120], "b": [820, 420] },
+          { "shape": "line", "a": [180, 330], "b": [620, 460] },
+          { "shape": "line", "a": [240, 570], "b": [780, 520] }
+        ]
+      }
+    },
+    {
+      "id": "m1e1",
+      "title": "Líneas horizontales",
+      "goal": "Repasa las 5 líneas de izquierda a derecha, cada una de un solo trazo.",
+      "krita_tip": "En Krita el Pincel a mano alzada se elige con la tecla B. Cambia el tamaño con [ y ] o con Mayús + arrastrar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "lines", "a": [160, 140], "b": [800, 140], "step": [0, 90], "count": 5 }]
+      }
+    },
+    {
+      "id": "m1e2",
+      "title": "Líneas verticales",
+      "goal": "Repasa las líneas de arriba abajo. Gira el lienzo si te resulta incómodo: en Krita también puedes.",
+      "krita_tip": "Si te equivocas, Ctrl+Z deshace el último trazo, igual que aquí.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 25 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "lines", "a": [180, 110], "b": [180, 530], "step": [120, 0], "count": 6 }]
+      }
+    },
+    {
+      "id": "m1e3",
+      "title": "Diagonales",
+      "goal": "Traza las diagonales en ambas direcciones sin detenerte.",
+      "krita_tip": "Krita tiene la herramienta de Asistentes (Regla, Paralelas…) para cuando necesites diagonales exactas; aquí entrenas la mano.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "line", "a": [150, 120], "b": [450, 520] },
+          { "shape": "line", "a": [250, 120], "b": [550, 520] },
+          { "shape": "line", "a": [810, 120], "b": [510, 520] },
+          { "shape": "line", "a": [710, 120], "b": [410, 520] }
+        ]
+      }
+    },
+    {
+      "id": "lin02",
+      "title": "Línea fantasma: planificar y trazar",
+      "goal": "Para cada par de puntos: mira los dos, repite el movimiento en el aire dos o tres veces y traza de un solo gesto. No corrijas: si sale torcida, pasa a la siguiente.",
+      "krita_tip": "En una tableta el lápiz marca en cuanto toca: fantasmea con la punta a un dedo de la superficie.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05], "rotate": 15 },
+      "kind": {
+        "type": "points",
+        "tol": 12,
+        "guides": [
+          { "shape": "line", "a": [140, 140], "b": [420, 110] },
+          { "shape": "line", "a": [520, 160], "b": [840, 200] },
+          { "shape": "line", "a": [160, 300], "b": [480, 360] },
+          { "shape": "line", "a": [560, 330], "b": [820, 470] },
+          { "shape": "line", "a": [220, 560], "b": [700, 520] }
+        ]
+      }
+    },
+    {
+      "id": "m1e7",
+      "title": "De punto a punto",
+      "goal": "Une cada par de puntos con el mismo número con una línea recta de un solo trazo. Mira el punto de llegada, no la punta del lápiz.",
+      "krita_tip": "Antes de apoyar, repite el movimiento en el aire un par de veces (\"fantasmear\"). Es el calentamiento habitual antes de dibujar en Krita.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05], "rotate": 10 },
+      "kind": {
+        "type": "points",
+        "tol": 12,
+        "guides": [
+          { "shape": "line", "a": [150, 120], "b": [450, 170] },
+          { "shape": "line", "a": [540, 110], "b": [820, 250] },
+          { "shape": "line", "a": [160, 290], "b": [360, 520] },
+          { "shape": "line", "a": [460, 330], "b": [800, 340] },
+          { "shape": "line", "a": [820, 450], "b": [560, 570] },
+          { "shape": "line", "a": [250, 590], "b": [470, 450] }
+        ]
+      }
+    },
+    {
+      "id": "m1e8",
+      "title": "Punto a punto en todas direcciones",
+      "goal": "Une cada par de puntos. Las líneas salen en todas direcciones: gira el lienzo si alguna se te hace difícil, pero no gires la muñeca.",
+      "krita_tip": "En Krita giras el lienzo con Mayús + barra espaciadora y arrastrar: busca siempre el ángulo en el que el trazo te sale natural.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "rotate": 25 },
+      "kind": {
+        "type": "points",
+        "tol": 12,
+        "guides": [{ "shape": "rays", "c": [480, 320], "r0": 80, "r1": 260, "count": 8, "start": 10 }]
+      }
+    },
+    {
+      "id": "lin03",
+      "title": "Líneas largas con el hombro",
+      "goal": "Tres líneas largas de lado a lado. Mueve todo el brazo desde el hombro: si mueves solo la muñeca, la línea se curva al final.",
+      "krita_tip": "Para líneas largas en Krita, aleja la vista (tecla -) hasta que la línea entera quepa cómoda en tu gesto.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20, "rotate": 6 },
+      "kind": {
+        "type": "points",
+        "tol": 14,
+        "guides": [
+          { "shape": "line", "a": [80, 130], "b": [880, 210] },
+          { "shape": "line", "a": [100, 520], "b": [860, 340] },
+          { "shape": "line", "a": [160, 290], "b": [800, 600] }
+        ]
+      }
+    },
+    {
+      "id": "lin04",
+      "title": "Líneas cortas y precisas",
+      "goal": "Doce líneas cortas: aquí se nota la puntería. Para las cortas, apoya la muñeca y mueve el codo.",
+      "krita_tip": "Acerca la vista (tecla +) para los trazos cortos: en Krita el tamaño del pincel en pantalla cambia con el zoom, la línea no.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 12 },
+      "kind": {
+        "type": "points",
+        "tol": 9,
+        "guides": [
+          { "shape": "line", "a": [120, 120], "b": [210, 150] },
+          { "shape": "line", "a": [300, 110], "b": [340, 200] },
+          { "shape": "line", "a": [450, 140], "b": [540, 120] },
+          { "shape": "line", "a": [640, 110], "b": [700, 190] },
+          { "shape": "line", "a": [780, 150], "b": [860, 130] },
+          { "shape": "line", "a": [130, 300], "b": [200, 370] },
+          { "shape": "line", "a": [320, 330], "b": [410, 320] },
+          { "shape": "line", "a": [520, 280], "b": [560, 370] },
+          { "shape": "line", "a": [660, 340], "b": [750, 300] },
+          { "shape": "line", "a": [800, 420], "b": [860, 500] },
+          { "shape": "line", "a": [200, 480], "b": [290, 520] },
+          { "shape": "line", "a": [420, 500], "b": [470, 580] }
+        ]
+      }
+    },
+    {
+      "id": "lin05",
+      "title": "Planos fantasma",
+      "goal": "Traza cada plano en el orden de los números: primero el contorno, luego las dos diagonales y por último las dos líneas que pasan por el centro.",
+      "krita_tip": "Los planos fantasma de Drawabox son la base de las cajas: en Krita conviene hacerlos en una capa de calentamiento que luego borras.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "numbered": true,
+      "vary": { "shift": 30, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "plane", "quad": [[120, 200], [400, 150], [430, 390], [150, 430]], "diagonals": true, "cross": true },
+          { "shape": "plane", "quad": [[530, 230], [840, 190], [800, 490], [560, 460]], "diagonals": true, "cross": true }
+        ]
+      }
+    },
+    {
+      "id": "m1e4",
+      "title": "Curvas en C y en S",
+      "goal": "Repasa las curvas con un movimiento continuo del brazo.",
+      "krita_tip": "Las curvas largas salen mejor si mueves el lienzo para que el gesto sea natural (en Krita: rotar con Mayús + barra espaciadora y arrastrar).",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "bezier", "p": [[260, 120], [80, 160], [80, 480], [260, 520]] },
+          { "shape": "bezier", "p": [[440, 120], [300, 180], [580, 460], [440, 520]] },
+          { "shape": "bezier", "p": [[640, 120], [860, 200], [500, 300], [720, 520]] }
+        ]
+      }
+    },
+    {
+      "id": "lin06",
+      "title": "Arcos de distinta curvatura",
+      "goal": "Cuatro arcos, de más abierto a más cerrado. Fantasmea el gesto completo antes de apoyar, igual que con las rectas.",
+      "krita_tip": "Si un arco te sale mejor en otra dirección, gira el lienzo: en Krita la orientación de la vista no afecta al dibujo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 12 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "bezier", "p": [[140, 200], [220, 100], [360, 100], [440, 200]] },
+          { "shape": "bezier", "p": [[520, 120], [640, 180], [720, 300], [740, 440]] },
+          { "shape": "bezier", "p": [[140, 420], [260, 520], [420, 540], [540, 480]] },
+          { "shape": "bezier", "p": [[600, 580], [680, 470], [800, 470], [860, 580]] }
+        ]
+      }
+    },
+    {
+      "id": "lin07",
+      "title": "Líneas de memoria",
+      "goal": "Mira las líneas unos segundos. Cuando desaparezcan, dibújalas donde estaban, con la misma dirección y largo.",
+      "krita_tip": "Dibujar de memoria entrena el ojo: en Krita, oculta la capa de referencia y compárala al terminar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 4,
+      "vary": { "shift": 40, "rotate": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          { "shape": "line", "a": [160, 160], "b": [520, 120] },
+          { "shape": "line", "a": [640, 140], "b": [760, 480] },
+          { "shape": "line", "a": [200, 520], "b": [560, 360] },
+          { "shape": "line", "a": [180, 300], "b": [420, 330] }
+        ]
+      }
+    }
+  ]
+}

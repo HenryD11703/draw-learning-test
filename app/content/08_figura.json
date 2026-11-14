@@ -1,0 +1,1726 @@
+{
+  "id": "figura",
+  "title": "Gesto y figura",
+  "subtitle": "Línea de acción, proporción en cabezas y maniquí",
+  "lesson": "Basado en Kimon Nicolaïdes («The Natural Way to Draw») y Andrew Loomis («Figure Drawing for All It's Worth»).\n\n• Primero el gesto: una línea de acción que resume el movimiento de toda la pose, dibujada en segundos.\n• Después la proporción: Loomis mide la figura en cabezas. Una figura idealizada mide unas ocho; la mitad cae en la entrepierna, los codos quedan a la altura de la cintura, las muñecas a la de la entrepierna y las rodillas a dos cabezas del suelo.\n• Por último el maniquí: caja torácica y pelvis como volúmenes, y las articulaciones como esferas.\n\nEn los ejercicios de gesto hay tiempo límite: cuando se acaba, se califica lo que hayas dibujado. No busques detalle: busca el movimiento.",
+  "accent": [
+    240,
+    120,
+    160
+  ],
+  "exercises": [
+    {
+      "id": "fig01",
+      "title": "Líneas de acción",
+      "goal": "Repasa cada curva de un solo gesto rápido. Una línea de acción es la curva que recorre la pose entera, de la cabeza al pie que apoya.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 30
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                160,
+                80
+              ],
+              [
+                100,
+                260
+              ],
+              [
+                260,
+                420
+              ],
+              [
+                180,
+                590
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                360,
+                80
+              ],
+              [
+                460,
+                220
+              ],
+              [
+                300,
+                420
+              ],
+              [
+                400,
+                590
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                560,
+                90
+              ],
+              [
+                700,
+                250
+              ],
+              [
+                700,
+                420
+              ],
+              [
+                580,
+                590
+              ]
+            ]
+          },
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                880,
+                80
+              ],
+              [
+                760,
+                200
+              ],
+              [
+                880,
+                420
+              ],
+              [
+                740,
+                590
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig02",
+      "title": "Línea de acción en 10 segundos",
+      "goal": "Copia la curva en menos de diez segundos, del tamaño que quieras. Un solo trazo, sin repasar.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 10,
+      "vary": {
+        "scale": [
+          0.85,
+          1.05
+        ],
+        "rotate": 20
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "bezier",
+            "p": [
+              [
+                420,
+                60
+              ],
+              [
+                600,
+                220
+              ],
+              [
+                320,
+                400
+              ],
+              [
+                520,
+                600
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig03",
+      "title": "Ocho cabezas",
+      "goal": "Repasa la figura de pie. Las marcas de la izquierda miden una cabeza cada una: comprueba que la mitad cae en la entrepierna y las rodillas a dos cabezas del suelo.",
+      "krita_tip": "En Krita, una rejilla con celdas del alto de una cabeza (menú Ver) sirve para comprobar proporciones.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 20
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          {
+            "shape": "line",
+            "a": [
+              330,
+              40
+            ],
+            "b": [
+              360,
+              40
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              110
+            ],
+            "b": [
+              360,
+              110
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              180
+            ],
+            "b": [
+              360,
+              180
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              250
+            ],
+            "b": [
+              360,
+              250
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              320
+            ],
+            "b": [
+              360,
+              320
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              390
+            ],
+            "b": [
+              360,
+              390
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              460
+            ],
+            "b": [
+              360,
+              460
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              530
+            ],
+            "b": [
+              360,
+              530
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              600
+            ],
+            "b": [
+              360,
+              600
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              345,
+              40
+            ],
+            "b": [
+              345,
+              600
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "figure",
+            "head": [
+              480,
+              75
+            ],
+            "r": 32,
+            "neck": [
+              480,
+              125
+            ],
+            "hip": [
+              480,
+              300
+            ],
+            "shoulders": [
+              [
+                410,
+                150
+              ],
+              [
+                550,
+                150
+              ]
+            ],
+            "hips": [
+              [
+                445,
+                300
+              ],
+              [
+                515,
+                300
+              ]
+            ],
+            "elbows": [
+              [
+                395,
+                262
+              ],
+              [
+                565,
+                262
+              ]
+            ],
+            "hands": [
+              [
+                392,
+                368
+              ],
+              [
+                568,
+                368
+              ]
+            ],
+            "knees": [
+              [
+                452,
+                452
+              ],
+              [
+                508,
+                452
+              ]
+            ],
+            "feet": [
+              [
+                448,
+                600
+              ],
+              [
+                512,
+                600
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig04",
+      "title": "Encuentra las articulaciones",
+      "goal": "El tronco ya está. Dibuja brazos y piernas: codos a la altura de la cintura, muñecas a la de la entrepierna, rodillas a dos cabezas del suelo y pies en la última marca.",
+      "krita_tip": "Medir en cabezas sirve para cualquier figura: en Krita, dibuja la cabeza primero y úsala como regla.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 20
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "line",
+            "a": [
+              330,
+              40
+            ],
+            "b": [
+              360,
+              40
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              110
+            ],
+            "b": [
+              360,
+              110
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              180
+            ],
+            "b": [
+              360,
+              180
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              250
+            ],
+            "b": [
+              360,
+              250
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              320
+            ],
+            "b": [
+              360,
+              320
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              390
+            ],
+            "b": [
+              360,
+              390
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              460
+            ],
+            "b": [
+              360,
+              460
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              530
+            ],
+            "b": [
+              360,
+              530
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              330,
+              600
+            ],
+            "b": [
+              360,
+              600
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              345,
+              40
+            ],
+            "b": [
+              345,
+              600
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "circle",
+            "c": [
+              480,
+              75
+            ],
+            "r": 32,
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              480,
+              125
+            ],
+            "b": [
+              480,
+              300
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              410,
+              150
+            ],
+            "b": [
+              550,
+              150
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "line",
+            "a": [
+              445,
+              300
+            ],
+            "b": [
+              515,
+              300
+            ],
+            "role": "context"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                410,
+                150
+              ],
+              [
+                395,
+                262
+              ],
+              [
+                392,
+                368
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                445,
+                300
+              ],
+              [
+                452,
+                452
+              ],
+              [
+                448,
+                600
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                550,
+                150
+              ],
+              [
+                565,
+                262
+              ],
+              [
+                568,
+                368
+              ]
+            ],
+            "role": "hidden"
+          },
+          {
+            "shape": "poly",
+            "pts": [
+              [
+                515,
+                300
+              ],
+              [
+                508,
+                452
+              ],
+              [
+                512,
+                600
+              ]
+            ],
+            "role": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig05",
+      "title": "El maniquí de Loomis (con guía)",
+      "goal": "Repasa el maniquí: cabeza, columna, caja torácica, pelvis, articulaciones y extremidades. Son los volúmenes sobre los que se construye cualquier figura.",
+      "krita_tip": "En Krita, dibuja el maniquí en una capa con poca opacidad y la figura definitiva en otra encima.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": {
+        "shift": 20
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              480,
+              75
+            ],
+            "r": 32,
+            "neck": [
+              480,
+              125
+            ],
+            "hip": [
+              480,
+              300
+            ],
+            "shoulders": [
+              [
+                410,
+                150
+              ],
+              [
+                550,
+                150
+              ]
+            ],
+            "hips": [
+              [
+                445,
+                300
+              ],
+              [
+                515,
+                300
+              ]
+            ],
+            "elbows": [
+              [
+                395,
+                262
+              ],
+              [
+                565,
+                262
+              ]
+            ],
+            "hands": [
+              [
+                392,
+                368
+              ],
+              [
+                568,
+                368
+              ]
+            ],
+            "knees": [
+              [
+                452,
+                452
+              ],
+              [
+                508,
+                452
+              ]
+            ],
+            "feet": [
+              [
+                448,
+                600
+              ],
+              [
+                512,
+                600
+              ]
+            ],
+            "volume": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig06",
+      "title": "Gesto: caminando",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Una pierna adelante y el brazo contrario también: busca ese cruce.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              485,
+              75
+            ],
+            "r": 32,
+            "neck": [
+              478,
+              125
+            ],
+            "chest": [
+              488,
+              200
+            ],
+            "hip": [
+              470,
+              300
+            ],
+            "shoulders": [
+              [
+                462,
+                150
+              ],
+              [
+                490,
+                150
+              ]
+            ],
+            "hips": [
+              [
+                460,
+                300
+              ],
+              [
+                482,
+                300
+              ]
+            ],
+            "elbows": [
+              [
+                448,
+                245
+              ],
+              [
+                508,
+                240
+              ]
+            ],
+            "hands": [
+              [
+                420,
+                318
+              ],
+              [
+                548,
+                308
+              ]
+            ],
+            "knees": [
+              [
+                448,
+                450
+              ],
+              [
+                518,
+                445
+              ]
+            ],
+            "feet": [
+              [
+                390,
+                590
+              ],
+              [
+                545,
+                600
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig07",
+      "title": "Gesto: alcanzando",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se estira hacia la mano levantada: empieza por esa línea larga.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              468,
+              100
+            ],
+            "r": 32,
+            "neck": [
+              472,
+              148
+            ],
+            "chest": [
+              484,
+              220
+            ],
+            "hip": [
+              492,
+              322
+            ],
+            "shoulders": [
+              [
+                410,
+                172
+              ],
+              [
+                545,
+                160
+              ]
+            ],
+            "hips": [
+              [
+                456,
+                322
+              ],
+              [
+                526,
+                322
+              ]
+            ],
+            "elbows": [
+              [
+                396,
+                272
+              ],
+              [
+                592,
+                95
+              ]
+            ],
+            "hands": [
+              [
+                392,
+                372
+              ],
+              [
+                622,
+                30
+              ]
+            ],
+            "knees": [
+              [
+                470,
+                470
+              ],
+              [
+                535,
+                466
+              ]
+            ],
+            "feet": [
+              [
+                456,
+                608
+              ],
+              [
+                560,
+                608
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig08",
+      "title": "Gesto: contrapposto",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El peso cae en una pierna: la cadera de ese lado sube y los hombros se inclinan al revés.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              466,
+              75
+            ],
+            "r": 32,
+            "neck": [
+              470,
+              125
+            ],
+            "chest": [
+              480,
+              205
+            ],
+            "hip": [
+              486,
+              305
+            ],
+            "shoulders": [
+              [
+                404,
+                160
+              ],
+              [
+                540,
+                146
+              ]
+            ],
+            "hips": [
+              [
+                450,
+                296
+              ],
+              [
+                522,
+                314
+              ]
+            ],
+            "elbows": [
+              [
+                390,
+                266
+              ],
+              [
+                592,
+                240
+              ]
+            ],
+            "hands": [
+              [
+                404,
+                366
+              ],
+              [
+                530,
+                312
+              ]
+            ],
+            "knees": [
+              [
+                440,
+                456
+              ],
+              [
+                512,
+                462
+              ]
+            ],
+            "feet": [
+              [
+                410,
+                596
+              ],
+              [
+                500,
+                608
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig09",
+      "title": "Gesto: sentado",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El torso se inclina hacia delante y las piernas forman un ángulo recto: fíjate en el triángulo que dibujan.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              430,
+              170
+            ],
+            "r": 32,
+            "neck": [
+              440,
+              220
+            ],
+            "chest": [
+              452,
+              300
+            ],
+            "hip": [
+              470,
+              382
+            ],
+            "shoulders": [
+              [
+                405,
+                240
+              ],
+              [
+                472,
+                236
+              ]
+            ],
+            "hips": [
+              [
+                455,
+                386
+              ],
+              [
+                486,
+                386
+              ]
+            ],
+            "elbows": [
+              [
+                452,
+                322
+              ],
+              [
+                492,
+                316
+              ]
+            ],
+            "hands": [
+              [
+                562,
+                372
+              ],
+              [
+                592,
+                362
+              ]
+            ],
+            "knees": [
+              [
+                592,
+                386
+              ],
+              [
+                604,
+                396
+              ]
+            ],
+            "feet": [
+              [
+                590,
+                560
+              ],
+              [
+                612,
+                566
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig10",
+      "title": "Gesto: corriendo",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se inclina hacia delante: la línea de acción va de la pierna de atrás a la cabeza.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              532,
+              100
+            ],
+            "r": 32,
+            "neck": [
+              516,
+              146
+            ],
+            "chest": [
+              506,
+              216
+            ],
+            "hip": [
+              470,
+              310
+            ],
+            "shoulders": [
+              [
+                504,
+                166
+              ],
+              [
+                526,
+                166
+              ]
+            ],
+            "hips": [
+              [
+                460,
+                310
+              ],
+              [
+                480,
+                310
+              ]
+            ],
+            "elbows": [
+              [
+                450,
+                218
+              ],
+              [
+                562,
+                232
+              ]
+            ],
+            "hands": [
+              [
+                410,
+                262
+              ],
+              [
+                602,
+                186
+              ]
+            ],
+            "knees": [
+              [
+                420,
+                420
+              ],
+              [
+                562,
+                382
+              ]
+            ],
+            "feet": [
+              [
+                330,
+                470
+              ],
+              [
+                540,
+                502
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig11",
+      "title": "Gesto: lanzando",
+      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Brazos y piernas se abren en direcciones opuestas: la pose es una gran X.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 60,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              440,
+              120
+            ],
+            "r": 32,
+            "neck": [
+              452,
+              166
+            ],
+            "chest": [
+              468,
+              236
+            ],
+            "hip": [
+              500,
+              330
+            ],
+            "shoulders": [
+              [
+                400,
+                182
+              ],
+              [
+                522,
+                186
+              ]
+            ],
+            "hips": [
+              [
+                470,
+                330
+              ],
+              [
+                532,
+                336
+              ]
+            ],
+            "elbows": [
+              [
+                340,
+                130
+              ],
+              [
+                582,
+                232
+              ]
+            ],
+            "hands": [
+              [
+                280,
+                88
+              ],
+              [
+                642,
+                272
+              ]
+            ],
+            "knees": [
+              [
+                420,
+                452
+              ],
+              [
+                600,
+                442
+              ]
+            ],
+            "feet": [
+              [
+                360,
+                592
+              ],
+              [
+                662,
+                582
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig12",
+      "title": "Gesto rápido: agachado",
+      "goal": "Copia la pose en 30 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: solo la curva de la espalda, la cabeza y la dirección de brazos y piernas.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 30,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              640,
+              252
+            ],
+            "r": 30,
+            "neck": [
+              594,
+              230
+            ],
+            "chest": [
+              520,
+              250
+            ],
+            "hip": [
+              432,
+              330
+            ],
+            "shoulders": [
+              [
+                578,
+                214
+              ],
+              [
+                602,
+                246
+              ]
+            ],
+            "hips": [
+              [
+                420,
+                330
+              ],
+              [
+                446,
+                336
+              ]
+            ],
+            "elbows": [
+              [
+                590,
+                330
+              ],
+              [
+                616,
+                336
+              ]
+            ],
+            "hands": [
+              [
+                600,
+                430
+              ],
+              [
+                632,
+                436
+              ]
+            ],
+            "knees": [
+              [
+                440,
+                462
+              ],
+              [
+                466,
+                462
+              ]
+            ],
+            "feet": [
+              [
+                440,
+                600
+              ],
+              [
+                482,
+                600
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig13",
+      "title": "Gesto rápido: contrapposto",
+      "goal": "Copia la pose en 30 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: la línea de acción, la inclinación de hombros y caderas, y nada más.",
+      "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 30,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              466,
+              75
+            ],
+            "r": 32,
+            "neck": [
+              470,
+              125
+            ],
+            "chest": [
+              480,
+              205
+            ],
+            "hip": [
+              486,
+              305
+            ],
+            "shoulders": [
+              [
+                404,
+                160
+              ],
+              [
+                540,
+                146
+              ]
+            ],
+            "hips": [
+              [
+                450,
+                296
+              ],
+              [
+                522,
+                314
+              ]
+            ],
+            "elbows": [
+              [
+                390,
+                266
+              ],
+              [
+                592,
+                240
+              ]
+            ],
+            "hands": [
+              [
+                404,
+                366
+              ],
+              [
+                530,
+                312
+              ]
+            ],
+            "knees": [
+              [
+                440,
+                456
+              ],
+              [
+                512,
+                462
+              ]
+            ],
+            "feet": [
+              [
+                410,
+                596
+              ],
+              [
+                500,
+                608
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig14",
+      "title": "Maniquí en pose",
+      "goal": "Copia el maniquí lanzando, con sus volúmenes: caja torácica, pelvis y articulaciones. Tienes dos minutos.",
+      "krita_tip": "Para construir figuras en Krita, haz el maniquí con el pincel por defecto y la figura final con el lápiz o la tinta encima.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "time_limit": 120,
+      "vary": {
+        "scale": [
+          0.9,
+          1.05
+        ]
+      },
+      "kind": {
+        "type": "copy",
+        "tol": 18,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              440,
+              120
+            ],
+            "r": 32,
+            "neck": [
+              452,
+              166
+            ],
+            "chest": [
+              468,
+              236
+            ],
+            "hip": [
+              500,
+              330
+            ],
+            "shoulders": [
+              [
+                400,
+                182
+              ],
+              [
+                522,
+                186
+              ]
+            ],
+            "hips": [
+              [
+                470,
+                330
+              ],
+              [
+                532,
+                336
+              ]
+            ],
+            "elbows": [
+              [
+                340,
+                130
+              ],
+              [
+                582,
+                232
+              ]
+            ],
+            "hands": [
+              [
+                280,
+                88
+              ],
+              [
+                642,
+                272
+              ]
+            ],
+            "knees": [
+              [
+                420,
+                452
+              ],
+              [
+                600,
+                442
+              ]
+            ],
+            "feet": [
+              [
+                360,
+                592
+              ],
+              [
+                662,
+                582
+              ]
+            ],
+            "volume": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "fig15",
+      "title": "Pose de memoria",
+      "goal": "Mira la pose seis segundos. Cuando desaparezca, dibújala en el mismo sitio: primero el movimiento, luego las proporciones.",
+      "krita_tip": "Dibujar poses de memoria es el ejercicio clásico de Nicolaïdes para pasar de copiar a entender.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "memory": 6,
+      "vary": {
+        "shift": 20
+      },
+      "kind": {
+        "type": "trace",
+        "tol": 20,
+        "guides": [
+          {
+            "shape": "figure",
+            "head": [
+              468,
+              100
+            ],
+            "r": 32,
+            "neck": [
+              472,
+              148
+            ],
+            "chest": [
+              484,
+              220
+            ],
+            "hip": [
+              492,
+              322
+            ],
+            "shoulders": [
+              [
+                410,
+                172
+              ],
+              [
+                545,
+                160
+              ]
+            ],
+            "hips": [
+              [
+                456,
+                322
+              ],
+              [
+                526,
+                322
+              ]
+            ],
+            "elbows": [
+              [
+                396,
+                272
+              ],
+              [
+                592,
+                95
+              ]
+            ],
+            "hands": [
+              [
+                392,
+                372
+              ],
+              [
+                622,
+                30
+              ]
+            ],
+            "knees": [
+              [
+                470,
+                470
+              ],
+              [
+                535,
+                466
+              ]
+            ],
+            "feet": [
+              [
+                456,
+                608
+              ],
+              [
+                560,
+                608
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "id": "sombreado",
+  "title": "Sombreado con línea",
+  "subtitle": "Rayado, trama cruzada y valor solo con líneas",
+  "lesson": "Basado en Bert Dodson, «Keys to Drawing», y en la tradición del dibujo a tinta: con una sola línea negra se consiguen todos los grises, solo cambiando cuántas líneas pones.\n\n• Rayado: líneas paralelas, todas en la misma dirección y a la misma distancia.\n• Más juntas = más oscuro; más separadas = más claro.\n• Trama cruzada: una segunda capa de rayado a 90° para los tonos más oscuros.\n• El valor (lo claro y lo oscuro) describe la luz: la cara que mira a la luz va clara y la que le da la espalda, oscura.\n\nJunto a cada zona verás una muestra con la dirección y la separación que se piden. Traza líneas rápidas y sueltas que empiecen y terminen dentro de la zona.",
+  "accent": [190, 190, 200],
+  "exercises": [
+    {
+      "id": "m5e1",
+      "title": "Lápiz: rayado",
+      "goal": "Rellena cada franja con líneas paralelas. Presión suave arriba, fuerte abajo.",
+      "krita_tip": "c) Pencil-2 tiene grano de papel; la opacidad sube con la presión. Es ideal para el boceto inicial.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "color": [0.18, 0.18, 0.2],
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 10,
+        "guides": [{ "shape": "lines", "a": [200, 160], "b": [320, 480], "step": [40, 0], "count": 14 }]
+      }
+    },
+    {
+      "id": "som01",
+      "title": "Rayado paralelo",
+      "goal": "Rellena el rectángulo con líneas paralelas en diagonal, como la muestra: misma dirección y misma distancia entre ellas.",
+      "krita_tip": "En Krita, para rayar rápido sin que se deforme la línea, usa el suavizado Básico o ninguno: el Estabilizador frena los trazos cortos.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": { "shift": 20, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [{ "pts": [[220, 150], [740, 150], [740, 500], [220, 500]], "angle": 45, "spacing": 14 }]
+      }
+    },
+    {
+      "id": "som02",
+      "title": "Rayado vertical y horizontal",
+      "goal": "Raya la zona izquierda en vertical y la derecha en horizontal, con la misma separación. Una de las dos te costará más: es la que más hay que practicar.",
+      "krita_tip": "Si una dirección te sale mal, gira el lienzo en Krita para rayar siempre en tu ángulo cómodo.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[120, 160], [440, 160], [440, 480], [120, 480]], "angle": 90, "spacing": 14 },
+          { "pts": [[520, 160], [840, 160], [840, 480], [520, 480]], "angle": 0, "spacing": 14 }
+        ]
+      }
+    },
+    {
+      "id": "som03",
+      "title": "Rayado en tu dirección",
+      "goal": "Elige la dirección que te resulte más cómoda y mantenla en toda la zona, con líneas igual de separadas.",
+      "krita_tip": "Así raya la mayoría de ilustradores en Krita: siempre en su dirección cómoda, girando el lienzo según la zona.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": { "shift": 20, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [{ "pts": [[300, 140], [660, 140], [800, 320], [660, 500], [300, 500], [160, 320]], "spacing": 12 }]
+      }
+    },
+    {
+      "id": "som04",
+      "title": "Claro y oscuro",
+      "goal": "Dos zonas con el mismo rayado pero distinta densidad: la izquierda clara (líneas separadas) y la derecha oscura (líneas muy juntas).",
+      "krita_tip": "En Krita podrías oscurecer subiendo la opacidad; con rayado el tono sale solo de la densidad, como en la tinta.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[120, 180], [440, 180], [440, 480], [120, 480]], "angle": 45, "spacing": 22, "label": "claro" },
+          { "pts": [[520, 180], [840, 180], [840, 480], [520, 480]], "angle": 45, "spacing": 8, "label": "oscuro" }
+        ]
+      }
+    },
+    {
+      "id": "som05",
+      "title": "Escala de valores con rayado",
+      "goal": "Cinco recuadros de claro a oscuro, solo con rayado, cada uno con la separación de su muestra. El salto de tono entre vecinos debe ser parejo.",
+      "krita_tip": "La escala de valores es la herramienta básica del sombreado; en Krita puedes comprobarla con el selector de color en modo gris.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[110, 230], [230, 230], [230, 430], [110, 430]], "angle": 45, "spacing": 26, "label": "1" },
+          { "pts": [[260, 230], [380, 230], [380, 430], [260, 430]], "angle": 45, "spacing": 18, "label": "2" },
+          { "pts": [[410, 230], [530, 230], [530, 430], [410, 430]], "angle": 45, "spacing": 12, "label": "3" },
+          { "pts": [[560, 230], [680, 230], [680, 430], [560, 430]], "angle": 45, "spacing": 8, "label": "4" },
+          { "pts": [[710, 230], [830, 230], [830, 430], [710, 430]], "angle": 45, "spacing": 5, "label": "5" }
+        ]
+      }
+    },
+    {
+      "id": "som06",
+      "title": "Trama cruzada",
+      "goal": "Raya toda la zona en una diagonal y luego cruza encima con la otra diagonal, con la misma separación.",
+      "krita_tip": "En tinta, la trama cruzada es la forma clásica de los tonos oscuros; en Krita, hazla con el fineliner y sin suavizado fuerte.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 20, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [{ "pts": [[240, 160], [720, 160], [720, 500], [240, 500]], "angle": 45, "spacing": 14, "cross": true }]
+      }
+    },
+    {
+      "id": "som07",
+      "title": "Escala con trama cruzada",
+      "goal": "Cuatro tonos: rayado simple separado, rayado simple junto, trama cruzada separada y trama cruzada junta. Cada uno, más oscuro que el anterior.",
+      "krita_tip": "Combinar densidad y capas de rayado da muchos más grises que una sola técnica.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[140, 230], [280, 230], [280, 430], [140, 430]], "angle": 45, "spacing": 16, "label": "1" },
+          { "pts": [[320, 230], [460, 230], [460, 430], [320, 430]], "angle": 45, "spacing": 9, "label": "2" },
+          { "pts": [[500, 230], [640, 230], [640, 430], [500, 430]], "angle": 45, "spacing": 16, "cross": true, "label": "3" },
+          { "pts": [[680, 230], [820, 230], [820, 430], [680, 430]], "angle": 45, "spacing": 9, "cross": true, "label": "4" }
+        ]
+      }
+    },
+    {
+      "id": "som08",
+      "title": "Rayado en zonas irregulares",
+      "goal": "Raya el triángulo en horizontal y el pentágono en vertical. Las líneas empiezan y terminan en el borde, sin pasarse.",
+      "krita_tip": "En Krita, si te sales al rayar, activa Bloquear alfa en una capa con la forma rellena: el rayado solo queda dentro.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[140, 500], [400, 140], [470, 520]], "angle": 0, "spacing": 12 },
+          { "pts": [[560, 200], [780, 150], [860, 340], [740, 520], [560, 460]], "angle": 90, "spacing": 12 }
+        ]
+      }
+    },
+    {
+      "id": "som09",
+      "title": "Degradado con rayado",
+      "goal": "Seis franjas seguidas, de claro a oscuro. Al terminar, entrecierra los ojos: debería verse un degradado continuo.",
+      "krita_tip": "Entrecerrar los ojos funde las líneas y deja ver el tono; en Krita, alejar la vista hace lo mismo.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[150, 200], [260, 200], [260, 460], [150, 460]], "angle": 45, "spacing": 28 },
+          { "pts": [[260, 200], [370, 200], [370, 460], [260, 460]], "angle": 45, "spacing": 20 },
+          { "pts": [[370, 200], [480, 200], [480, 460], [370, 460]], "angle": 45, "spacing": 14 },
+          { "pts": [[480, 200], [590, 200], [590, 460], [480, 460]], "angle": 45, "spacing": 10 },
+          { "pts": [[590, 200], [700, 200], [700, 460], [590, 460]], "angle": 45, "spacing": 7 },
+          { "pts": [[700, 200], [810, 200], [810, 460], [700, 460]], "angle": 45, "spacing": 5 }
+        ]
+      }
+    },
+    {
+      "id": "som10",
+      "title": "Sombra en una caja",
+      "goal": "La luz viene de arriba a la izquierda: la tapa casi blanca, el frente gris medio y el lado derecho oscuro con trama cruzada.",
+      "krita_tip": "Decide primero de dónde viene la luz y no la cambies: en Krita, una flecha pequeña en una capa aparte ayuda a recordarlo.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[300, 280], [420, 180], [660, 180], [540, 280]], "angle": 0, "spacing": 24 },
+          { "pts": [[300, 280], [540, 280], [540, 500], [300, 500]], "angle": 90, "spacing": 13 },
+          { "pts": [[540, 280], [660, 180], [660, 400], [540, 500]], "angle": 45, "spacing": 9, "cross": true }
+        ]
+      }
+    },
+    {
+      "id": "som11",
+      "title": "Sombra en un cilindro",
+      "goal": "Cinco franjas verticales forman el cuerpo del cilindro. Con luz por la izquierda: algo de tono en el borde izquierdo, la luz un poco antes del centro y la sombra cada vez más oscura hacia la derecha.",
+      "krita_tip": "En una superficie curva el tono cambia poco a poco; en una caja, de golpe en cada arista. Es lo que distingue una forma de otra.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[340, 200], [396, 200], [396, 500], [340, 500]], "angle": 90, "spacing": 16 },
+          { "pts": [[396, 200], [452, 200], [452, 500], [396, 500]], "angle": 90, "spacing": 26 },
+          { "pts": [[452, 200], [508, 200], [508, 500], [452, 500]], "angle": 90, "spacing": 18 },
+          { "pts": [[508, 200], [564, 200], [564, 500], [508, 500]], "angle": 90, "spacing": 11 },
+          { "pts": [[564, 200], [620, 200], [620, 500], [564, 500]], "angle": 90, "spacing": 7 }
+        ]
+      }
+    },
+    {
+      "id": "som12",
+      "title": "Sombra proyectada",
+      "goal": "Sombrea la caja y su sombra en el suelo. La sombra proyectada es lo más oscuro de la escena: trama cruzada muy junta.",
+      "krita_tip": "La sombra proyectada asienta el objeto en el suelo; sin ella, parece flotar.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "hatch",
+        "tol": 10,
+        "regions": [
+          { "pts": [[260, 300], [360, 220], [560, 220], [460, 300]], "angle": 0, "spacing": 26 },
+          { "pts": [[260, 300], [460, 300], [460, 480], [260, 480]], "angle": 90, "spacing": 14 },
+          { "pts": [[460, 300], [560, 220], [560, 400], [460, 480]], "angle": 45, "spacing": 10 },
+          { "pts": [[460, 480], [560, 400], [800, 440], [700, 540]], "angle": 0, "spacing": 7, "cross": true }
+        ]
+      }
+    }
+  ]
+}

@@ -45,7 +45,15 @@ El número del módulo ("5.") lo pone la app según el orden.
 - `color` (opcional): RGB de 0 a 1.
 - `memory` (opcional): segundos que se ven las ayudas antes de ocultarse.
 - `vary` (opcional): variación de cada intento. Desplazamiento máximo en px, rango de escala y giro
-  máximo en grados, alrededor del centro del lienzo. No se aplica a perspectiva, que varía por sí sola.
+  máximo en grados, alrededor del centro del lienzo. No se aplica a perspectiva, que varía por sí sola;
+  en rayado solo se aplican desplazamiento y escala. `"turn": 180` es un giro fijo que se aplica
+  siempre (para copiar del revés).
+- `numbered` (opcional): numera las guías de calcar en el lienzo para indicar el orden de construcción.
+- `time_limit` (opcional): segundos para hacer el ejercicio (gestos). Se ve una cuenta atrás; al
+  llegar a cero se califica lo dibujado y el lienzo se bloquea hasta Repetir.
+
+Cada módulo debería decir en su lección en qué libro, guía o concepto se basa (Drawabox, Betty
+Edwards, Bert Dodson, Loomis…) y cada `goal` explicar el concepto, no solo la acción.
 
 ## Tipos de ejercicio (`kind`)
 
@@ -55,6 +63,7 @@ El número del módulo ("5.") lo pone la app según el orden.
 | `points` | Solo los extremos de cada guía, numerados | `tol`, `guides` (mejor líneas rectas) |
 | `copy` | La referencia al lado; dibuja donde quiera | `tol`, `guides` y/o `scene` |
 | `perspective` | Horizonte, PF, líneas dadas y puntos de salida | `tol`, `scene`, `hints` |
+| `hatch` | Zonas para rellenar con rayado, cada una con su muestra | `tol`, `regions` |
 | `paint` | Un objetivo de pintura | `target`: `ValueSteps`, `Gradient`, `Sphere`, `Cylinder`, `Silhouette`, `Cleanup`, `ColorBlend` |
 
 `tol` es la tolerancia en px (entre 8 y 18 en los ejercicios actuales). `hints: true` permite mostrar
@@ -81,7 +90,61 @@ Cualquier guía acepta `"pressure"` para pedir un perfil de presión: `"taper_ou
 { "shape": "petals", "c": [480, 280], "inner": 40, "outer": 150, "count": 6 }
 ```
 
-`lines` y `rays` crean varias guías a la vez.
+`lines` y `rays` crean varias guías a la vez. Figuras de construcción (Drawabox):
+
+```json
+{ "shape": "funnel", "a": [250, 100], "b": [250, 530], "count": 5, "r0": 60, "r1": 150, "d0": 0.15, "d1": 0.45 }
+{ "shape": "plane", "quad": [[100, 250], [400, 200], [440, 350], [120, 400]], "circle": true, "diagonals": true, "cross": true }
+{ "shape": "cylinder", "c": [480, 140], "rx": 140, "ry": 40, "h": 380, "rings": 3 }
+{ "shape": "sphere", "c": [480, 320], "r": 220, "tilt": 0.3, "rings": 3 }
+{ "shape": "cone", "c": [360, 500], "rx": 170, "ry": 45, "apex": [360, 90] }
+{ "shape": "sausage", "a": [200, 200], "b": [420, 420], "r": 70, "rings": 3 }
+```
+
+- `funnel`: elipses a lo largo de un eje. `r0`/`r1` son los radios en cada extremo y `d0`/`d1` el
+  grado (alto/ancho, de 0 a 1). `"frame": false` quita el eje y los lados; `"ellipses": false`, las elipses.
+- `plane`: cuadrilátero en perspectiva (esquinas en orden) con su círculo inscrito, diagonales y
+  líneas medias opcionales. `"outline": false` quita el contorno.
+- `cylinder`, `sphere`, `sausage`: los anillos de contorno son la mitad de delante de cada elipse.
+  `"outline": false` deja solo los anillos.
+
+Figura humana (maniquí de Loomis). Los pares van como [izquierda, derecha] del dibujo; `chest` curva
+la columna y `volume` añade caja torácica, pelvis y articulaciones:
+
+```json
+{ "shape": "figure", "head": [480, 75], "r": 32, "neck": [480, 125], "chest": [480, 200], "hip": [480, 300],
+  "shoulders": [[410, 150], [550, 150]], "hips": [[445, 300], [515, 300]],
+  "elbows": [[395, 262], [565, 262]], "hands": [[392, 368], [568, 368]],
+  "knees": [[452, 452], [508, 452]], "feet": [[448, 600], [512, 600]], "volume": true }
+```
+
+Con una cabeza de 70 px, una figura de 8 cabezas va de y = 40 a y = 600.
+
+### Papel de cada guía (`role`)
+
+En los ejercicios de calcar, cada guía puede tener `"role"`:
+
+- `"trace"` (por defecto): se ve y se califica.
+- `"context"`: ya está dibujada (línea negra continua) y no se califica.
+- `"hidden"`: no se ve, pero se califica; aparece al calificar para comparar.
+
+Así se pide encontrar algo a partir de lo que ya está: las elipses de un embudo a partir de su eje
+y sus lados, la mitad que falta de una figura simétrica, las líneas que dividen un rectángulo en tercios…
+
+## Zonas de rayado (`regions`)
+
+```json
+{ "type": "hatch", "tol": 10, "regions": [
+  { "pts": [[110, 230], [230, 230], [230, 430], [110, 430]], "angle": 45, "spacing": 12, "cross": false, "label": "1" }
+] }
+```
+
+- `pts`: polígono convexo.
+- `angle` (opcional): dirección en grados (0 horizontal, 90 vertical, 45 «/»). Sin él, el alumno
+  elige la dirección, pero debe ser la misma en toda la zona.
+- `spacing`: separación entre líneas en px; menos separación = tono más oscuro.
+- `cross`: trama cruzada (una segunda familia de líneas a 90°).
+- `label` (opcional): texto en el centro de la zona.
 
 ## Escenas de perspectiva (`scene`)
 
