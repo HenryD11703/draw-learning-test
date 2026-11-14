@@ -10,6 +10,7 @@ mod lessons;
 mod pressure;
 mod progress;
 mod smoothing;
+mod theme;
 
 use std::path::PathBuf;
 use std::sync::Arc;
