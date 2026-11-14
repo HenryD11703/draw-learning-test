@@ -1,6 +1,7 @@
 //! Ventana principal: inicio, mapa de niveles, ejercicios, lienzo libre, estudio con referencia,
 //! diario, presión y guía de Krita.
 
+mod program_ui;
 mod study_ui;
 
 use crate::brush::{BrushKind, BrushPreset, presets};
@@ -10,6 +11,7 @@ use crate::grading::{Grade, error_marks, grade_copy, grade_hatch, grade_paint, g
 use crate::lessons::{Exercise, Guide, Kind, Module, Region, Role, Scene, modules};
 use crate::painting::PaintMode;
 use crate::pressure::{MouseMode, PressureSettings, SpeedSmoother, simulated};
+use crate::program::{Program, Review};
 use crate::progress::Progress;
 use crate::smoothing::{PInfo, Segment, SmoothingType, Smoother};
 use crate::study::Topic;
@@ -43,6 +45,7 @@ fn kind_info(kind: &Kind) -> (Icon, &'static str) {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Screen {
     Home,
+    Program,
     Map,
     Gallery,
     Exercise(usize, usize),
@@ -133,6 +136,15 @@ pub struct TrazoApp {
     diary: Vec<DiaryItem>,
     diary_loaded: bool,
     diary_filter: Option<Topic>,
+    /// Programa del año (contenido fijo) y la semana que se está leyendo, si no es la actual.
+    program: Program,
+    program_view: Option<usize>,
+    review: Review,
+    review_open: bool,
+    /// El ejercicio o el estudio abierto viene de la pantalla «Hoy».
+    from_program: bool,
+    /// Última foto elegida al azar de la biblioteca, para no repetirla.
+    last_ref: Option<std::path::PathBuf>,
 }
 
 /// Un dibujo guardado, con su miniatura cuando ya se cargó.
@@ -204,6 +216,12 @@ impl TrazoApp {
             diary: Vec::new(),
             diary_loaded: false,
             diary_filter: None,
+            program: Program::load(),
+            program_view: None,
+            review: Review::default(),
+            review_open: false,
+            from_program: false,
+            last_ref: None,
         }
     }
 
@@ -304,6 +322,7 @@ impl TrazoApp {
         self.modules[m].exercises[e].kind = built;
         let ex = self.modules[m].exercises[e].clone();
         self.use_canvas(Slot::Exercise);
+        self.from_program = false;
         self.screen = Screen::Exercise(m, e);
         self.grade = None;
         self.clear_result();
@@ -383,6 +402,8 @@ impl TrazoApp {
         self.marks = error_marks(&ex.kind, &self.canvas.strokes);
         self.show_marks = true;
         self.progress.record(&ex.id, g.total, g.stars);
+        // Cuenta para el calentamiento de hoy en el programa del año.
+        self.progress.program.record_exercise(&ex.id, &crate::program::today());
         self.grade = Some(g);
         self.save();
     }
@@ -500,6 +521,9 @@ impl TrazoApp {
                 let mean = s.scores.iter().sum::<f32>() / n.max(1) as f32;
                 self.message = Some((format!("Sesión terminada: {n} poses, media {mean:.0}/100."), now));
                 self.session = None;
+                // Cuenta como el gesto del día en el recorrido.
+                self.progress.program.record_gesture(&crate::program::today());
+                self.save();
             }
         }
     }
@@ -615,6 +639,7 @@ impl TrazoApp {
                 Ok("galeria") => self.screen = Screen::Gallery,
                 Ok("sesion") => self.start_session(ctx, 5, 60.0),
                 Ok("diario") => self.screen = Screen::Diary,
+                Ok("hoy") => self.demo_program(ctx),
                 Ok("estudio") => self.demo_study(ctx),
                 _ => {}
             }
@@ -808,6 +833,7 @@ impl TrazoApp {
                     ui.add_space(18.0);
                     let tabs = [
                         (Screen::Home, Icon::Home, "Inicio"),
+                        (Screen::Program, Icon::Play, "Hoy"),
                         (Screen::Map, Icon::Map, "Niveles"),
                         (Screen::Free, Icon::Brush, "Lienzo libre"),
                         (Screen::Study, Icon::Copy, "Estudio"),
@@ -849,6 +875,10 @@ impl TrazoApp {
                     ui.label(theme::strong("Aprende a dibujar en digital", theme::DISPLAY));
                     ui.label(theme::body("Ejercicios guiados con los pinceles y el suavizado de Krita. Lo que practicas aquí funciona igual en Krita."));
                     ui.add_space(20.0);
+                    if self.home_today_card(ui) {
+                        go = Some(Screen::Program);
+                    }
+                    ui.add_space(14.0);
                     match self.next_target() {
                         Some((m, e)) => {
                             if self.continue_card(ui, m, e) {
@@ -1542,12 +1572,20 @@ impl TrazoApp {
                 if g.stars > 0 && theme::button(ui, Some(Icon::Next), "Siguiente", Btn::Outline).clicked() {
                     action = Some(1);
                 }
+                if self.from_program && theme::button(ui, Some(Icon::Play), "Volver a Hoy", Btn::Primary).clicked() {
+                    action = Some(2);
+                }
             });
         });
+        let from_program = self.from_program;
         match action {
             Some(0) => self.open_exercise(&ctx, m, e),
             Some(1) => self.next_exercise(&ctx),
+            Some(2) => self.screen = Screen::Program,
             _ => {}
+        }
+        if action.is_some_and(|a| a < 2) {
+            self.from_program = from_program;
         }
     }
 
@@ -2420,12 +2458,13 @@ impl eframe::App for TrazoApp {
         self.demo_step(&ctx);
         self.check_timer();
         self.session_step(&ctx);
-        self.study_step();
+        self.study_step(&ctx);
         self.handle_drops(&ctx);
         self.shortcuts(&ctx);
         self.top_bar(ui);
         match self.screen {
             Screen::Home => self.home_screen(ui),
+            Screen::Program => self.program_screen(ui),
             Screen::Map => self.map_screen(ui),
             Screen::Gallery => self.gallery_screen(ui),
             Screen::Exercise(..) | Screen::Free => self.exercise_or_free_screen(ui),

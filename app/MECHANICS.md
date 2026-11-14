@@ -173,6 +173,10 @@ con nota automática.
   siguiente se expresa en unidades en la foto y en el dibujo. Diferencia = `(dibujo / foto − 1) × 100 %`;
   verde hasta ±5 %, ámbar hasta ±12 %, rojo por encima. Las medidas de la foto se guardan en px de la
   imagen y las del dibujo en px del lienzo, así que no cambian con el zoom.
+- Primera impresión: al terminar de dibujar, las preguntas se responden primero sin superponer ni medir
+  (se pueden usar espejo y grises). Después se comprueba con las herramientas y se dan las respuestas
+  finales. Ojo crítico = parte de las preguntas respondidas en ambas veces en que la primera respuesta ya
+  era la final; se muestra para los 10 últimos estudios y, si hay más de 10, para los 10 primeros.
 - Autocrítica: cuatro preguntas por tema, sacadas del método que cita cada tema (Nicolaïdes, Edwards,
   Gurney y Dodson, Loomis, Drawabox, copia de maestros), con «Sí / A medias / No» y dos notas: lo mejor y
   qué mejorar en el siguiente.
@@ -182,3 +186,51 @@ con nota automática.
 - Demostración: `TRAZO_PANTALLA=estudio` (con `TRAZO_FASE=comparar` para la comparación) usa una escena de
   pintura como referencia; `TRAZO_DIARIO=<carpeta>` cambia la carpeta del diario y, en la comparación,
   guarda el estudio de demostración. `TRAZO_PANTALLA=diario` abre el diario.
+
+## 6. Recorrido de 48 lecciones, hilos continuos y biblioteca (diseño propio)
+
+Por qué está hecho así (resumen de la revisión de la investigación, noviembre de 2026):
+- La mayoría de los errores al dibujar del natural vienen de percibir mal, no de la mano (Cohen y Bennett,
+  1997; Ostrofsky y colaboradores, 2015; Chamberlain y Wagemans, 2016). Por eso el centro es el estudio con
+  referencia y las herramientas que no se dejan engañar: superponer y medir.
+- Los principiantes calcan líneas simples casi tan bien como los expertos (Tchalenko); los ejercicios con
+  nota quedan como calentamiento corto y su nota es orientativa.
+- La autoevaluación de los principiantes es poco fiable. De ahí la primera impresión que luego se comprueba
+  (y que mide el ojo crítico) y la opinión de fuera periódica.
+- La práctica repartida y mezclada retiene mejor que la práctica en bloques (metaanálisis de Donovan y
+  Radosevich, 1999; Brunmair y Richter, 2019). Ningún método serio va un tema por mes, así que las lecciones
+  no tienen fecha y lo aprendido se repasa siempre.
+
+- `content/programa.json`: 12 bloques de 4 lecciones. Cada lección tiene título, fuente (el libro o método
+  en el que se basa), texto, módulos de calentamiento (ids de `content/*.json`), tema del estudio y minutos
+  sugeridos. Un test comprueba que son 48 lecciones y que todos los módulos existen.
+- Un día queda completo con 2 ejercicios distintos calificados (cualquier nota), una sesión de gesto y un
+  estudio (o dibujo de control) guardado en el diario. Se recomiendan 4 días completos por lección, pero la
+  lección se cierra cuando el alumno quiere, con una revisión (qué mejoró, qué error se repite, qué dijo
+  alguien de fuera y el foco para la siguiente; el foco se muestra durante la lección siguiente).
+- Calentamiento: un ejercicio de un módulo de la lección y otro de repaso de un módulo de lecciones
+  anteriores. En ambos casos se elige el módulo con la práctica más antigua (sin contar hoy, para que la
+  sugerencia no cambie mientras se hace), y dentro de él el ejercicio hecho hoy, el primero sin tres
+  estrellas o el menos repetido.
+- Gesto: 5 poses de 60 s con fotos al azar de la carpeta «gesto» (los dibujos no se guardan). Si la carpeta
+  está vacía se usa la sesión de poses esquemáticas de la app.
+- Copia de maestro: una por semana (últimos 7 días), 30 minutos, con fotos de la carpeta «maestros».
+- Opinión de fuera: se recuerda si pasaron 35 días desde la última revisión con ese campo relleno (o desde
+  el primer día de práctica).
+- Dibujos de control: de 1 a 3 fotos fijas en la carpeta «control», 15 minutos cada una. Se abre una ronda
+  la primera vez (punto de partida), cada 28 días y en la última lección de un bloque si no hubo ronda
+  desde que empezó el bloque. La ronda se cierra cuando todas las fotos tienen dibujo; cada dibujo cuenta
+  como el estudio del día. El diario los muestra en fila, del más antiguo al más reciente.
+- Racha: días seguidos con algo de práctica, contando hasta hoy o, si hoy aún no se practicó, hasta ayer.
+  Las fechas son locales (AAAA-MM-DD).
+- El estado se guarda en `progreso.json` (`program`: lección, inicio de la lección y del bloque, días,
+  revisiones, dibujos y rondas de control, copias de maestro). Los archivos guardados con la versión
+  anterior (por semanas) se siguen leyendo.
+- Biblioteca: `Imágenes/TrazoAcademia/referencias/<tema>/` (gesto, proporcion, figura, valor, cabeza, manos,
+  objetos, paisaje, maestros, color) y `control/`. Los estudios empiezan con una foto PNG o JPG al azar de la
+  carpeta del tema, sin repetir la última.
+- Demostración: `TRAZO_PANTALLA=hoy` (lección 6, o `TRAZO_LECCION=<n>`), con `TRAZO_FASE=revision` (lección
+  lista para cerrar) o `TRAZO_FASE=estudio` (abre el estudio de la lección); `TRAZO_REFERENCIAS=<carpeta>`
+  cambia la biblioteca y `TRAZO_DESPLAZAR=<px>` baja la pantalla. En el estudio de demostración,
+  `TRAZO_IMPRESION=1` deja la comparación en la primera impresión y `TRAZO_CONTROL=<nombre>` guarda el
+  estudio como dibujo de control.

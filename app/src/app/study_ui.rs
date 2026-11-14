@@ -64,9 +64,25 @@ pub(super) struct StudyState {
     pub meas_draw: Vec<[Pos2; 2]>,
     pub drag: Option<(bool, Pos2)>,
     pub answers: Vec<Option<Answer>>,
+    /// Primera impresión: respuestas antes de superponer y medir.
+    pub first: Vec<Option<Answer>>,
+    /// Ya se pasó de la primera impresión a la comprobación.
+    pub verified: bool,
     pub best: String,
     pub improve: String,
     pub saved: bool,
+    /// Dibujo de control: nombre de la referencia fija.
+    pub control: Option<String>,
+    /// Sesión de gesto con fotos de la biblioteca.
+    pub gesture: Option<GestureRun>,
+}
+
+/// Sesión de gesto: varias fotos seguidas con el mismo tiempo; los dibujos no se guardan.
+#[derive(Clone, Copy, Debug)]
+pub(super) struct GestureRun {
+    /// Poses que quedan después de la actual.
+    pub left: usize,
+    pub total: usize,
 }
 
 impl Default for StudyState {
@@ -92,9 +108,13 @@ impl Default for StudyState {
             meas_draw: Vec::new(),
             drag: None,
             answers: Vec::new(),
+            first: Vec::new(),
+            verified: false,
             best: String::new(),
             improve: String::new(),
             saved: false,
+            control: None,
+            gesture: None,
         }
     }
 }
@@ -113,6 +133,8 @@ const MEASURE_COL: Color32 = Color32::from_rgb(240, 150, 40);
 impl TrazoApp {
     pub(super) fn open_study(&mut self) {
         self.use_canvas(Slot::Study);
+        self.from_program = false;
+        self.study.gesture = None;
         self.screen = Screen::Study;
         self.grade = None;
         self.clear_result();
@@ -158,12 +180,57 @@ impl TrazoApp {
             self.study.overlay = 0.45;
             self.study.meas_ref = vec![[pos2(300.0, 180.0), pos2(300.0, 330.0)], [pos2(260.0, 400.0), pos2(640.0, 400.0)]];
             self.study.meas_draw = vec![[pos2(285.0, 175.0), pos2(285.0, 310.0)], [pos2(250.0, 375.0), pos2(590.0, 375.0)]];
-            self.study.answers = vec![Some(Answer::Yes), Some(Answer::Partly), None, None];
+            self.study.first = vec![Some(Answer::Yes), Some(Answer::No), Some(Answer::Yes), Some(Answer::Partly)];
+            self.study.answers = vec![Some(Answer::Yes), Some(Answer::Partly), Some(Answer::Yes), None];
+            self.study.verified = std::env::var("TRAZO_IMPRESION").is_err();
             self.study.best = "Las masas de sombra se leen bien.".into();
             if std::env::var_os("TRAZO_DIARIO").is_some() {
+                // TRAZO_CONTROL=<nombre>: se guarda como dibujo de control.
+                self.study.control = std::env::var("TRAZO_CONTROL").ok();
                 self.study.improve = "Medir antes de oscurecer.".into();
                 self.save_study();
             }
+        }
+    }
+
+    /// Demostración (TRAZO_PANTALLA=hoy): lección TRAZO_LECCION (o la 6), tres días completos y hoy
+    /// con un ejercicio hecho. TRAZO_FASE=revision completa también hoy; TRAZO_FASE=estudio abre el
+    /// estudio de la lección con una foto de la biblioteca.
+    pub(super) fn demo_program(&mut self, ctx: &egui::Context) {
+        self.screen = Screen::Program;
+        let p = &mut self.progress.program;
+        let n = std::env::var("TRAZO_LECCION").or_else(|_| std::env::var("TRAZO_SEMANA")).ok().and_then(|s| s.parse::<usize>().ok());
+        p.lesson = n.map_or(5, |n| n.saturating_sub(1));
+        let today = chrono::Local::now().date_naive();
+        let date = |back: i64| (today - chrono::Duration::days(back)).format("%Y-%m-%d").to_string();
+        for back in [3i64, 2, 1] {
+            let d = date(back);
+            p.record_exercise("eli01", &d);
+            p.record_exercise("lin01", &d);
+            p.record_gesture(&d);
+            p.record_study(&d);
+        }
+        p.lesson_started = date(3);
+        p.block_started = date(3);
+        let lesson = p.lesson;
+        let first = self.program.lesson(lesson).and_then(|(_, l)| l.warmup.first().cloned());
+        if let Some(id) = first.and_then(|id| self.modules.iter().find(|m| m.id == id).map(|m| m.exercises[0].id.clone())) {
+            self.progress.program.record_exercise(&id, &crate::program::today());
+        }
+        self.progress.program.reviews.push(Review { focus: "Medir la unidad antes de dibujar el contorno.".into(), date: date(4), ..Default::default() });
+        match std::env::var("TRAZO_FASE").as_deref() {
+            Ok("revision") => {
+                let t = crate::program::today();
+                self.progress.program.record_exercise("lin02", &t);
+                self.progress.program.record_gesture(&t);
+                self.progress.program.record_study(&t);
+            }
+            Ok("estudio") => {
+                if let Some(l) = self.program.lesson(lesson).map(|(_, l)| l.clone()) {
+                    self.start_program_study(ctx, &l);
+                }
+            }
+            _ => {}
         }
     }
 
@@ -171,6 +238,7 @@ impl TrazoApp {
         let rgba = img.thumbnail(2048, 2048).to_rgba8();
         let s = &mut self.study;
         s.reference = Some(RefImage::new(ctx, rgba));
+        s.control = None;
         s.zoom = 1.0;
         s.pan = Vec2::ZERO;
         s.meas_ref.clear();
@@ -187,6 +255,8 @@ impl TrazoApp {
         s.phase = Phase::Draw;
         s.started = now;
         s.answers = vec![None; n];
+        s.first = vec![None; n];
+        s.verified = false;
         s.best.clear();
         s.improve.clear();
         s.saved = false;
@@ -207,17 +277,67 @@ impl TrazoApp {
     }
 
     /// Cada fotograma: el tiempo del estudio, si se eligió uno.
-    pub(super) fn study_step(&mut self) {
+    pub(super) fn study_step(&mut self, ctx: &egui::Context) {
         if self.screen != Screen::Study || self.study.phase != Phase::Draw {
             return;
         }
         if let Some(t) = self.study.timer {
             if self.now_ms() - self.study.started >= t as f64 * 1000.0 && !self.drawing {
+                if self.study.gesture.is_some() {
+                    self.next_gesture_pose(ctx);
+                    return;
+                }
                 self.time_up = true;
                 self.finish_study();
                 self.message = Some(("¡Tiempo! Ahora compara tu dibujo con la referencia.".into(), self.now_ms()));
             }
         }
+    }
+
+    /// Sesión de gesto con fotos al azar de la carpeta «gesto».
+    pub(super) fn start_gesture_photos(&mut self, ctx: &egui::Context, count: usize, secs: f32) {
+        self.open_study();
+        self.from_program = true;
+        self.study.topic = Topic::Gesture;
+        self.study.timer = Some(secs);
+        if self.random_reference(ctx) {
+            self.study.gesture = Some(GestureRun { left: count.saturating_sub(1), total: count });
+            self.start_study();
+        }
+    }
+
+    /// Siguiente pose de la sesión de gesto, o fin de la sesión.
+    fn next_gesture_pose(&mut self, ctx: &egui::Context) {
+        let Some(g) = self.study.gesture.as_mut() else { return };
+        if g.left == 0 {
+            self.study.gesture = None;
+            self.study.phase = Phase::Setup;
+            self.study.timer = None;
+            self.progress.program.record_gesture(&crate::program::today());
+            self.save();
+            self.message = Some(("Sesión de gesto terminada.".into(), self.now_ms()));
+            if self.from_program {
+                self.screen = Screen::Program;
+            }
+            return;
+        }
+        g.left -= 1;
+        let gesture = self.study.gesture;
+        self.random_reference(ctx);
+        self.study.gesture = gesture;
+        self.start_study();
+    }
+
+    /// Dibujo de control: siempre la misma foto y 15 minutos.
+    pub(super) fn start_control(&mut self, ctx: &egui::Context, path: &std::path::Path) {
+        self.open_study();
+        self.from_program = true;
+        self.study.topic = Topic::Proportion;
+        self.study.timer = Some(15.0 * 60.0);
+        if self.load_reference_file(ctx, path) {
+            self.study.control = Some(study::file_name(path));
+        }
+        self.study.phase = Phase::Setup;
     }
 
     /// La referencia colocada sobre el lienzo (en px del lienzo), para superponer y para la rejilla.
@@ -298,7 +418,7 @@ impl TrazoApp {
         let painter = ui.painter_at(area);
         painter.add(xf.image(tex));
         painter.add(xf.frame(Color32::TRANSPARENT, Stroke::new(1.0, Color32::from_gray(45))));
-        if comparing {
+        if comparing && self.study.verified {
             if let (Some(r), Some(rect)) = (&self.study.reference, self.ref_on_canvas()) {
                 let a = if self.study.blink { if (self.now_ms() / 500.0) as i64 % 2 == 0 { 1.0 } else { 0.0 } } else { self.study.overlay };
                 if a > 0.01 {
@@ -433,6 +553,22 @@ impl TrazoApp {
     }
 
     fn study_setup_ui(&mut self, ui: &mut Ui) {
+        let ctx = ui.ctx().clone();
+        if let Some(c) = self.study.control.clone() {
+            ui.label(theme::strong("Dibujo de control", theme::TITLE));
+            ui.label(theme::body(format!(
+                "La misma foto («{c}») y el mismo tiempo (15 minutos) en cada ronda: así tus dibujos se pueden comparar en el diario. Dibújala como lo harías normalmente, sin calcar."
+            )));
+            ui.add_space(12.0);
+            let w = ui.available_width();
+            if theme::button_ex(ui, Some(Icon::Play), "Empezar a dibujar", Btn::Primary, w, false).clicked() {
+                self.start_study();
+            }
+            if theme::button_ex(ui, None, "Hacer un estudio normal", Btn::Ghost, w, false).clicked() {
+                self.study.control = None;
+            }
+            return;
+        }
         ui.label(theme::strong("Estudio con referencia", theme::TITLE));
         ui.label(theme::body("Dibuja a partir de una foto real y, al terminar, compara y critica tu dibujo tú mismo. Aquí no hay nota: el objetivo es entrenar el ojo."));
         theme::section(ui, "1. La referencia");
@@ -451,11 +587,38 @@ impl TrazoApp {
             }
         });
         ui.label(theme::caption(format!("Las preguntas de autocrítica salen de: {}.", self.study.topic.source())));
+        let n = study::library_images(self.study.topic).len();
+        ui.horizontal_wrapped(|ui| {
+            ui.add_enabled_ui(n > 0, |ui| {
+                if theme::button(ui, Some(Icon::Image), &format!("Foto al azar ({n})"), Btn::Outline)
+                    .on_hover_text("Una foto de la carpeta de este tema en tu biblioteca de referencias")
+                    .clicked()
+                {
+                    self.random_reference(&ctx);
+                }
+            });
+            if theme::button(ui, None, "Abrir la carpeta", Btn::Ghost)
+                .on_hover_text(format!("Imágenes › TrazoAcademia › referencias › {}", self.study.topic.folder()))
+                .clicked()
+            {
+                let _ = std::process::Command::new("explorer").arg(study::library_folder(self.study.topic)).spawn();
+            }
+        });
+        ui.label(theme::caption("Ve guardando fotos en la carpeta de cada tema (tuyas, de poses o de museos) y tendrás tu propia biblioteca."));
         theme::section(ui, "3. El tiempo");
         ui.horizontal_wrapped(|ui| {
-            let options: [(Option<f32>, &str); 6] =
-                [(None, "Sin límite"), (Some(120.0), "2 min"), (Some(300.0), "5 min"), (Some(600.0), "10 min"), (Some(1200.0), "20 min"), (Some(1800.0), "30 min")];
+            let mut options: Vec<(Option<f32>, String)> = [None, Some(2.0), Some(5.0), Some(10.0), Some(20.0), Some(30.0)]
+                .into_iter()
+                .map(|m: Option<f32>| (m.map(|m| m * 60.0), m.map_or("Sin límite".to_string(), |m| format!("{m:.0} min"))))
+                .collect();
+            // El tiempo que propone el programa, si no está entre los de siempre.
+            if let Some(t) = self.study.timer {
+                if !options.iter().any(|(o, _)| *o == Some(t)) {
+                    options.push((Some(t), format!("{:.0} min", t / 60.0)));
+                }
+            }
             for (t, label) in options {
+                let label = label.as_str();
                 let kind = if self.study.timer == t { Btn::Selected } else { Btn::Outline };
                 if theme::button(ui, None, label, kind).clicked() {
                     self.study.timer = t;
@@ -475,6 +638,31 @@ impl TrazoApp {
     fn study_draw_ui(&mut self, ui: &mut Ui, ctx: &egui::Context) {
         let topic = self.study.topic;
         theme::chip(ui, Some(Icon::Copy), topic.label(), ACCENT);
+        if let Some(g) = self.study.gesture {
+            ui.label(theme::strong(format!("Gesto · pose {} de {}", g.total - g.left, g.total), theme::TITLE));
+            if let Some(t) = self.study.timer {
+                let left = (t as f64 - (self.now_ms() - self.study.started) / 1000.0).max(0.0);
+                ui.label(theme::strong(format!("{:.0} s", left.ceil()), theme::LEAD).color(GOLD));
+                let w = ui.available_width();
+                theme::progress(ui, (left / t as f64) as f32, GOLD, w, 6.0);
+            }
+            ui.label(theme::body("Dibuja lo que la pose hace, no cómo es: la línea de acción, el peso, la torsión. Sin detalles y sin borrar. Al acabar el tiempo pasa sola a la siguiente."));
+            ui.add_space(8.0);
+            let w = ui.available_width();
+            if theme::button_ex(ui, Some(Icon::Next), "Siguiente pose", Btn::Outline, w, false).clicked() {
+                self.next_gesture_pose(ctx);
+            }
+            if theme::button_ex(ui, None, "Terminar la sesión", Btn::Ghost, w, false).clicked() {
+                if let Some(g) = self.study.gesture.as_mut() {
+                    g.left = 0;
+                }
+                self.next_gesture_pose(ctx);
+            }
+            return;
+        }
+        if let Some(c) = &self.study.control {
+            ui.label(RichText::new(format!("Dibujo de control · {c}")).size(theme::BODY).color(GOLD));
+        }
         ui.label(theme::strong("Dibujando", theme::TITLE));
         if let Some(t) = self.study.timer {
             let left = (t as f64 - (self.now_ms() - self.study.started) / 1000.0).max(0.0);
@@ -511,6 +699,7 @@ impl TrazoApp {
         }
         if theme::button_ex(ui, None, "Cambiar de referencia o de tema", Btn::Ghost, w, false).clicked() {
             self.study.phase = Phase::Setup;
+            self.study.control = None;
         }
     }
 
@@ -525,10 +714,40 @@ impl TrazoApp {
     fn study_compare_ui(&mut self, ui: &mut Ui) {
         let topic = self.study.topic;
         theme::chip(ui, Some(Icon::Copy), topic.label(), ACCENT);
+        if let Some(c) = &self.study.control {
+            ui.label(RichText::new(format!("Dibujo de control · {c}")).size(theme::BODY).color(GOLD));
+        }
         ui.label(theme::strong("Compara y critica", theme::TITLE));
-        ui.label(theme::caption(format!("{:.0} min de dibujo. Antes de responder, usa las herramientas: los errores se ven mejor de lejos, en espejo y en grises.", self.study.minutes.max(1.0))));
+        ui.label(theme::caption(format!("{:.0} min de dibujo.", self.study.minutes.max(1.0))));
+        if !self.study.verified {
+            theme::section(ui, "1. Tu primera impresión");
+            ui.label(theme::body(
+                "Antes de superponer y medir, responde mirando la foto y tu dibujo lado a lado. Puedes usar «Espejo» y «Grises», arriba. Después lo comprobarás: así ves cuánto acierta tu ojo.",
+            ));
+            ui.label(theme::caption(format!("Preguntas según {}.", topic.source())));
+            answer_rows(ui, topic, &mut self.study.first, None);
+            let all = self.study.first.iter().all(|a| a.is_some());
+            let w = ui.available_width();
+            if theme::button_ex(ui, Some(Icon::Check), "Comprobar: superponer y medir", if all { Btn::Primary } else { Btn::Outline }, w, false).clicked() {
+                self.study.verified = true;
+                self.study.answers = self.study.first.clone();
+                if self.study.overlay < 0.05 {
+                    self.study.overlay = 0.5;
+                }
+            }
+            if !all {
+                ui.label(theme::caption("Responde todas para que cuenten en tu ojo crítico."));
+            }
+            ui.horizontal_wrapped(|ui| {
+                if theme::button(ui, None, "Seguir dibujando", Btn::Ghost).clicked() {
+                    self.study.phase = Phase::Draw;
+                    self.time_up = false;
+                }
+            });
+            return;
+        }
 
-        theme::section(ui, "Comparar");
+        theme::section(ui, "2. Comprueba");
         ui.label(theme::caption("Referencia encima de tu dibujo"));
         ui.spacing_mut().slider_width = (ui.available_width() - 66.0).max(60.0);
         ui.add(egui::Slider::new(&mut self.study.overlay, 0.0..=1.0).max_decimals(2));
@@ -554,9 +773,7 @@ impl TrazoApp {
             ui.label(theme::caption("Tamaño de la referencia"));
             ui.add(egui::Slider::new(&mut self.study.ov_scale, 0.2..=3.0).logarithmic(true).max_decimals(2));
         }
-        ui.label(theme::caption("«Espejo» y «Grises», encima del lienzo, voltean y pasan a grises la foto y el dibujo a la vez."));
-
-        theme::section(ui, "Medir proporciones");
+        ui.label(theme::caption("Medir proporciones"));
         let m = if self.study.measuring { Btn::Selected } else { Btn::Outline };
         ui.horizontal_wrapped(|ui| {
             if theme::button(ui, None, "Medir", m).clicked() {
@@ -571,21 +788,14 @@ impl TrazoApp {
         ui.label(theme::caption("Como enseña Betty Edwards: arrastra la primera medida (por ejemplo, el alto de la cabeza) en la foto y la misma en tu dibujo; es la unidad. Después mide otras partes en el mismo orden."));
         measure_table(ui, &self.study.meas_ref, &self.study.meas_draw);
 
-        theme::section(ui, "Autocrítica");
-        ui.label(theme::caption(format!("Según {}.", topic.source())));
-        for (i, q) in topic.questions().iter().enumerate() {
-            ui.label(RichText::new(*q).size(theme::BODY).color(theme::TEXT));
-            ui.horizontal(|ui| {
-                for a in [Answer::Yes, Answer::Partly, Answer::No] {
-                    let sel = self.study.answers.get(i).copied().flatten() == Some(a);
-                    if theme::button(ui, None, a.label(), if sel { Btn::Selected } else { Btn::Outline }).clicked() {
-                        if let Some(slot) = self.study.answers.get_mut(i) {
-                            *slot = Some(a);
-                        }
-                    }
-                }
-            });
-            ui.add_space(4.0);
+        theme::section(ui, "3. Autocrítica final");
+        ui.label(theme::caption("Cambia lo que la comprobación te haya mostrado. En dorado, tu primera impresión cuando era distinta."));
+        let st = &mut self.study;
+        answer_rows(ui, topic, &mut st.answers, Some(&st.first));
+        let pairs: Vec<bool> = st.first.iter().zip(&st.answers).filter_map(|(a, b)| Some((*a)? == (*b)?)).collect();
+        if !pairs.is_empty() {
+            let hits = pairs.iter().filter(|x| **x).count();
+            ui.label(RichText::new(format!("Tu primera impresión acertó en {hits} de {} preguntas.", pairs.len())).size(theme::BODY).color(theme::GOOD));
         }
         ui.label(RichText::new("Lo mejor de este estudio").size(theme::BODY).color(theme::TEXT));
         ui.add(egui::TextEdit::multiline(&mut self.study.best).desired_rows(2).desired_width(f32::INFINITY));
@@ -595,6 +805,9 @@ impl TrazoApp {
         let w = ui.available_width();
         if self.study.saved {
             ui.label(RichText::new("Guardado en el diario.").size(theme::BODY).color(theme::GOOD));
+            if self.from_program && theme::button_ex(ui, Some(Icon::Play), "Volver a Hoy", Btn::Primary, w, false).clicked() {
+                self.screen = Screen::Program;
+            }
         } else if theme::button_ex(ui, Some(Icon::Save), "Guardar en el diario", Btn::Primary, w, false).clicked() {
             self.save_study();
         }
@@ -604,9 +817,11 @@ impl TrazoApp {
                 self.time_up = false;
                 self.study.overlay = 0.0;
                 self.study.blink = false;
+                self.study.verified = false;
             }
             if theme::button(ui, Some(Icon::Play), "Nuevo estudio", Btn::Outline).clicked() {
                 self.study.phase = Phase::Setup;
+                self.study.control = None;
             }
         });
         if let Some((msg, t)) = &self.message {
@@ -624,13 +839,24 @@ impl TrazoApp {
             topic: self.study.topic,
             minutes: self.study.minutes,
             answers: self.study.answers.clone(),
+            first: self.study.first.clone(),
             best: self.study.best.trim().to_string(),
             improve: self.study.improve.trim().to_string(),
+            control: self.study.control.clone(),
         };
         let now = self.now_ms();
         match study::save(&entry, &self.canvas.to_rgba(), [W as u32, H as u32], &r.rgba) {
             Ok(_) => {
                 self.study.saved = true;
+                let today = crate::program::today();
+                self.progress.program.record_study(&today);
+                if let Some(c) = &self.study.control {
+                    self.progress.program.record_control(c, &today);
+                }
+                if self.study.topic == Topic::Master {
+                    self.progress.program.record_master_copy(&today);
+                }
+                self.save();
                 self.diary.clear();
                 self.message = Some(("Estudio guardado en el diario.".into(), now));
             }
@@ -640,13 +866,7 @@ impl TrazoApp {
 
     pub(super) fn diary_screen(&mut self, ui: &mut Ui) {
         let ctx = ui.ctx().clone();
-        if self.diary.is_empty() && !self.diary_loaded {
-            self.diary = study::load_all()
-                .into_iter()
-                .map(|(path, entry)| DiaryItem { path, entry, ref_tex: None, draw_tex: None, failed: false })
-                .collect();
-            self.diary_loaded = true;
-        }
+        self.ensure_diary();
         // Miniaturas poco a poco.
         for it in self.diary.iter_mut().filter(|d| d.draw_tex.is_none() && !d.failed).take(2) {
             let load = |name: &str| image::open(it.path.join(name)).ok().map(|i| i.thumbnail(300, 200).to_rgba8());
@@ -663,7 +883,7 @@ impl TrazoApp {
             egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
                 centered(ui, 1180.0, |ui| {
                     ui.label(theme::strong("Diario de estudios", theme::TITLE + 4.0));
-                    ui.label(theme::body("Cada estudio con su referencia al lado, tu autocrítica y lo que querías mejorar. Repásalo cada semana: el progreso se ve comparando, no recordando."));
+                    ui.label(theme::body("Cada estudio con su referencia al lado, tu autocrítica y lo que querías mejorar. Repásalo al cerrar cada lección: el progreso se ve comparando, no recordando."));
                     let total = self.diary.len();
                     let minutes = self.diary.iter().map(|d| d.entry.minutes.max(0.0).round() as u32).sum::<u32>();
                     ui.horizontal(|ui| {
@@ -694,7 +914,47 @@ impl TrazoApp {
                             }
                         }
                     });
+                    if let Some((recent, early)) = self.eye_trend() {
+                        let txt = match early {
+                            Some(e) => format!("Ojo crítico: {:.0} % de aciertos de primeras en tus últimos estudios (al principio: {:.0} %).", recent * 100.0, e * 100.0),
+                            None => format!("Ojo crítico: {:.0} % de aciertos de primeras.", recent * 100.0),
+                        };
+                        ui.label(RichText::new(txt).size(theme::BODY).color(theme::GOOD));
+                    }
                     ui.add_space(10.0);
+                    let mut names: Vec<String> = self.diary.iter().filter_map(|d| d.entry.control.clone()).collect();
+                    names.sort();
+                    names.dedup();
+                    if !names.is_empty() && self.diary_filter.is_none() {
+                        theme::section(ui, "Dibujos de control");
+                        ui.label(theme::caption("La misma foto y el mismo tiempo en cada ronda, del más antiguo al más reciente: aquí se ve el avance sin depender de tu memoria."));
+                        for n in &names {
+                            theme::card(theme::RAISED).inner_margin(12).show(ui, |ui| {
+                                ui.set_width(ui.available_width());
+                                ui.label(theme::strong(n, theme::BODY));
+                                egui::ScrollArea::horizontal().id_salt(format!("control-{n}")).show(ui, |ui| {
+                                    ui.horizontal(|ui| {
+                                        let items: Vec<&DiaryItem> = self.diary.iter().rev().filter(|d| d.entry.control.as_deref() == Some(n.as_str())).collect();
+                                        if let Some(first) = items.first() {
+                                            ui.vertical(|ui| {
+                                                thumb(ui, &first.ref_tex, vec2(180.0, 120.0));
+                                                ui.label(theme::caption("Referencia"));
+                                            });
+                                        }
+                                        for it in items {
+                                            ui.vertical(|ui| {
+                                                thumb(ui, &it.draw_tex, vec2(180.0, 120.0));
+                                                let date = study::date_label(it.entry.when);
+                                                ui.label(theme::caption(date.split(' ').next().unwrap_or_default().to_string()));
+                                            });
+                                        }
+                                    });
+                                });
+                            });
+                            ui.add_space(8.0);
+                        }
+                        theme::section(ui, "Todos los estudios");
+                    }
                     if self.diary.is_empty() {
                         theme::card(theme::RAISED).show(ui, |ui| {
                             ui.set_width(ui.available_width());
@@ -741,8 +1001,14 @@ fn diary_card(ui: &mut Ui, it: &DiaryItem) {
             ui.vertical(|ui| {
                 ui.horizontal(|ui| {
                     theme::chip(ui, None, e.topic.label(), ACCENT);
+                    if e.control.is_some() {
+                        theme::chip(ui, None, "Control", GOLD);
+                    }
                     ui.label(theme::caption(format!("{} · {:.0} min", study::date_label(e.when), e.minutes.max(1.0))));
                 });
+                if let Some((hit, n)) = e.eye() {
+                    ui.label(RichText::new(format!("Primera impresión: {hit} de {n} acertadas")).size(theme::CAPTION).color(theme::GOOD));
+                }
                 let (yes, answered) = e.score();
                 ui.label(theme::strong(format!("{yes} «sí» de {answered} respondidas en la autocrítica"), theme::BODY));
                 for (q, a) in e.topic.questions().iter().zip(&e.answers) {
@@ -838,4 +1104,39 @@ fn measure_table(ui: &mut Ui, r: &[[Pos2; 2]], d: &[[Pos2; 2]]) {
             ui.end_row();
         }
     });
+}
+
+/// Preguntas de autocrítica con sus tres respuestas. Con `before`, marca en dorado la primera
+/// impresión cuando es distinta de la respuesta actual.
+fn answer_rows(ui: &mut Ui, topic: Topic, answers: &mut [Option<Answer>], before: Option<&[Option<Answer>]>) {
+    for (i, q) in topic.questions().iter().enumerate() {
+        ui.label(RichText::new(*q).size(theme::BODY).color(theme::TEXT));
+        ui.horizontal_wrapped(|ui| {
+            for a in [Answer::Yes, Answer::Partly, Answer::No] {
+                let sel = answers.get(i).copied().flatten() == Some(a);
+                if theme::button(ui, None, a.label(), if sel { Btn::Selected } else { Btn::Outline }).clicked() {
+                    if let Some(slot) = answers.get_mut(i) {
+                        *slot = Some(a);
+                    }
+                }
+            }
+            if let Some(b) = before.and_then(|b| b.get(i).copied().flatten()) {
+                if answers.get(i).copied().flatten() != Some(b) {
+                    ui.label(RichText::new(format!("antes: {}", b.label())).size(theme::CAPTION).color(GOLD));
+                }
+            }
+        });
+        ui.add_space(4.0);
+    }
+}
+
+/// Miniatura encajada en un recuadro.
+fn thumb(ui: &mut Ui, tex: &Option<TextureHandle>, size: Vec2) {
+    let (r, _) = ui.allocate_exact_size(size, Sense::hover());
+    ui.painter().rect_filled(r, 6, Color32::from_rgb(26, 29, 33));
+    if let Some(t) = tex {
+        let [w, h] = t.size();
+        let s = (size.x / w as f32).min(size.y / h as f32);
+        ui.painter().image(t.id(), Rect::from_center_size(r.center(), vec2(w as f32, h as f32) * s), Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
+    }
 }

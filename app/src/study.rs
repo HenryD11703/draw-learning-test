@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 pub enum Topic {
     Gesture,
     Proportion,
+    Figure,
     Value,
     Head,
     Hands,
@@ -21,13 +22,24 @@ pub enum Topic {
 }
 
 impl Topic {
-    pub const ALL: [Topic; 9] =
-        [Topic::Gesture, Topic::Proportion, Topic::Value, Topic::Head, Topic::Hands, Topic::Objects, Topic::Landscape, Topic::Master, Topic::Color];
+    pub const ALL: [Topic; 10] = [
+        Topic::Gesture,
+        Topic::Proportion,
+        Topic::Figure,
+        Topic::Value,
+        Topic::Head,
+        Topic::Hands,
+        Topic::Objects,
+        Topic::Landscape,
+        Topic::Master,
+        Topic::Color,
+    ];
 
     pub fn label(self) -> &'static str {
         match self {
             Topic::Gesture => "Gesto",
             Topic::Proportion => "Forma y proporción",
+            Topic::Figure => "Figura y anatomía",
             Topic::Value => "Valor",
             Topic::Head => "Cabeza y retrato",
             Topic::Hands => "Manos",
@@ -43,6 +55,7 @@ impl Topic {
         match self {
             Topic::Gesture => "Kimon Nicolaïdes, «The Natural Way to Draw»",
             Topic::Proportion => "Betty Edwards, «Dibujar con el lado derecho del cerebro»",
+            Topic::Figure => "Andrew Loomis, Michael Hampton y George Bridgman",
             Topic::Value => "James Gurney, «Color and Light», y Bert Dodson, «Keys to Drawing»",
             Topic::Head => "Andrew Loomis, «Drawing the Head and Hands»",
             Topic::Hands => "Andrew Loomis, «Drawing the Head and Hands»",
@@ -67,6 +80,12 @@ impl Topic {
                 "¿Los ángulos principales (bordes, ejes) tienen la misma inclinación?",
                 "¿Los espacios negativos (los huecos entre formas) tienen la misma forma?",
                 "¿Cada parte está donde toca, medida con la unidad que elegiste?",
+            ],
+            Topic::Figure => &[
+                "¿El tórax y la pelvis tienen la misma inclinación y el mismo giro que en la referencia?",
+                "¿Los largos de brazos y piernas, medidos en cabezas, coinciden?",
+                "¿Los puntos óseos (clavículas, codos, rodillas, cresta de la cadera) están en su sitio?",
+                "¿Las formas envuelven el volumen en vez de ser contornos planos?",
             ],
             Topic::Value => &[
                 "Vistos en grises, ¿las grandes masas de luz y sombra coinciden?",
@@ -141,10 +160,16 @@ pub struct Entry {
     pub topic: Topic,
     pub minutes: f32,
     pub answers: Vec<Option<Answer>>,
+    /// Primera impresión: las respuestas antes de superponer y medir.
+    #[serde(default)]
+    pub first: Vec<Option<Answer>>,
     #[serde(default)]
     pub best: String,
     #[serde(default)]
     pub improve: String,
+    /// Dibujo de control: nombre del archivo de la referencia fija.
+    #[serde(default)]
+    pub control: Option<String>,
 }
 
 impl Entry {
@@ -154,6 +179,113 @@ impl Entry {
         let yes = self.answers.iter().flatten().filter(|a| **a == Answer::Yes).count();
         (yes, answered)
     }
+
+    /// Ojo crítico: de las preguntas respondidas antes y después de comprobar, en cuántas la primera
+    /// impresión ya era la respuesta final.
+    pub fn eye(&self) -> Option<(usize, usize)> {
+        let pairs: Vec<(Answer, Answer)> = self.first.iter().zip(&self.answers).filter_map(|(a, b)| Some(((*a)?, (*b)?))).collect();
+        if pairs.is_empty() {
+            return None;
+        }
+        Some((pairs.iter().filter(|(a, b)| a == b).count(), pairs.len()))
+    }
+}
+
+/// Porcentaje de aciertos de la primera impresión en un grupo de estudios.
+pub fn eye_rate<'a>(entries: impl Iterator<Item = &'a Entry>) -> Option<f32> {
+    let (hit, total) = entries.filter_map(|e| e.eye()).fold((0, 0), |(h, t), (a, b)| (h + a, t + b));
+    (total > 0).then(|| hit as f32 / total as f32)
+}
+
+impl Topic {
+    /// Nombre de la carpeta del tema en la biblioteca de referencias.
+    pub fn folder(self) -> &'static str {
+        match self {
+            Topic::Gesture => "gesto",
+            Topic::Proportion => "proporcion",
+            Topic::Figure => "figura",
+            Topic::Value => "valor",
+            Topic::Head => "cabeza",
+            Topic::Hands => "manos",
+            Topic::Objects => "objetos",
+            Topic::Landscape => "paisaje",
+            Topic::Master => "maestros",
+            Topic::Color => "color",
+        }
+    }
+}
+
+/// Biblioteca de referencias: una carpeta por tema (Imágenes › TrazoAcademia › referencias › tema).
+pub fn library_dir() -> PathBuf {
+    if let Some(d) = std::env::var_os("TRAZO_REFERENCIAS") {
+        return PathBuf::from(d);
+    }
+    let base = std::env::var_os("USERPROFILE").map(PathBuf::from).unwrap_or_default();
+    base.join("Pictures").join("TrazoAcademia").join("referencias")
+}
+
+/// Crea las carpetas de la biblioteca (si faltan) y devuelve la del tema.
+pub fn library_folder(topic: Topic) -> PathBuf {
+    create_library();
+    library_dir().join(topic.folder())
+}
+
+fn create_library() {
+    for t in Topic::ALL {
+        let _ = std::fs::create_dir_all(library_dir().join(t.folder()));
+    }
+    let _ = std::fs::create_dir_all(control_dir());
+}
+
+/// Carpeta de las referencias de control: las mismas fotos para cada ronda.
+pub fn control_dir() -> PathBuf {
+    library_dir().join("control")
+}
+
+pub fn control_folder() -> PathBuf {
+    create_library();
+    control_dir()
+}
+
+/// Las referencias de control (como mucho tres, por orden de nombre).
+pub fn control_refs() -> Vec<PathBuf> {
+    images_in(&control_dir()).into_iter().take(3).collect()
+}
+
+/// Nombre de archivo de una ruta, para identificar una referencia de control.
+pub fn file_name(p: &Path) -> String {
+    p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
+}
+
+/// Imágenes (PNG o JPG) de la carpeta de un tema, ordenadas por nombre.
+pub fn library_images(topic: Topic) -> Vec<PathBuf> {
+    images_in(&library_dir().join(topic.folder()))
+}
+
+pub fn images_in(dir: &Path) -> Vec<PathBuf> {
+    let mut v: Vec<PathBuf> = std::fs::read_dir(dir)
+        .map(|rd| {
+            rd.filter_map(|e| e.ok())
+                .map(|e| e.path())
+                .filter(|p| p.extension().and_then(|x| x.to_str()).is_some_and(|x| ["png", "jpg", "jpeg"].contains(&x.to_ascii_lowercase().as_str())))
+                .collect()
+        })
+        .unwrap_or_default();
+    v.sort();
+    v
+}
+
+/// Elige una imagen al azar, evitando repetir la última si hay otras.
+pub fn pick(images: &[PathBuf], last: Option<&Path>, seed: u64) -> Option<PathBuf> {
+    let pool: Vec<&PathBuf> = images.iter().filter(|p| Some(p.as_path()) != last).collect();
+    let pool = if pool.is_empty() { images.iter().collect() } else { pool };
+    if pool.is_empty() {
+        return None;
+    }
+    let mut z = seed.wrapping_add(0x9E37_79B9_7F4A_7C15);
+    z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    z ^= z >> 27;
+    Some(pool[(z % pool.len() as u64) as usize].clone())
 }
 
 /// Carpeta del diario de estudios (Imágenes › TrazoAcademia › estudios).
@@ -202,8 +334,16 @@ pub fn load_from(dir: &Path) -> Vec<(PathBuf, Entry)> {
     out
 }
 
-/// Fecha legible (día/mes/año hora:minuto, en UTC) a partir de segundos desde 1970.
+/// Fecha legible en la hora local (día/mes/año hora:minuto).
 pub fn date_label(when: u64) -> String {
+    match chrono::DateTime::from_timestamp(when as i64, 0) {
+        Some(t) => t.with_timezone(&chrono::Local).format("%d/%m/%Y %H:%M").to_string(),
+        None => date_label_utc(when),
+    }
+}
+
+/// Fecha legible en UTC, sin depender de la zona horaria.
+pub fn date_label_utc(when: u64) -> String {
     // Días desde 1970 a fecha civil (algoritmo de Howard Hinnant).
     let days = (when / 86_400) as i64;
     let secs = when % 86_400;
@@ -240,9 +380,16 @@ mod tests {
             topic: Topic::Value,
             minutes: 12.5,
             answers: vec![Some(Answer::Yes), Some(Answer::No), None, Some(Answer::Partly)],
+            first: vec![Some(Answer::Yes), Some(Answer::Yes), Some(Answer::No), None],
             best: "Las masas de sombra".into(),
             improve: "Agrupar más".into(),
+            control: None,
         };
+        // Solo cuentan las preguntas con las dos respuestas: la 1 acertó y la 2 no.
+        assert_eq!(entry.eye(), Some((1, 2)));
+        assert_eq!(eye_rate([&entry, &entry].into_iter()), Some(0.5));
+        let old: Entry = serde_json::from_str(r#"{"when":1,"topic":"value","minutes":1.0,"answers":[]}"#).unwrap();
+        assert_eq!(old.eye(), None);
         let sub = dir.join("estudio-1");
         std::fs::create_dir_all(&sub).unwrap();
         std::fs::write(sub.join("estudio.json"), serde_json::to_string(&entry).unwrap()).unwrap();
@@ -255,7 +402,25 @@ mod tests {
 
     #[test]
     fn dates_are_readable() {
-        assert_eq!(date_label(0), "01/01/1970 00:00");
-        assert_eq!(date_label(1_700_000_000), "14/11/2023 22:13");
+        assert_eq!(date_label_utc(0), "01/01/1970 00:00");
+        assert_eq!(date_label_utc(1_700_000_000), "14/11/2023 22:13");
+        assert_eq!(date_label(1_700_000_000).len(), 16);
+    }
+
+    #[test]
+    fn library_picks_images_without_repeating() {
+        let dir = std::env::temp_dir().join(format!("trazo-refs-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        for n in ["a.png", "b.JPG", "c.txt"] {
+            std::fs::write(dir.join(n), b"x").unwrap();
+        }
+        let imgs = images_in(&dir);
+        assert_eq!(imgs.len(), 2);
+        for seed in 0..20 {
+            assert_eq!(pick(&imgs, Some(&imgs[0]), seed).as_ref(), Some(&imgs[1]));
+        }
+        assert!(pick(&[], None, 1).is_none());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
