@@ -195,3 +195,19 @@ de -1 a 1, `lit`, `shadow`, `reflected`, `steps`). La esfera y el cilindro sigue
 forma de Gurney: luz plena y medio tono, terminador, sombra propia con luz reflejada y brillo. `light`
 es la dirección hacia la luz en pantalla (x a la derecha, y hacia abajo); `steps` > 0 la pinta por
 planos.
+
+## Programa del año (`programa.json`)
+
+No es un módulo: lo lee `src/program.rs`. Tiene `months`, y cada mes `title`, `goal` y `weeks`. Cada semana:
+
+| Campo | Qué es |
+|---|---|
+| `title` | Nombre de la semana |
+| `source` | Libro o método en el que se basa la lección |
+| `lesson` | Texto de la lección; los párrafos se separan con una línea en blanco (`\n\n`) |
+| `warmup` | Ids de los módulos del calentamiento (por ejemplo `["elipses", "perspectiva"]`) |
+| `topic` | Tema del estudio: `gesture`, `proportion`, `figure`, `value`, `head`, `hands`, `objects`, `landscape`, `master` o `color` |
+| `study` | Qué dibujar en los estudios de la semana |
+| `minutes` | Tiempo sugerido para cada estudio |
+
+Los tests comprueban que hay 12 meses y 48 semanas, y que los módulos de `warmup` existen.

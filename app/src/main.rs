@@ -9,6 +9,7 @@ mod grading;
 mod lessons;
 mod painting;
 mod pressure;
+mod program;
 mod progress;
 mod smoothing;
 mod study;

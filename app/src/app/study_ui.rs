@@ -113,6 +113,7 @@ const MEASURE_COL: Color32 = Color32::from_rgb(240, 150, 40);
 impl TrazoApp {
     pub(super) fn open_study(&mut self) {
         self.use_canvas(Slot::Study);
+        self.from_program = false;
         self.screen = Screen::Study;
         self.grade = None;
         self.clear_result();
@@ -164,6 +165,43 @@ impl TrazoApp {
                 self.study.improve = "Medir antes de oscurecer.".into();
                 self.save_study();
             }
+        }
+    }
+
+    /// Demostración (TRAZO_PANTALLA=hoy): semana TRAZO_SEMANA (o la 6), tres días completos y hoy
+    /// con un ejercicio hecho.
+    pub(super) fn demo_program(&mut self, ctx: &egui::Context) {
+        self.screen = Screen::Program;
+        let p = &mut self.progress.program;
+        p.week = std::env::var("TRAZO_SEMANA").ok().and_then(|s| s.parse::<usize>().ok()).map_or(5, |n| n.saturating_sub(1));
+        let today = chrono::Local::now().date_naive();
+        for back in [3i64, 2, 1] {
+            let d = (today - chrono::Duration::days(back)).format("%Y-%m-%d").to_string();
+            p.record_exercise("eli01", &d);
+            p.record_exercise("persp01", &d);
+            p.record_study(&d);
+        }
+        p.week_started = (today - chrono::Duration::days(3)).format("%Y-%m-%d").to_string();
+        let week = p.week;
+        let first = self.program.week(week).and_then(|(_, w)| w.warmup.first().cloned());
+        if let Some(id) = first.and_then(|id| self.modules.iter().find(|m| m.id == id).map(|m| m.exercises[0].id.clone())) {
+            self.progress.program.record_exercise(&id, &crate::program::today());
+        }
+        self.progress.program.reviews.push(Review { focus: "Medir la unidad antes de dibujar el contorno.".into(), ..Default::default() });
+        // TRAZO_FASE=revision: hoy también completo, para ver la revisión de la semana.
+        // TRAZO_FASE=estudio: abre el estudio de la semana con una foto de la biblioteca.
+        match std::env::var("TRAZO_FASE").as_deref() {
+            Ok("revision") => {
+                let today = crate::program::today();
+                self.progress.program.record_exercise("persp02", &today);
+                self.progress.program.record_study(&today);
+            }
+            Ok("estudio") => {
+                if let Some((_, w)) = self.program.week(week).map(|(m, w)| (m, w.clone())) {
+                    self.start_program_study(ctx, &w);
+                }
+            }
+            _ => {}
         }
     }
 
@@ -433,6 +471,7 @@ impl TrazoApp {
     }
 
     fn study_setup_ui(&mut self, ui: &mut Ui) {
+        let ctx = ui.ctx().clone();
         ui.label(theme::strong("Estudio con referencia", theme::TITLE));
         ui.label(theme::body("Dibuja a partir de una foto real y, al terminar, compara y critica tu dibujo tú mismo. Aquí no hay nota: el objetivo es entrenar el ojo."));
         theme::section(ui, "1. La referencia");
@@ -451,11 +490,38 @@ impl TrazoApp {
             }
         });
         ui.label(theme::caption(format!("Las preguntas de autocrítica salen de: {}.", self.study.topic.source())));
+        let n = study::library_images(self.study.topic).len();
+        ui.horizontal_wrapped(|ui| {
+            ui.add_enabled_ui(n > 0, |ui| {
+                if theme::button(ui, Some(Icon::Image), &format!("Foto al azar ({n})"), Btn::Outline)
+                    .on_hover_text("Una foto de la carpeta de este tema en tu biblioteca de referencias")
+                    .clicked()
+                {
+                    self.random_reference(&ctx);
+                }
+            });
+            if theme::button(ui, None, "Abrir la carpeta", Btn::Ghost)
+                .on_hover_text(format!("Imágenes › TrazoAcademia › referencias › {}", self.study.topic.folder()))
+                .clicked()
+            {
+                let _ = std::process::Command::new("explorer").arg(study::library_folder(self.study.topic)).spawn();
+            }
+        });
+        ui.label(theme::caption("Ve guardando fotos en la carpeta de cada tema (tuyas, de poses o de museos) y tendrás tu propia biblioteca."));
         theme::section(ui, "3. El tiempo");
         ui.horizontal_wrapped(|ui| {
-            let options: [(Option<f32>, &str); 6] =
-                [(None, "Sin límite"), (Some(120.0), "2 min"), (Some(300.0), "5 min"), (Some(600.0), "10 min"), (Some(1200.0), "20 min"), (Some(1800.0), "30 min")];
+            let mut options: Vec<(Option<f32>, String)> = [None, Some(2.0), Some(5.0), Some(10.0), Some(20.0), Some(30.0)]
+                .into_iter()
+                .map(|m: Option<f32>| (m.map(|m| m * 60.0), m.map_or("Sin límite".to_string(), |m| format!("{m:.0} min"))))
+                .collect();
+            // El tiempo que propone el programa, si no está entre los de siempre.
+            if let Some(t) = self.study.timer {
+                if !options.iter().any(|(o, _)| *o == Some(t)) {
+                    options.push((Some(t), format!("{:.0} min", t / 60.0)));
+                }
+            }
             for (t, label) in options {
+                let label = label.as_str();
                 let kind = if self.study.timer == t { Btn::Selected } else { Btn::Outline };
                 if theme::button(ui, None, label, kind).clicked() {
                     self.study.timer = t;
@@ -595,6 +661,9 @@ impl TrazoApp {
         let w = ui.available_width();
         if self.study.saved {
             ui.label(RichText::new("Guardado en el diario.").size(theme::BODY).color(theme::GOOD));
+            if self.from_program && theme::button_ex(ui, Some(Icon::Play), "Volver a Hoy", Btn::Primary, w, false).clicked() {
+                self.screen = Screen::Program;
+            }
         } else if theme::button_ex(ui, Some(Icon::Save), "Guardar en el diario", Btn::Primary, w, false).clicked() {
             self.save_study();
         }
@@ -631,6 +700,8 @@ impl TrazoApp {
         match study::save(&entry, &self.canvas.to_rgba(), [W as u32, H as u32], &r.rgba) {
             Ok(_) => {
                 self.study.saved = true;
+                self.progress.program.record_study(&crate::program::today());
+                self.save();
                 self.diary.clear();
                 self.message = Some(("Estudio guardado en el diario.".into(), now));
             }

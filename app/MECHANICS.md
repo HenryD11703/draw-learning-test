@@ -182,3 +182,24 @@ con nota automática.
 - Demostración: `TRAZO_PANTALLA=estudio` (con `TRAZO_FASE=comparar` para la comparación) usa una escena de
   pintura como referencia; `TRAZO_DIARIO=<carpeta>` cambia la carpeta del diario y, en la comparación,
   guarda el estudio de demostración. `TRAZO_PANTALLA=diario` abre el diario.
+
+## 6. Programa del año y biblioteca de referencias (diseño propio)
+
+- `content/programa.json`: 12 meses de 4 semanas. Cada semana tiene título, fuente (el libro o método en el
+  que se basa), lección, módulos de calentamiento (ids de `content/*.json`), tema del estudio y minutos
+  sugeridos. Un test comprueba que son 48 semanas y que todos los módulos existen.
+- Un día queda completo con 2 ejercicios distintos calificados (cualquier nota) y 1 estudio guardado en el
+  diario. Con 4 días completos desde que empezó la semana, se puede cerrar con una revisión (qué mejoró,
+  qué error se repite y el foco para la siguiente; el foco se muestra toda la semana siguiente). También se
+  puede cerrar antes. El programa avanza por días practicados, no por calendario.
+- Racha: días seguidos con algo de práctica, contando hasta hoy o, si hoy aún no se practicó, hasta ayer.
+  Las fechas son locales (AAAA-MM-DD).
+- Calentamiento sugerido: por cada módulo de la semana, primero los ejercicios ya hechos hoy (con su marca) y
+  luego el primero del módulo que aún no tiene tres estrellas; si todos tienen tres, los menos repetidos.
+- El estado se guarda en `progreso.json` (`program`: semana, inicio de la semana, días y revisiones).
+- Biblioteca: `Imágenes/TrazoAcademia/referencias/<tema>/` (gesto, proporcion, figura, valor, cabeza, manos,
+  objetos, paisaje, maestros, color). El estudio de la semana empieza con una foto PNG o JPG al azar de la
+  carpeta del tema, sin repetir la última.
+- Demostración: `TRAZO_PANTALLA=hoy` (semana 6, o `TRAZO_SEMANA=<n>`), con `TRAZO_FASE=revision` (semana
+  lista para cerrar) o `TRAZO_FASE=estudio` (abre el estudio de la semana); `TRAZO_REFERENCIAS=<carpeta>`
+  cambia la biblioteca y `TRAZO_DESPLAZAR=<px>` baja la pantalla para las capturas.

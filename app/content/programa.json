@@ -1,0 +1,508 @@
+{
+  "months": [
+    {
+      "title": "Línea y contorno",
+      "goal": "Trazar con seguridad y empezar a ver formas, bordes y espacios en vez de símbolos.",
+      "weeks": [
+        {
+          "title": "Líneas seguras",
+          "source": "Drawabox, lección 1 (método fantasma)",
+          "lesson": "Una línea segura se dibuja en tres pasos: planificar (marca el inicio y el final), fantasmear (repite el movimiento en el aire hasta que salga solo) y trazar de un golpe, mirando el punto final y no la punta del lápiz.\n\nLas líneas largas salen del hombro; la muñeca queda para los detalles. Una línea firme algo desviada es mejor que una exacta pero temblorosa, porque la tembladera no se corrige luego y la desviación sí.",
+          "warmup": ["lineas"],
+          "topic": "proportion",
+          "study": "Objetos planos y sencillos de casa: unas tijeras, unas llaves, una hoja de árbol. Fotografíalos desde arriba sobre un fondo liso y dibuja solo el contorno, con líneas largas y decididas.",
+          "minutes": 15
+        },
+        {
+          "title": "Contorno: mirar el borde",
+          "source": "Betty Edwards, «Dibujar con el lado derecho del cerebro» (percibir los bordes)",
+          "lesson": "Dibujamos mal porque dibujamos lo que creemos saber («un ojo es una almendra») y no lo que vemos. El contorno ciego es el antídoto: recorre el borde de la forma con la vista, muy despacio, y deja que la mano lo siga a la misma velocidad sin mirar el papel.\n\nEl resultado no se parece al objeto, y no importa: entrenas a mirar de verdad. Después haz el contorno modificado: mira el papel solo para recolocar la mano y dedica el 90 % del tiempo a la referencia.",
+          "warmup": ["lineas", "elipses"],
+          "topic": "proportion",
+          "study": "Tu propia mano en una pose arrugada (fotografíala) o una planta con hojas que se cruzan. Primero un contorno ciego de 5 minutos y después un contorno modificado. Guarda el segundo.",
+          "minutes": 20
+        },
+        {
+          "title": "Espacios negativos",
+          "source": "Betty Edwards, «Dibujar con el lado derecho del cerebro» (percibir los espacios)",
+          "lesson": "Los huecos entre las formas no tienen nombre, así que el cerebro no los deforma: los vemos tal como son. Dibujar la forma de esos espacios (entre las patas de una silla, entre un brazo y el cuerpo) es una de las maneras más fiables de conseguir proporciones correctas.\n\nEncuadra la referencia, elige un hueco y dibújalo como si fuera la forma principal. Los bordes que comparte con el objeto aparecen solos.",
+          "warmup": ["lineas", "formas"],
+          "topic": "proportion",
+          "study": "Una silla, un taburete o una planta de interior delante de una pared lisa. Dibuja primero los huecos y rellénalos de gris; el objeto aparece por contraste.",
+          "minutes": 20
+        },
+        {
+          "title": "Proporción con una unidad",
+          "source": "Betty Edwards (percibir las relaciones) y Bert Dodson, «Keys to Drawing»",
+          "lesson": "Para medir: elige una parte que sirva de unidad (el alto de una botella, el ancho de una cabeza) y compara todo lo demás con ella: «el ancho total es una unidad y media». Con un lápiz a brazo extendido y un ojo cerrado se mide igual del natural.\n\nLos ángulos se comparan con la vertical y la horizontal, no con lo que esperas. Mide antes de entrar en detalle: corregir una proporción al final cuesta el doble.",
+          "warmup": ["formas", "lineas"],
+          "topic": "proportion",
+          "study": "Un objeto con medidas claras: una lámpara, una botella con su tapón, una guitarra. Usa la herramienta «Medir» al comparar: la primera medida es la unidad.",
+          "minutes": 25
+        }
+      ]
+    },
+    {
+      "title": "Elipses, cajas y perspectiva",
+      "goal": "Entender que lo que dibujas tiene volumen y vive en un espacio con horizonte.",
+      "weeks": [
+        {
+          "title": "Elipses y su eje menor",
+          "source": "Drawabox, lección 1, y Scott Robertson, «How to Draw»",
+          "lesson": "Cualquier círculo visto en perspectiva es una elipse. Su eje menor coincide siempre con el eje del cilindro al que pertenece: si el vaso está inclinado, el eje menor de la boca se inclina con él.\n\nCuanto más lejos queda una elipse de la línea del horizonte (la altura de tus ojos), más se abre; justo a la altura de los ojos se vuelve una línea. Dibuja las elipses de un solo trazo, pasando dos o tres veces por encima.",
+          "warmup": ["elipses"],
+          "topic": "objects",
+          "study": "Tazas, vasos, botellas y platos a distintas alturas respecto a tus ojos. Fíjate en que la boca del vaso se ve más cerrada que el fondo.",
+          "minutes": 20
+        },
+        {
+          "title": "Horizonte y puntos de fuga",
+          "source": "Scott Robertson, «How to Draw»",
+          "lesson": "El horizonte está siempre a la altura de tus ojos. Las líneas paralelas que se alejan de ti convergen en un punto de fuga sobre ese horizonte; las paralelas al plano del cuadro no convergen.\n\nPerspectiva de un punto: miras de frente a una cara del objeto. De dos puntos: miras a una esquina. Antes de dibujar, localiza el horizonte en la foto: es la línea en la que las aristas no suben ni bajan.",
+          "warmup": ["perspectiva"],
+          "topic": "objects",
+          "study": "Libros, cajas y un mueble sencillo fotografiados una vez de frente y otra hacia una esquina. Marca el horizonte en tu dibujo antes de empezar.",
+          "minutes": 20
+        },
+        {
+          "title": "Cajas en el espacio",
+          "source": "Drawabox, lección 1, y el reto de las 250 cajas",
+          "lesson": "Una caja bien dibujada contiene casi toda la perspectiva. Dibújala «a través»: traza también las aristas ocultas, porque así ves si las paralelas convergen hacia el mismo lado.\n\nComprueba cada grupo de cuatro aristas paralelas: deben acercarse entre sí poco a poco, nunca separarse. Casi todos los objetos de una casa son cajas con algo añadido o quitado.",
+          "warmup": ["volumen", "perspectiva"],
+          "topic": "objects",
+          "study": "Electrodomésticos y muebles: una tostadora, un microondas, una mesilla. Empieza por la caja que los contiene y después talla o añade.",
+          "minutes": 25
+        },
+        {
+          "title": "Un rincón de tu casa",
+          "source": "Scott Robertson, «How to Draw» (espacios), y James Gurney, «Imaginative Realism»",
+          "lesson": "Un interior es un conjunto de cajas que comparten horizonte y puntos de fuga. Empieza por el gran espacio (suelo, paredes, techo), después los muebles grandes como cajas y por último los objetos.\n\nSi los objetos «flotan», casi siempre es porque su base no sigue la perspectiva del suelo: comprueba dónde toca cada mueble con el piso.",
+          "warmup": ["perspectiva", "volumen"],
+          "topic": "landscape",
+          "study": "Una esquina de tu habitación o de la cocina, fotografiada a la altura de tus ojos. Dibuja primero el horizonte y las líneas del suelo.",
+          "minutes": 30
+        }
+      ]
+    },
+    {
+      "title": "Construcción de objetos",
+      "goal": "Pensar los objetos como formas simples que se combinan, y dibujarlos con intención.",
+      "weeks": [
+        {
+          "title": "Las formas básicas",
+          "source": "Drawabox, lección 2 (formas y contornos)",
+          "lesson": "Casi todo se reduce a cajas, cilindros, esferas y conos. Antes de dibujar un objeto, pregúntate de qué formas está hecho y dibuja esas formas primero, con trazo suave.\n\nLas líneas de contorno que rodean una forma (como los anillos de un cilindro) le dan volumen al instante: úsalas para entender hacia dónde gira cada superficie.",
+          "warmup": ["volumen", "elipses"],
+          "topic": "objects",
+          "study": "Frutas y botes de cocina: una manzana (esfera), una lata (cilindro), un embudo (cono). Dibuja cada uno con sus líneas de contorno.",
+          "minutes": 20
+        },
+        {
+          "title": "Intersecciones de formas",
+          "source": "Drawabox, lección 2 (intersecciones de formas)",
+          "lesson": "Cuando dos formas se tocan, la línea donde se cruzan dice mucho del volumen: el asa de una taza se une al cilindro con una curva que sigue su superficie, no con una recta.\n\nDibuja las formas enteras y transparentes y busca la línea de unión. Es lo que separa un dibujo plano de uno que «se puede tocar».",
+          "warmup": ["volumen", "formas"],
+          "topic": "objects",
+          "study": "Objetos con piezas unidas: una tetera, una lámpara de mesa, una regadera. Dibuja las piezas transparentes antes de borrar lo que no se ve.",
+          "minutes": 25
+        },
+        {
+          "title": "Objetos de todos los días",
+          "source": "Drawabox, lección 6 (objetos cotidianos)",
+          "lesson": "Construye con precisión: empieza por la caja que envuelve todo el objeto, divídela en mitades y tercios para situar cada parte, y ve recortando. Las divisiones en perspectiva se hacen con las diagonales de la caja, no a ojo.\n\nNo busques el detalle hasta que la estructura esté bien: un detalle precioso sobre una caja torcida sigue siendo un dibujo torcido.",
+          "warmup": ["perspectiva", "volumen"],
+          "topic": "objects",
+          "study": "Un objeto de cocina o del escritorio con varias partes: una batidora, un ratón, una grapadora. Construye la caja, subdivídela y talla.",
+          "minutes": 30
+        },
+        {
+          "title": "Peso de línea",
+          "source": "Drawabox, lección 1, y el entintado tradicional",
+          "lesson": "El grosor de la línea guía la mirada: más gruesa donde la forma se superpone a otra o queda en sombra, más fina en los bordes iluminados y en los detalles interiores.\n\nNo repases todo el dibujo: añade peso solo donde aclara qué está delante de qué. En Krita, una capa de tinta encima del boceto con poca opacidad.",
+          "warmup": ["peso", "entintado"],
+          "topic": "objects",
+          "study": "Repite uno de los objetos de las semanas anteriores y entíntalo en una capa nueva, con peso de línea en las superposiciones.",
+          "minutes": 25
+        }
+      ]
+    },
+    {
+      "title": "Valor",
+      "goal": "Ver la luz y la sombra como grandes masas y dibujarlas con pocos valores bien elegidos.",
+      "weeks": [
+        {
+          "title": "Pensar en grises",
+          "source": "Bert Dodson, «Keys to Drawing», y Betty Edwards (percibir luces y sombras)",
+          "lesson": "El valor es lo claro u oscuro de algo, sin importar el color. Entrecierra los ojos frente a la referencia: los detalles desaparecen y quedan las grandes masas de luz y sombra. Eso es lo que hay que dibujar primero.\n\nUsa el botón «Grises» de la app: muchas veces el error no está en la forma sino en que una zona está demasiado clara u oscura.",
+          "warmup": ["sombreado", "valor"],
+          "topic": "value",
+          "study": "Un objeto blanco con una sola luz lateral (una taza, un huevo, una caja blanca junto a una ventana). Tres valores: luz, sombra y sombra proyectada.",
+          "minutes": 20
+        },
+        {
+          "title": "Familia de luz y familia de sombra",
+          "source": "James Gurney, «Color and Light»",
+          "lesson": "Todo lo que mira hacia la luz pertenece a la familia de luz; lo que no la recibe, a la de sombra. Regla de oro: el valor más oscuro de la luz es más claro que el más claro de la sombra.\n\nSi la luz reflejada en una sombra se vuelve tan clara como la zona iluminada, la forma se rompe. Mantén las dos familias separadas y la forma se lee aunque el dibujo sea sencillo.",
+          "warmup": ["valor", "luz"],
+          "topic": "value",
+          "study": "Una naranja o una pelota bajo una lámpara de escritorio, en una habitación sin otras luces. Separa con claridad las dos familias.",
+          "minutes": 25
+        },
+        {
+          "title": "Las partes de la sombra",
+          "source": "James Gurney, «Color and Light» (el principio de la forma)",
+          "lesson": "En una forma iluminada aparecen siempre las mismas zonas: luz, medio tono, línea de terminación (donde la luz se acaba), sombra propia con luz reflejada, sombra proyectada y la oclusión, la parte más oscura justo donde el objeto toca el suelo.\n\nNómbralas en la referencia antes de dibujar. La línea de terminación y la oclusión son las que más «venden» el volumen.",
+          "warmup": ["luz", "sombreado"],
+          "topic": "value",
+          "study": "Un bodegón de dos o tres objetos sencillos (un huevo, una taza, una caja) con luz lateral. Busca las seis zonas en cada objeto.",
+          "minutes": 30
+        },
+        {
+          "title": "Miniaturas de valor",
+          "source": "Bert Dodson, «Keys to Drawing», y la planificación en notan",
+          "lesson": "Antes de un dibujo largo, haz miniaturas del tamaño de una tarjeta con solo tres o cuatro valores. Ahí decides dónde va lo más oscuro, dónde lo más claro y qué masas se agrupan.\n\nUna buena imagen se lee en una miniatura. Si la miniatura no funciona, el dibujo grande tampoco funcionará por mucho detalle que añadas.",
+          "warmup": ["valor", "bordes"],
+          "topic": "value",
+          "study": "Tres miniaturas rápidas de fotos de paisajes o calles, cada una en tres valores, y luego un estudio de 25 minutos de la que mejor funcione.",
+          "minutes": 30
+        }
+      ]
+    },
+    {
+      "title": "Gesto",
+      "goal": "Captar el movimiento y la intención de una pose antes que su contorno.",
+      "weeks": [
+        {
+          "title": "Dibujar lo que la pose hace",
+          "source": "Kimon Nicolaïdes, «The Natural Way to Draw»",
+          "lesson": "Nicolaïdes pedía dibujar lo que el modelo está haciendo, no cómo es. En 30 a 60 segundos no hay tiempo para contornos: busca el empuje, la torsión, el peso, y deja que la mano se mueva sin parar.\n\nLos gestos no son dibujos acabados: son ejercicios de percepción. Haz muchos y no te encariñes con ninguno.",
+          "warmup": ["figura", "lineas"],
+          "topic": "gesture",
+          "study": "Sesiones de gestos con fotos de poses (hay páginas de poses gratuitas para dibujo). Diez poses de 1 minuto y guarda la que mejor transmita el movimiento.",
+          "minutes": 2
+        },
+        {
+          "title": "Línea de acción",
+          "source": "Walt Stanchfield, «Drawn to Life»",
+          "lesson": "Casi toda pose se resume en una línea de acción: una curva en C o en S que va de la cabeza a los pies a través de la columna y la pierna de apoyo. Dibújala primero y cuelga el resto del cuerpo de ella.\n\nExagera un poco la curva: un gesto tímido queda rígido; uno exagerado se puede moderar luego.",
+          "warmup": ["figura", "lineas"],
+          "topic": "gesture",
+          "study": "Fotos de deportistas y bailarines. Para cada pose, primero una sola línea de acción en 5 segundos y después el gesto completo.",
+          "minutes": 2
+        },
+        {
+          "title": "Peso y equilibrio",
+          "source": "Kimon Nicolaïdes y Walt Stanchfield",
+          "lesson": "Una figura de pie se sostiene cuando el centro de gravedad (aproximadamente la base del cuello) cae sobre la pierna de apoyo. Traza una vertical desde el cuello: debe caer dentro de la base de los pies.\n\nCuando el peso va a una pierna, la cadera de ese lado sube y el hombro suele bajar: los ejes de hombros y caderas se inclinan en sentidos opuestos.",
+          "warmup": ["figura", "formas"],
+          "topic": "gesture",
+          "study": "Poses de pie con el peso en una pierna, gente cargando cosas o empujando. Comprueba la vertical del cuello al comparar.",
+          "minutes": 5
+        },
+        {
+          "title": "Gente de verdad",
+          "source": "Kimon Nicolaïdes y la práctica del cuaderno de calle",
+          "lesson": "Las fotos de poses están pensadas; la gente real, no. Dibujar personas en la calle, en una cafetería o en un vídeo en pausa entrena a decidir rápido qué es lo esencial.\n\nEmpieza por el gesto y añade solo lo que te dé tiempo. Si la persona se mueve, termina con la memoria o empieza otra: ambas cosas valen.",
+          "warmup": ["figura", "observacion"],
+          "topic": "gesture",
+          "study": "Capturas de vídeos (deportes, baile, gente caminando) o tus propias fotos de la calle. Gestos de 2 minutos.",
+          "minutes": 2
+        }
+      ]
+    },
+    {
+      "title": "Proporción y maniquí",
+      "goal": "Construir una figura creíble con medidas de referencia y masas simples.",
+      "weeks": [
+        {
+          "title": "Medir la figura en cabezas",
+          "source": "Andrew Loomis, «Figure Drawing for All It's Worth»",
+          "lesson": "Un adulto mide unas siete cabezas y media; Loomis usa ocho como canon idealizado porque facilita las cuentas. Puntos de referencia útiles: la entrepierna cae cerca de la mitad del cuerpo, los codos a la altura de la cintura y las muñecas a la de la entrepierna.\n\nSon promedios, no reglas: úsalos para detectar errores grandes y mide siempre la referencia real.",
+          "warmup": ["figura", "formas"],
+          "topic": "proportion",
+          "study": "Fotos de figuras de pie, de frente y de perfil. Usa la cabeza como unidad con la herramienta «Medir» y comprueba cada punto de referencia.",
+          "minutes": 20
+        },
+        {
+          "title": "El maniquí: tórax, pelvis y columna",
+          "source": "Michael Hampton, «Figure Drawing: Design and Invention», y Andrew Loomis",
+          "lesson": "Bajo el gesto, el cuerpo tiene dos masas rígidas: la caja torácica (un huevo o una caja) y la pelvis (una caja más pequeña), unidas por la columna flexible. Los brazos y las piernas son cilindros que se estrechan.\n\nColoca primero las dos masas con su inclinación y su giro respecto al gesto. Si el tórax y la pelvis están bien, el resto encaja con facilidad.",
+          "warmup": ["figura", "volumen"],
+          "topic": "figure",
+          "study": "Poses de pie y sentadas. Sobre el gesto, dibuja el tórax y la pelvis como cajas o huevos, y los miembros como cilindros.",
+          "minutes": 15
+        },
+        {
+          "title": "Torsión y escorzo",
+          "source": "Michael Hampton, «Figure Drawing: Design and Invention»",
+          "lesson": "Cuando el tórax y la pelvis miran a lados distintos, el torso se tuerce: dibújalos como dos cajas con orientaciones diferentes y conéctalos con la curva de la columna.\n\nEn escorzo, lo que se acerca a ti se superpone a lo que queda detrás: dibuja las formas cercanas primero y deja que tapen a las lejanas. Los cilindros en escorzo se vuelven casi elipses.",
+          "warmup": ["volumen", "figura"],
+          "topic": "figure",
+          "study": "Poses girando, agachándose o con un brazo hacia la cámara. Construye con cajas y cilindros antes de dibujar el contorno.",
+          "minutes": 15
+        },
+        {
+          "title": "Del gesto a la estructura",
+          "source": "Michael Hampton y Andrew Loomis",
+          "lesson": "Une todo el mes en un proceso: gesto en un minuto, masas de tórax y pelvis, cilindros de los miembros, comprobación de proporciones y, por último, el contorno por encima, en otra capa.\n\nCada paso corrige el anterior. Si al llegar al contorno algo no encaja, vuelve a la estructura en vez de retocar la línea final.",
+          "warmup": ["figura", "formas"],
+          "topic": "figure",
+          "study": "Figuras de 10 a 15 minutos siguiendo los cuatro pasos, cada uno en su capa. Al comparar, mira qué paso falló.",
+          "minutes": 15
+        }
+      ]
+    },
+    {
+      "title": "Anatomía para dibujar",
+      "goal": "Conocer los puntos óseos y las grandes masas musculares que cambian la silueta.",
+      "weeks": [
+        {
+          "title": "El torso y sus puntos óseos",
+          "source": "George Bridgman, «Constructive Anatomy», y Michael Hampton",
+          "lesson": "Algunos huesos se ven siempre bajo la piel y sirven de referencia: las clavículas, la escotadura del esternón, el borde de las costillas, la cresta ilíaca (la parte alta de la cadera) y la séptima vértebra en la nuca.\n\nLocalízalos en la referencia antes de sombrear: definen la estructura y no se mueven aunque el músculo cambie.",
+          "warmup": ["figura", "sombreado"],
+          "topic": "figure",
+          "study": "Fotos de torsos de frente y de espalda, con luz lateral (las fotos de esculturas clásicas de museos funcionan muy bien). Marca los puntos óseos.",
+          "minutes": 25
+        },
+        {
+          "title": "Brazos y hombros",
+          "source": "George Bridgman, «Constructive Anatomy»",
+          "lesson": "El hombro es una tapa (el deltoides) que envuelve la unión del brazo. El brazo no es un tubo recto: el bíceps y el tríceps hacen que el contorno de delante y el de detrás estén desfasados, y el antebrazo se aplana y gira cerca de la muñeca.\n\nBridgman simplifica cada músculo en bloques que encajan entre sí. Dibuja esos bloques antes que el contorno.",
+          "warmup": ["figura", "volumen"],
+          "topic": "figure",
+          "study": "Brazos en distintas posiciones: levantados, doblados, cargando algo. Fotografía los tuyos frente a un espejo si hace falta.",
+          "minutes": 20
+        },
+        {
+          "title": "Piernas y pies",
+          "source": "George Bridgman, «Constructive Anatomy»",
+          "lesson": "Las piernas tienen un ritmo alternado: los abultamientos de un lado y del otro no están enfrentados, sino a distinta altura. En la pantorrilla, por ejemplo, el de fuera queda más alto que el de dentro. La tibia es una arista recta y la pantorrilla una curva amplia detrás.\n\nEl pie es una cuña: alto en el tobillo, bajo en los dedos. El tobillo interno está más alto que el externo.",
+          "warmup": ["figura", "formas"],
+          "topic": "figure",
+          "study": "Fotos de piernas de pie, caminando y sentadas, y de pies desde varios ángulos.",
+          "minutes": 20
+        },
+        {
+          "title": "La figura completa con luz",
+          "source": "Michael Hampton y James Gurney",
+          "lesson": "Junta estructura y valor: construye la figura, decide la dirección de la luz y separa la familia de luz de la de sombra sobre las grandes masas (tórax, pelvis, miembros) antes que sobre los músculos.\n\nUna figura bien iluminada en dos valores ya tiene volumen; los músculos son detalles dentro de esas masas.",
+          "warmup": ["figura", "luz"],
+          "topic": "figure",
+          "study": "Una figura de 30 minutos con luz lateral fuerte (fotos de esculturas clásicas o de modelos con iluminación dura).",
+          "minutes": 30
+        }
+      ]
+    },
+    {
+      "title": "La cabeza",
+      "goal": "Construir la cabeza en cualquier ángulo y colocar los rasgos con sus proporciones.",
+      "weeks": [
+        {
+          "title": "La bola de Loomis",
+          "source": "Andrew Loomis, «Drawing the Head and Hands»",
+          "lesson": "Loomis construye la cabeza con una esfera a la que corta los lados y añade la mandíbula. Sobre la esfera trazas la línea central y la de las cejas: las dos siguen la curva de la bola, y eso hace que giren con la cabeza.\n\nEl rostro se divide en tres partes iguales: del nacimiento del pelo a las cejas, de las cejas a la base de la nariz y de la nariz a la barbilla.",
+          "warmup": ["cabeza", "elipses"],
+          "topic": "head",
+          "study": "Fotos de cabezas de frente, de perfil y de tres cuartos. Solo la construcción: esfera, cortes laterales, mandíbula y líneas guía.",
+          "minutes": 15
+        },
+        {
+          "title": "Los rasgos",
+          "source": "Andrew Loomis, «Drawing the Head and Hands»",
+          "lesson": "Los ojos están más o menos a media altura de la cabeza y separados por el ancho de un ojo. La oreja cabe entre la línea de las cejas y la de la nariz. La boca cae a un tercio entre la nariz y la barbilla.\n\nLos rasgos son formas con volumen: el ojo es una esfera con párpados encima y la nariz, una cuña. Dibújalos así y no como símbolos.",
+          "warmup": ["cabeza", "formas"],
+          "topic": "head",
+          "study": "Estudios de rasgos sueltos: ojos, narices, bocas y orejas, de fotos o de esculturas. Después un retrato de frente ubicándolos sobre la construcción.",
+          "minutes": 20
+        },
+        {
+          "title": "La cabeza girada",
+          "source": "Andrew Loomis, «Drawing the Head and Hands»",
+          "lesson": "Cuando la cabeza mira hacia arriba o hacia abajo, las líneas de cejas, nariz y boca se curvan como elipses sobre la esfera: hacia arriba si miras desde abajo, y al revés. Al girar de lado, el lado lejano del rostro se acorta.\n\nComprueba siempre que todas las líneas guía curven en el mismo sentido: es el error más común y el que más se nota.",
+          "warmup": ["cabeza", "elipses"],
+          "topic": "head",
+          "study": "Cabezas vistas desde arriba, desde abajo y en tres cuartos. Construcción completa y rasgos colocados.",
+          "minutes": 20
+        },
+        {
+          "title": "Los planos de la cabeza",
+          "source": "La cabeza de planos de John Asaro y James Gurney, «Color and Light»",
+          "lesson": "La cabeza de planos de Asaro simplifica el rostro en caras planas: frente, sienes, pómulos, laterales de la nariz, mentón. Con luz lateral, cada plano recibe un valor distinto, y eso es todo lo que hace falta para que un retrato tenga volumen.\n\nSombrea por planos, no por rasgos: primero las grandes masas de luz y sombra, después los cambios dentro de ellas.",
+          "warmup": ["cabeza", "valor"],
+          "topic": "head",
+          "study": "Retratos con luz lateral fuerte. Usa «Grises» para comparar los planos de luz y sombra.",
+          "minutes": 30
+        }
+      ]
+    },
+    {
+      "title": "Manos y pies",
+      "goal": "Simplificar manos y pies en bloques y dibujarlos con naturalidad.",
+      "weeks": [
+        {
+          "title": "La mano en bloques",
+          "source": "Andrew Loomis, «Drawing the Head and Hands»",
+          "lesson": "La palma es una caja algo más larga que ancha; los dedos, tres cilindros cada uno que se estrechan. El dedo medio mide más o menos lo mismo que la palma. Los nudillos forman un arco, no una recta.\n\nEl pulgar sale del lado de la palma, cerca de la muñeca, con su propia masa carnosa. Dibuja la caja de la palma primero y el pulgar después.",
+          "warmup": ["manos", "volumen"],
+          "topic": "hands",
+          "study": "Tu mano libre en poses sencillas: abierta, de canto, en puño. Fotografíala o dibújala del natural.",
+          "minutes": 15
+        },
+        {
+          "title": "Gestos de la mano",
+          "source": "Andrew Loomis y Kimon Nicolaïdes",
+          "lesson": "Las manos también tienen gesto: apuntar, agarrar, descansar. Empieza por una línea que recorra el dorso y el dedo principal, como la línea de acción del cuerpo, y luego los bloques.\n\nLos dedos rara vez van paralelos: se abren en abanico desde la palma y se doblan siguiendo arcos.",
+          "warmup": ["manos", "figura"],
+          "topic": "hands",
+          "study": "Manos expresivas: señalando, saludando, con los dedos cruzados. Gesto de un minuto antes de cada estudio.",
+          "minutes": 15
+        },
+        {
+          "title": "Los pies",
+          "source": "George Bridgman, «Constructive Anatomy»",
+          "lesson": "El pie es una cuña: alto en el empeine y bajo en los dedos, con el talón como una caja. Visto desde dentro, el arco deja un hueco; desde fuera, el pie apoya casi entero.\n\nEl dedo gordo apunta hacia delante y los demás se curvan hacia el suelo. El tobillo interior está más alto que el exterior.",
+          "warmup": ["manos", "formas"],
+          "topic": "figure",
+          "study": "Tus pies desde varios ángulos, descalzos y con zapatos. Construye la cuña antes del contorno.",
+          "minutes": 15
+        },
+        {
+          "title": "Manos que sostienen",
+          "source": "Andrew Loomis, «Drawing the Head and Hands»",
+          "lesson": "Una mano sosteniendo algo se adapta a la forma del objeto: dibuja primero el objeto, luego la palma en contacto con él y por último los dedos rodeándolo.\n\nFíjate en qué dedos tocan y cuáles no, y en dónde se aplasta la carne contra el objeto: ese detalle es el que hace creíble el agarre.",
+          "warmup": ["manos", "elipses"],
+          "topic": "hands",
+          "study": "Tu mano sosteniendo una taza, un bolígrafo, el móvil o una fruta.",
+          "minutes": 20
+        }
+      ]
+    },
+    {
+      "title": "Ropa, animales y entornos",
+      "goal": "Aplicar gesto y construcción a lo que rodea a la figura.",
+      "weeks": [
+        {
+          "title": "Los pliegues",
+          "source": "Burne Hogarth, «Dynamic Wrinkles and Drapery»",
+          "lesson": "La tela cuelga de puntos de apoyo (hombros, codos, rodillas) y se tensa o se acumula según la pose. Hogarth clasifica los pliegues en tipos que se repiten: de tubo, en zigzag, en espiral, de media vuelta en las articulaciones, de festón entre dos apoyos, de caída y los inertes en el suelo.\n\nIdentifica de dónde cuelga cada pliegue antes de dibujarlo: un pliegue sin apoyo parece pegado.",
+          "warmup": ["figura", "sombreado"],
+          "topic": "figure",
+          "study": "Una camisa colgada de una silla, una toalla, y luego figuras vestidas con ropa holgada.",
+          "minutes": 20
+        },
+        {
+          "title": "Animales",
+          "source": "Ken Hultgren, «The Art of Animal Drawing»",
+          "lesson": "Los animales se dibujan como las personas: gesto, masas (tórax, pelvis, cabeza) y miembros. La diferencia está en las proporciones y en las patas: el «codo» y la «rodilla» que vemos suelen ser la muñeca y el talón.\n\nEmpieza por animales quietos (gatos dormidos, perros sentados) y gestos rápidos de animales en movimiento.",
+          "warmup": ["figura", "formas"],
+          "topic": "gesture",
+          "study": "Fotos o vídeos en pausa de tu mascota o de animales del zoo. Gestos de 2 minutos y un estudio largo.",
+          "minutes": 5
+        },
+        {
+          "title": "Perspectiva atmosférica",
+          "source": "James Gurney, «Color and Light»",
+          "lesson": "El aire entre tú y lo lejano añade una capa de luz: los objetos lejanos se ven más claros, con menos contraste y menos detalle, y los oscuros dejan de ser negros.\n\nOrganiza el paisaje en tres planos (cerca, medio, lejos) con un rango de valores distinto para cada uno. Si el fondo tiene tanto contraste como el primer plano, la profundidad desaparece.",
+          "warmup": ["valor", "perspectiva"],
+          "topic": "landscape",
+          "study": "Fotos de paisajes con montañas, calles largas o niebla. Primero una miniatura en tres planos de valor.",
+          "minutes": 30
+        },
+        {
+          "title": "Dibujo de lugares",
+          "source": "La práctica del dibujo urbano y Scott Robertson, «How to Draw»",
+          "lesson": "Para dibujar un lugar real, decide primero qué te interesa (una fachada, la luz de una calle) y encuádralo. Localiza el horizonte, los puntos de fuga principales y las grandes masas; el detalle solo donde está tu interés.\n\nSimplifica sin miedo: un dibujo de lugar se trata de transmitir la sensación del sitio, no de contar ventanas.",
+          "warmup": ["perspectiva", "observacion"],
+          "topic": "landscape",
+          "study": "Tus propias fotos de la calle, de una plaza o de un edificio de tu ciudad. Si puedes, alguno del natural, desde una ventana.",
+          "minutes": 30
+        }
+      ]
+    },
+    {
+      "title": "Composición y luz",
+      "goal": "Organizar una imagen completa: dónde mira el espectador y cómo la luz lo guía.",
+      "weeks": [
+        {
+          "title": "Miniaturas de composición",
+          "source": "Andrew Loomis, «Creative Illustration»",
+          "lesson": "Antes de una imagen, haz varias miniaturas cambiando el encuadre: más cerca, más lejos, horizonte alto o bajo. Loomis insiste en que la composición se decide en pequeño, donde equivocarse no cuesta nada.\n\nBusca un reparto claro de masas: una grande, una mediana y una pequeña funcionan mejor que tres iguales.",
+          "warmup": ["valor", "formas"],
+          "topic": "master",
+          "study": "Copia en miniatura, en tres valores, la composición de cinco cuadros de maestros (colecciones abiertas de museos como el Met o el Rijksmuseum). Un estudio largo del que más te guste.",
+          "minutes": 20
+        },
+        {
+          "title": "Punto focal",
+          "source": "James Gurney, «Color and Light», y Bert Dodson, «Keys to Drawing»",
+          "lesson": "La mirada va primero a donde hay más contraste, más detalle y más saturación. Pon esos tres en tu punto de interés y bájalos en el resto de la imagen.\n\nUn truco de los maestros: el valor más claro junto al más oscuro, solo una vez, en el centro de interés.",
+          "warmup": ["luz", "valor"],
+          "topic": "landscape",
+          "study": "Una escena con un elemento claro de interés (una persona en una calle, un árbol en un campo). Decide el punto focal antes de empezar.",
+          "minutes": 30
+        },
+        {
+          "title": "Bordes",
+          "source": "Richard Schmid, «Alla Prima», y James Gurney",
+          "lesson": "Los bordes pueden ser duros, suaves o perdidos (cuando dos zonas de valor parecido se funden). Los duros atraen la mirada; los suaves y perdidos la dejan pasar.\n\nUsa bordes duros en el punto focal y donde una forma corta a otra; suavízalos en los giros de la forma y en lo secundario. Un dibujo con todos los bordes iguales parece recortado.",
+          "warmup": ["bordes", "luz"],
+          "topic": "value",
+          "study": "Un objeto con zonas brillantes y sombras suaves (una tela, una fruta, un rostro con luz difusa). Busca un borde perdido.",
+          "minutes": 30
+        },
+        {
+          "title": "Copia de un maestro",
+          "source": "La copia de maestros, práctica clásica de los talleres",
+          "lesson": "Copiar a un maestro con atención es una conversación con él: ves qué simplificó, dónde puso los bordes duros, cómo agrupó los valores.\n\nCopia primero la estructura y las masas, como en tus estudios, y al comparar pregúntate por qué tomó cada decisión, no solo si tu copia se parece.",
+          "warmup": ["valor", "bordes"],
+          "topic": "master",
+          "study": "Un dibujo o una pintura de un maestro (Rembrandt, Sargent, Zorn, Menzel…) de una colección abierta de museo. Una o dos sesiones largas.",
+          "minutes": 40
+        }
+      ]
+    },
+    {
+      "title": "Color y proyecto final",
+      "goal": "Pasar del valor al color y comprobar cuánto has avanzado en el año.",
+      "weeks": [
+        {
+          "title": "Valor antes que color",
+          "source": "James Gurney, «Color and Light»",
+          "lesson": "Un color tiene tono, saturación y valor, y el valor es el que manda: si los valores están bien, la imagen funciona aunque los colores sean raros; al revés, no.\n\nPinta primero en grises o comprueba constantemente con «Grises». Después, el color local de cada objeto, y por último cómo lo cambia la luz.",
+          "warmup": ["color", "valor"],
+          "topic": "color",
+          "study": "Un bodegón sencillo con objetos de colores distintos y una sola luz. Compara con «Grises» antes de responder.",
+          "minutes": 30
+        },
+        {
+          "title": "Temperatura y paletas limitadas",
+          "source": "James Gurney, «Color and Light» (temperatura y mapeo de gamas)",
+          "lesson": "Con luz cálida (sol, bombilla) las sombras tienden a verse frías, y al revés. Esa alternancia de temperatura hace que una imagen se sienta iluminada.\n\nGurney propone elegir una gama limitada de colores antes de pintar: con menos colores, la imagen gana armonía. Empieza con tres o cuatro colores y sus mezclas.",
+          "warmup": ["color_luz", "color"],
+          "topic": "color",
+          "study": "Fotos de una escena al atardecer y otra con luz de día nublado. Elige una paleta limitada para cada una.",
+          "minutes": 30
+        },
+        {
+          "title": "Repite tus primeros estudios",
+          "source": "La revisión del propio progreso",
+          "lesson": "Vuelve al diario, busca tus estudios del primer y del segundo mes y repite dos de ellos con la misma referencia y el mismo tiempo.\n\nCompara los dos dibujos lado a lado. No mires solo si el nuevo es «más bonito»: fíjate en qué ves ahora que antes no veías. Eso es el ojo crítico que has construido este año.",
+          "warmup": ["lineas", "elipses"],
+          "topic": "proportion",
+          "study": "Las mismas referencias de tus estudios del mes 1 y del mes 2 (están en la carpeta del diario).",
+          "minutes": 25
+        },
+        {
+          "title": "Proyecto final",
+          "source": "Todo el año",
+          "lesson": "Elige un tema que te guste (un retrato, una escena, un personaje con su entorno) y hazlo con todo el proceso: referencias, miniaturas de composición y valor, construcción, valores y, si quieres, color.\n\nDedícale varias sesiones. Al terminar, haz la autocrítica completa y apunta qué vas a estudiar el año que viene.",
+          "warmup": ["lineas", "valor"],
+          "topic": "master",
+          "study": "Tu propio proyecto, con tus referencias. Guarda cada sesión en el diario para ver el proceso.",
+          "minutes": 45
+        }
+      ]
+    }
+  ]
+}

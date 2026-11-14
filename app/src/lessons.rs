@@ -232,6 +232,8 @@ impl Exercise {
 }
 
 pub struct Module {
+    /// Identificador del archivo de contenido (el programa del año se refiere a él).
+    pub id: &'static str,
     pub title: &'static str,
     pub subtitle: &'static str,
     pub lesson: &'static str,

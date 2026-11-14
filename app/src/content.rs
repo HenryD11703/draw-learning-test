@@ -389,6 +389,12 @@ fn leak(s: String) -> &'static str {
     Box::leak(s.into_boxed_str())
 }
 
+/// Ids de todos los módulos, en orden.
+#[cfg(test)]
+pub fn module_ids() -> Vec<String> {
+    modules().iter().map(|m| m.id.to_string()).collect()
+}
+
 pub fn modules() -> Vec<Module> {
     let brushes: HashSet<&str> = crate::brush::presets().iter().map(|b| b.id).collect();
     let mut module_ids = HashSet::new();
@@ -423,6 +429,7 @@ pub fn modules() -> Vec<Module> {
                 })
                 .collect();
             Module {
+                id: leak(m.id),
                 title: leak(m.title),
                 subtitle: leak(m.subtitle),
                 lesson: leak(m.lesson),
