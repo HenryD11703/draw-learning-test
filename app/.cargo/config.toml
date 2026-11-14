@@ -1,4 +1,8 @@
-# Compilación en Windows con el compilador GNU de Rust: dlltool necesita el ensamblador `as`,
-# que viene en tools/binutils. Se antepone esa carpeta al PATH de rustc.
-[env]
-PATH = { value = 'C:\Users\Henry\Documents\Craft Anything\krita\app\tools\binutils;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem', force = true }
+# Compilación en Windows con el compilador GNU de Rust.
+#
+# Algunas dependencias (windows-sys, libloading) necesitan `dlltool`, que viene en tools/binutils
+# junto con el ensamblador `as` que usa. Poner esa carpeta en el PATH desde [env] no funciona:
+# Cargo reescribe el PATH de rustc. Por eso se le pasa a rustc la ruta completa de dlltool;
+# dlltool busca `as` en su propia carpeta.
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", 'dlltool=C:\Users\Henry\Documents\Craft Anything\krita\app\tools\binutils\dlltool.exe']
