@@ -155,3 +155,30 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
 - Variaciones: cada intento construye el ejercicio con una semilla nueva (desplazamiento, escala y giro de
   las guías; posición de los puntos de fuga y tamaño de las cajas en perspectiva). Las variaciones que se
   salen del lienzo se descartan. El modo demostración usa siempre la versión de referencia.
+
+## 5. Estudio con referencia y diario (diseño propio, sin nota)
+
+El trabajo de observación (figura, cabeza, manos, bodegón, paisaje, copias de maestros, color) no se
+califica: se dibuja a partir de una foto real y se compara con herramientas, y la autocrítica la hace el
+alumno. Solo los fundamentos (líneas, elipses, perspectiva, rayado, valor y color de las escenas) siguen
+con nota automática.
+
+- Fases: preparar (soltar la foto en la ventana, elegir tema y tiempo) → dibujar (referencia a la
+  izquierda, lienzo propio a la derecha; ocultar, girar 90°, voltear, zoom con la rueda y mover arrastrando)
+  → comparar. Con tiempo elegido, al acabarse pasa sola a comparar.
+- Comparar: la referencia se coloca sobre el lienzo encajada en él (`ajuste = min(W/ancho, H/alto)`) y se
+  puede superponer con opacidad, alternar cada 0,5 s («Alternar»), mover y escalar («Alinear») y cubrir
+  con la misma rejilla de 4 × 4 que la foto. «Espejo» y «Grises» de la barra afectan a la foto y al dibujo.
+- Medir (Betty Edwards, «visión de proporciones»): la primera medida de cada lado es la unidad; cada medida
+  siguiente se expresa en unidades en la foto y en el dibujo. Diferencia = `(dibujo / foto − 1) × 100 %`;
+  verde hasta ±5 %, ámbar hasta ±12 %, rojo por encima. Las medidas de la foto se guardan en px de la
+  imagen y las del dibujo en px del lienzo, así que no cambian con el zoom.
+- Autocrítica: cuatro preguntas por tema, sacadas del método que cita cada tema (Nicolaïdes, Edwards,
+  Gurney y Dodson, Loomis, Drawabox, copia de maestros), con «Sí / A medias / No» y dos notas: lo mejor y
+  qué mejorar en el siguiente.
+- Diario: cada estudio guardado crea `Imágenes/TrazoAcademia/estudios/estudio-<segundos>/` con
+  `dibujo.png`, `referencia.png` (máx. 1600 px) y `estudio.json` (tema, minutos, respuestas y notas).
+  El diario los muestra del más nuevo al más antiguo, con filtro por tema y horas acumuladas.
+- Demostración: `TRAZO_PANTALLA=estudio` (con `TRAZO_FASE=comparar` para la comparación) usa una escena de
+  pintura como referencia; `TRAZO_DIARIO=<carpeta>` cambia la carpeta del diario y, en la comparación,
+  guarda el estudio de demostración. `TRAZO_PANTALLA=diario` abre el diario.

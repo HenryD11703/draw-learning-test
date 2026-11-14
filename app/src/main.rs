@@ -11,6 +11,7 @@ mod painting;
 mod pressure;
 mod progress;
 mod smoothing;
+mod study;
 mod theme;
 mod view;
 
