@@ -1,0 +1,9 @@
+# Solo para compilar en Windows con el toolchain GNU de Rust (x86_64-pc-windows-gnu).
+# Con el toolchain MSVC no hace falta nada de esto.
+#
+# Algunas dependencias (windows-sys, libloading) necesitan `dlltool`. Pon una copia de binutils de
+# MinGW (dlltool.exe y as.exe juntos) en app/tools/binutils, copia este archivo como
+# app/.cargo/config.toml y cambia la ruta por la tuya. Poner esa carpeta en el PATH desde [env] no
+# funciona: Cargo reescribe el PATH de rustc. dlltool busca `as` en su propia carpeta.
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", 'dlltool=C:\ruta\a\app\tools\binutils\dlltool.exe']

@@ -4,6 +4,22 @@ Valores leídos del código de Krita (libkritaui.dll, Krita x64 instalado) con G
 Las funciones citadas son direcciones dentro de `libkritaui.dll`. Lo que no viene del
 código está marcado **estimado** o **diseño propio**.
 
+Krita es software libre (GNU GPL) y su código fuente es público en
+[invent.kde.org/graphics/krita](https://invent.kde.org/graphics/krita). Las clases citadas aquí están en
+estos archivos, que sirven para comprobar cada valor sin necesidad del binario:
+
+| Clase | Archivo en el código fuente de Krita |
+|---|---|
+| `KisToolFreehandHelper` | `libs/ui/tool/kis_tool_freehand_helper.cpp` |
+| `KisSmoothingOptions` | `libs/ui/tool/kis_smoothing_options.cpp` |
+| `KisSpeedSmoother` | `libs/ui/tool/kis_speed_smoother.cpp` |
+| `KisPaintingInformationBuilder` | `libs/ui/tool/kis_painting_information_builder.cpp` |
+| `KisConfig` | `libs/ui/kis_config.cc` |
+| `KisCubicCurve` | `libs/image/kis_cubic_curve.cpp` |
+
+Este proyecto reimplementa ese comportamiento en Rust y, por eso, se distribuye con la misma familia de
+licencias (GPL-3.0-or-later; ver `LICENSE` en la raíz del repositorio).
+
 ## 1. Suavizado del trazo (KisSmoothingOptions / KisToolFreehandHelper)
 
 | Valor | Krita | Fuente |
