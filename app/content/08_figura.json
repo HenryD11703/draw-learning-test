@@ -717,7 +717,7 @@
     {
       "id": "fig06",
       "title": "Gesto: caminando",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Una pierna adelante y el brazo contrario también: busca ese cruce.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Una pierna adelante y el brazo contrario también: busca ese cruce.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -818,7 +818,7 @@
     {
       "id": "fig07",
       "title": "Gesto: alcanzando",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se estira hacia la mano levantada: empieza por esa línea larga.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se estira hacia la mano levantada: empieza por esa línea larga.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -919,7 +919,7 @@
     {
       "id": "fig08",
       "title": "Gesto: contrapposto",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El peso cae en una pierna: la cadera de ese lado sube y los hombros se inclinan al revés.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El peso cae en una pierna: la cadera de ese lado sube y los hombros se inclinan al revés.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1020,7 +1020,7 @@
     {
       "id": "fig09",
       "title": "Gesto: sentado",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El torso se inclina hacia delante y las piernas forman un ángulo recto: fíjate en el triángulo que dibujan.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. El torso se inclina hacia delante y las piernas forman un ángulo recto: fíjate en el triángulo que dibujan.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1121,7 +1121,7 @@
     {
       "id": "fig10",
       "title": "Gesto: corriendo",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se inclina hacia delante: la línea de acción va de la pierna de atrás a la cabeza.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Todo el cuerpo se inclina hacia delante: la línea de acción va de la pierna de atrás a la cabeza.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1222,7 +1222,7 @@
     {
       "id": "fig11",
       "title": "Gesto: lanzando",
-      "goal": "Copia la pose en 60 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Brazos y piernas se abren en direcciones opuestas: la pose es una gran X.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Brazos y piernas se abren en direcciones opuestas: la pose es una gran X.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1323,7 +1323,7 @@
     {
       "id": "fig12",
       "title": "Gesto rápido: agachado",
-      "goal": "Copia la pose en 30 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: solo la curva de la espalda, la cabeza y la dirección de brazos y piernas.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: solo la curva de la espalda, la cabeza y la dirección de brazos y piernas.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1424,7 +1424,7 @@
     {
       "id": "fig13",
       "title": "Gesto rápido: contrapposto",
-      "goal": "Copia la pose en 30 segundos, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: la línea de acción, la inclinación de hombros y caderas, y nada más.",
+      "goal": "Copia la pose antes de que se acabe el tiempo, del tamaño que quieras. Empieza por la línea de acción, luego cabeza, hombros y caderas, y por último las extremidades. Treinta segundos: la línea de acción, la inclinación de hombros y caderas, y nada más.",
       "krita_tip": "Para gestos rápidos en Krita, quita el suavizado o usa el Básico: el Estabilizador frena el trazo y mata el movimiento.",
       "brush": "lapiz",
       "smoothing": "Basico",
@@ -1525,7 +1525,7 @@
     {
       "id": "fig14",
       "title": "Maniquí en pose",
-      "goal": "Copia el maniquí lanzando, con sus volúmenes: caja torácica, pelvis y articulaciones. Tienes dos minutos.",
+      "goal": "Copia el maniquí lanzando, con sus volúmenes: caja torácica, pelvis y articulaciones, antes de que se acabe el tiempo.",
       "krita_tip": "Para construir figuras en Krita, haz el maniquí con el pincel por defecto y la figura final con el lápiz o la tinta encima.",
       "brush": "lapiz",
       "smoothing": "Basico",

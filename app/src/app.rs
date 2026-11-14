@@ -9,6 +9,7 @@ use crate::pressure::{MouseMode, PressureSettings, SpeedSmoother, simulated};
 use crate::progress::Progress;
 use crate::smoothing::{PInfo, Segment, SmoothingType, Smoother};
 use crate::theme::{self, Btn, Icon};
+use crate::view::{View, Xf};
 use egui::{
     Align2, Color32, ColorImage, Event, FontId, Pos2, Rect, RichText, Sense, Shape, Stroke, StrokeKind, TextureHandle, TextureOptions, Ui,
     pos2, vec2,
@@ -36,6 +37,7 @@ fn kind_info(kind: &Kind) -> (Icon, &'static str) {
 enum Screen {
     Home,
     Map,
+    Gallery,
     Exercise(usize, usize),
     Free,
     Pressure,
@@ -97,6 +99,36 @@ pub struct TrazoApp {
     map_focus: Option<usize>,
     /// Se acabó el tiempo del ejercicio: ya se calificó y no se puede seguir dibujando.
     time_up: bool,
+    view: View,
+    /// Área del lienzo en el último fotograma (para los atajos de zoom).
+    last_area: Rect,
+    grid: bool,
+    thirds: bool,
+    /// El lienzo del otro modo: si `canvas` es el de los ejercicios, aquí espera el libre, y al revés.
+    stash: Canvas,
+    canvas_is_free: bool,
+    /// Imagen de referencia del lienzo libre (se carga arrastrando un archivo a la ventana).
+    reference: Option<TextureHandle>,
+    gallery: Vec<GalleryItem>,
+    session: Option<Session>,
+}
+
+/// Un dibujo guardado, con su miniatura cuando ya se cargó.
+struct GalleryItem {
+    path: std::path::PathBuf,
+    name: String,
+    tex: Option<TextureHandle>,
+    failed: bool,
+}
+
+/// Sesión de gestos: varias poses seguidas, cada una con el mismo tiempo.
+struct Session {
+    queue: Vec<(usize, usize)>,
+    secs: f32,
+    total: usize,
+    scores: Vec<f32>,
+    /// Cuándo pasar a la siguiente pose tras acabarse el tiempo.
+    next_at: Option<f64>,
 }
 
 impl TrazoApp {
@@ -137,6 +169,15 @@ impl TrazoApp {
             show_marks: true,
             map_focus: None,
             time_up: false,
+            view: View::default(),
+            last_area: Rect::from_min_size(pos2(0.0, 0.0), vec2(W as f32, H as f32)),
+            grid: false,
+            thirds: false,
+            stash: Canvas::new_free(),
+            canvas_is_free: false,
+            reference: None,
+            gallery: Vec::new(),
+            session: None,
         }
     }
 
@@ -236,6 +277,7 @@ impl TrazoApp {
         let built = self.modules[m].exercises[e].build(seed);
         self.modules[m].exercises[e].kind = built;
         let ex = self.modules[m].exercises[e].clone();
+        self.use_canvas(false);
         self.screen = Screen::Exercise(m, e);
         self.grade = None;
         self.clear_result();
@@ -271,7 +313,17 @@ impl TrazoApp {
         }
     }
 
+    /// Pone en `canvas` el lienzo libre o el de los ejercicios, sin perder el otro.
+    fn use_canvas(&mut self, free: bool) {
+        if self.canvas_is_free != free {
+            std::mem::swap(&mut self.canvas, &mut self.stash);
+            self.canvas_is_free = free;
+            self.canvas.mark_all();
+        }
+    }
+
     fn open_free(&mut self) {
+        self.use_canvas(true);
         self.screen = Screen::Free;
         self.grade = None;
         self.clear_result();
@@ -343,10 +395,80 @@ impl TrazoApp {
 
     /// Ejercicios con tiempo límite: al acabarse, califica lo dibujado y bloquea el lienzo.
     fn check_timer(&mut self) {
-        let Some(limit) = self.current_exercise().and_then(|e| e.time_limit) else { return };
+        let Some(limit) = self.time_limit() else { return };
         if !self.time_up && self.now_ms() - self.ex_started >= limit as f64 * 1000.0 {
             self.time_up = true;
             self.grade_now();
+        }
+    }
+
+    /// Tiempo del ejercicio actual: el de la sesión de gestos si hay una, o el del propio ejercicio.
+    fn time_limit(&self) -> Option<f32> {
+        let ex = self.current_exercise()?;
+        match &self.session {
+            Some(s) => Some(s.secs),
+            None => ex.time_limit,
+        }
+    }
+
+    /// Empieza una sesión con `count` poses al azar de los ejercicios de gesto, de `secs` segundos.
+    fn start_session(&mut self, ctx: &egui::Context, count: usize, secs: f32) {
+        let mut pool: Vec<(usize, usize)> = Vec::new();
+        for (m, md) in self.modules.iter().enumerate() {
+            for (e, ex) in md.exercises.iter().enumerate() {
+                if ex.time_limit.is_some_and(|t| t >= 30.0) && matches!(ex.kind, Kind::Copy { .. }) {
+                    pool.push((m, e));
+                }
+            }
+        }
+        if pool.is_empty() {
+            return;
+        }
+        // Barajar (Fisher-Yates) con la misma fuente de semillas que las variaciones.
+        let mut z = self.next_seed();
+        for i in (1..pool.len()).rev() {
+            z = z.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+            pool.swap(i, (z >> 33) as usize % (i + 1));
+        }
+        let mut queue: Vec<(usize, usize)> = pool.iter().cycle().take(count).copied().collect();
+        queue.reverse();
+        let first = queue.pop().expect("al menos una pose");
+        self.session = Some(Session { queue, secs, total: count, scores: Vec::new(), next_at: None });
+        self.open_exercise(ctx, first.0, first.1);
+    }
+
+    /// Avanza la sesión de gestos: al acabarse el tiempo de una pose, espera un momento y abre la
+    /// siguiente; al terminar, deja un resumen.
+    fn session_step(&mut self, ctx: &egui::Context) {
+        if self.session.is_none() {
+            return;
+        }
+        if !matches!(self.screen, Screen::Exercise(..)) {
+            self.session = None;
+            return;
+        }
+        if !self.time_up {
+            return;
+        }
+        let now = self.now_ms();
+        let total = self.grade.as_ref().map_or(0.0, |g| g.total);
+        let s = self.session.as_mut().expect("sesión");
+        let at = *s.next_at.get_or_insert_with(|| {
+            s.scores.push(total);
+            now + 2500.0
+        });
+        if now < at {
+            return;
+        }
+        s.next_at = None;
+        match s.queue.pop() {
+            Some((m, e)) => self.open_exercise(ctx, m, e),
+            None => {
+                let n = s.scores.len();
+                let mean = s.scores.iter().sum::<f32>() / n.max(1) as f32;
+                self.message = Some((format!("Sesión terminada: {n} poses, media {mean:.0}/100."), now));
+                self.session = None;
+            }
         }
     }
 
@@ -379,10 +501,10 @@ impl TrazoApp {
         self.last_force.is_some_and(|(_, t)| self.now_ms() - t < 2000.0)
     }
 
-    fn handle_canvas_input(&mut self, ui: &Ui, resp: &egui::Response, rect: Rect) {
-        let scale = rect.width() / W as f32;
-        self.smoother.zoom = scale;
-        let to_canvas = |p: Pos2| pos2((p.x - rect.min.x) / scale, (p.y - rect.min.y) / scale);
+    /// `allow`: falso mientras se mueve o gira la vista (no se empieza a dibujar).
+    fn handle_canvas_input(&mut self, ui: &Ui, resp: &egui::Response, xf: Xf, allow: bool) {
+        self.smoother.zoom = xf.scale;
+        let to_canvas = |p: Pos2| xf.to_canvas(p);
         let now = self.now_ms();
         let (moves, force) = ui.ctx().input(|i| {
             let mut moves = Vec::new();
@@ -398,7 +520,7 @@ impl TrazoApp {
         });
         let brush = self.brushes[self.brush].clone();
         let mut segs: Vec<Segment> = Vec::new();
-        if resp.drag_started_by(egui::PointerButton::Primary) && !self.time_up {
+        if resp.drag_started_by(egui::PointerButton::Primary) && !self.time_up && allow {
             if let Some(p) = resp.interact_pointer_pos() {
                 self.speed.reset();
                 let cp = self.magnet(to_canvas(p));
@@ -447,7 +569,13 @@ impl TrazoApp {
                 Ok("guia") => self.screen = Screen::Guide,
                 Ok("libre") => self.open_free(),
                 Ok("mapa") => self.screen = Screen::Map,
+                Ok("galeria") => self.screen = Screen::Gallery,
+                Ok("sesion") => self.start_session(ctx, 5, 60.0),
                 _ => {}
+            }
+            // TRAZO_VISTA=giro o espejo: vista girada (y volteada) para comprobar la transformación.
+            if let Ok(v) = std::env::var("TRAZO_VISTA") {
+                self.view = View { zoom: 1.2, pan: vec2(-40.0, 10.0), rot: 0.35, mirror: v == "espejo" };
             }
         }
         let Ok(id) = std::env::var("TRAZO_DEMO") else { return };
@@ -563,6 +691,45 @@ impl TrazoApp {
         if eraser {
             self.toggle_eraser();
         }
+        // Vista del lienzo: solo en las pantallas con lienzo.
+        if !matches!(self.screen, Screen::Exercise(..) | Screen::Free) {
+            return;
+        }
+        let (mirror, zin, zout, fit, left, right, straight) = ctx.input(|i| {
+            let plain = !i.modifiers.command && !i.modifiers.alt;
+            (
+                plain && i.key_pressed(egui::Key::M),
+                plain && (i.key_pressed(egui::Key::Plus) || i.key_pressed(egui::Key::Equals)),
+                plain && i.key_pressed(egui::Key::Minus),
+                plain && i.key_pressed(egui::Key::Num0),
+                plain && i.key_pressed(egui::Key::Num4),
+                plain && i.key_pressed(egui::Key::Num6),
+                plain && i.key_pressed(egui::Key::Num5),
+            )
+        });
+        let area = self.last_area;
+        if mirror {
+            self.view.mirror = !self.view.mirror;
+        }
+        if zin {
+            self.view.zoom_at(area, area.center(), 1.25);
+        }
+        if zout {
+            self.view.zoom_at(area, area.center(), 1.0 / 1.25);
+        }
+        if fit {
+            self.view = View::default();
+        }
+        let c = area.center() + self.view.pan;
+        if left {
+            self.view.rotate_at(area, c, -15f32.to_radians());
+        }
+        if right {
+            self.view.rotate_at(area, c, 15f32.to_radians());
+        }
+        if straight {
+            self.view.rotate_at(area, c, -self.view.rot);
+        }
     }
 
     fn toggle_eraser(&mut self) {
@@ -592,6 +759,7 @@ impl TrazoApp {
                         (Screen::Home, Icon::Home, "Inicio"),
                         (Screen::Map, Icon::Map, "Niveles"),
                         (Screen::Free, Icon::Brush, "Lienzo libre"),
+                        (Screen::Gallery, Icon::Image, "Galería"),
                         (Screen::Pressure, Icon::Pressure, "Presión"),
                         (Screen::Guide, Icon::Book, "Guía de Krita"),
                     ];
@@ -620,6 +788,7 @@ impl TrazoApp {
         let ctx = ui.ctx().clone();
         let mut open: Option<(usize, usize)> = None;
         let mut go: Option<Screen> = None;
+        let mut start: Option<(usize, f32)> = None;
         egui::CentralPanel::default().frame(egui::Frame::new().fill(theme::BG).inner_margin(28)).show(ui, |ui| {
             egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
                 centered(ui, 1080.0, |ui| {
@@ -661,22 +830,27 @@ impl TrazoApp {
                     }
                     ui.add_space(20.0);
                     theme::section(ui, "Practica a tu aire");
-                    ui.columns(3, |cols| {
-                        if action_card(&mut cols[0], Icon::Brush, "Lienzo libre", "Dibuja sin guías con los pinceles y el suavizado de Krita.").clicked() {
+                    ui.columns(4, |cols| {
+                        if action_card(&mut cols[0], Icon::Brush, "Lienzo libre", "Dibuja sin guías, con capas, referencia y rejilla.").clicked() {
                             go = Some(Screen::Free);
                         }
-                        if action_card(&mut cols[1], Icon::Pressure, "Calibrar la presión", "Ajusta la curva del lápiz a tu mano, como en los ajustes de tableta de Krita.").clicked() {
-                            go = Some(Screen::Pressure);
+                        if action_card(&mut cols[1], Icon::Play, "Sesión de gestos", "Cinco poses al azar, un minuto cada una.").clicked() {
+                            start = Some((5, 60.0));
                         }
-                        if action_card(&mut cols[2], Icon::Book, "Guía de Krita", "Dónde está cada herramienta y cada opción en Krita.").clicked() {
-                            go = Some(Screen::Guide);
+                        if action_card(&mut cols[2], Icon::Play, "Gestos rápidos", "Ocho poses al azar, treinta segundos cada una.").clicked() {
+                            start = Some((8, 30.0));
+                        }
+                        if action_card(&mut cols[3], Icon::Pressure, "Calibrar la presión", "Ajusta la curva del lápiz a tu mano, como en Krita.").clicked() {
+                            go = Some(Screen::Pressure);
                         }
                     });
                     ui.add_space(12.0);
                 });
             });
         });
-        if let Some((m, e)) = open {
+        if let Some((n, secs)) = start {
+            self.start_session(&ctx, n, secs);
+        } else if let Some((m, e)) = open {
             self.open_exercise(&ctx, m, e);
         } else if let Some(s) = go {
             match s {
@@ -909,7 +1083,8 @@ impl TrazoApp {
                             self.canvas.undo();
                         }
                     });
-                    if theme::button_ex(ui, Some(Icon::Trash), "Borrar todo", Btn::Outline, w, true).clicked() {
+                    let clear_label = if self.screen == Screen::Free { "Vaciar la capa" } else { "Borrar todo" };
+                    if theme::button_ex(ui, Some(Icon::Trash), clear_label, Btn::Outline, w, true).clicked() {
                         if let Some(r) = &self.paint_ref {
                             let start = starting_canvas(r.kind);
                             self.canvas.reset_with(start);
@@ -939,14 +1114,18 @@ impl TrazoApp {
                             theme::chip(ui, Some(icon), kind, theme::TEXT_2);
                         });
                         ui.add_space(2.0);
+                        if let Some(sn) = &self.session {
+                            let n = sn.total - sn.queue.len();
+                            ui.label(theme::strong(format!("Sesión de gestos: pose {n} de {}", sn.total), theme::BODY).color(GOLD));
+                        }
                         ui.label(theme::caption(format!("Ejercicio {} de {}", e + 1, count)));
                         ui.label(theme::strong(ex.title, theme::TITLE));
                         ui.label(RichText::new(ex.goal).size(theme::BODY).color(theme::TEXT));
-                        if let Some(sec) = ex.time_limit {
+                        if let Some(sec) = self.time_limit() {
                             let left = (sec as f64 - (self.now_ms() - self.ex_started) / 1000.0).max(0.0);
                             if self.time_up {
                                 ui.label(theme::strong("¡Tiempo!", theme::LEAD).color(GOLD));
-                                ui.label(theme::caption("Pulsa Repetir para otra pose."));
+                                ui.label(theme::caption(if self.session.is_some() { "La siguiente pose sale en un momento." } else { "Pulsa Repetir para otra pose." }));
                             } else {
                                 ui.horizontal(|ui| {
                                     theme::icon_widget(ui, Icon::Play, 16.0, GOLD);
@@ -1013,7 +1192,10 @@ impl TrazoApp {
                         if theme::button_ex(ui, Some(Icon::Save), "Guardar como PNG", Btn::Primary, w, false).clicked() {
                             self.save_png();
                         }
-                        ui.label(theme::caption("Se guarda en Imágenes › TrazoAcademia."));
+                        ui.label(theme::caption("Se guarda en Imágenes › TrazoAcademia y aparece en la Galería."));
+                        ui.add_space(4.0);
+                        self.layers_ui(ui);
+                        self.reference_ui(ui);
                         ui.add_space(8.0);
                         egui::CollapsingHeader::new(theme::strong("Asistente de trazo", theme::BODY)).id_salt("suavizado_libre").default_open(true).show(ui, |ui| {
                             self.smoothing_ui(ui, false);
@@ -1040,12 +1222,16 @@ impl TrazoApp {
         self.assist_panel(ui, rw);
         let mut nav: Option<(usize, usize)> = None;
         let mut back = false;
-        egui::CentralPanel::default().frame(egui::Frame::new().fill(theme::STAGE).inner_margin(16)).show(ui, |ui| {
-            if let Screen::Exercise(m, e) = self.screen {
-                ui.horizontal(|ui| {
+        egui::CentralPanel::default().frame(egui::Frame::new().fill(theme::STAGE).inner_margin(12)).show(ui, |ui| {
+            ui.horizontal(|ui| {
+                if let Screen::Exercise(..) = self.screen {
                     if theme::button(ui, Some(Icon::Map), "Niveles", Btn::Ghost).clicked() {
                         back = true;
                     }
+                    ui.add_space(8.0);
+                }
+                self.view_controls(ui);
+                if let Screen::Exercise(m, e) = self.screen {
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         let i = self.flat_index(m, e);
                         let next = self.by_flat(i + 1).filter(|&(nm, ne)| self.unlocked(nm, ne));
@@ -1061,22 +1247,24 @@ impl TrazoApp {
                             }
                         });
                     });
-                });
-                ui.add_space(6.0);
-            }
-            let avail = ui.available_size();
-            let scale = (avail.x / W as f32).min(avail.y / H as f32).max(0.1);
-            let size = vec2(W as f32 * scale, H as f32 * scale);
-            let rect = Rect::from_center_size(ui.available_rect_before_wrap().center(), size);
-            let resp = ui.interact(rect, egui::Id::unique("lienzo"), Sense::drag());
-            self.handle_canvas_input(ui, &resp, rect);
+                }
+            });
+            ui.add_space(4.0);
+            let area = ui.available_rect_before_wrap();
+            self.last_area = area;
+            let resp = ui.interact(area, egui::Id::unique("lienzo"), Sense::drag());
+            let navigating = self.navigate_view(ui, &resp, area);
+            let xf = self.view.xf(area);
+            self.handle_canvas_input(ui, &resp, xf, !navigating);
             let tex = self.canvas.texture(&ctx).id();
-            let painter = ui.painter_at(rect.expand(4.0));
-            let uv = Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0));
-            painter.rect_filled(rect.expand(1.0), 0, Color32::from_gray(12));
-            painter.image(tex, rect, uv, Color32::WHITE);
+            let painter = ui.painter_at(area);
+            painter.add(xf.image(tex));
+            painter.add(xf.frame(Color32::TRANSPARENT, Stroke::new(1.0, Color32::from_gray(45))));
             if let Some(r) = &self.paint_ref {
-                painter.image(r.outline.id(), rect, uv, Color32::WHITE);
+                painter.add(xf.image(r.outline.id()));
+            }
+            if self.screen == Screen::Free {
+                self.draw_free_aids(&painter, &xf);
             }
             // Después de calificar se muestran la guía y las ayudas para comparar.
             let reveal = self.grade.is_some() && self.show_marks;
@@ -1085,16 +1273,16 @@ impl TrazoApp {
                 match &ex.kind {
                     Kind::Trace { guides, .. } => {
                         let size = self.brushes[self.brush].size * self.canvas.size_mult;
-                        draw_guides(&painter, guides, rect, scale, size, self.guide_visible() || reveal, reveal);
+                        draw_guides(&painter, guides, &xf, size, self.guide_visible() || reveal, reveal);
                         if ex.numbered && (self.guide_visible() || reveal) {
-                            draw_order(&painter, guides, rect, scale);
+                            draw_order(&painter, guides, &xf);
                         }
                     }
-                    Kind::Hatch { regions, .. } => draw_hatch(&painter, regions, rect, scale),
-                    Kind::Points { guides, .. } if aids => draw_points(&painter, guides, rect, scale),
+                    Kind::Hatch { regions, .. } => draw_hatch(&painter, regions, &xf),
+                    Kind::Points { guides, .. } if aids => draw_points(&painter, guides, &xf),
                     Kind::Perspective(scene) => {
                         let hints = aids && ((self.show_guide && scene.hints) || reveal);
-                        draw_scene(&painter, scene, rect, scale, aids, hints);
+                        draw_scene(&painter, scene, &xf, aids, hints);
                     }
                     _ => {}
                 }
@@ -1105,23 +1293,25 @@ impl TrazoApp {
                         continue;
                     }
                     let t = ((sev - 0.35) / 0.65).clamp(0.0, 1.0);
-                    painter.circle_filled(rect.min + q.to_vec2() * scale, 2.5 + 2.0 * t, mix(GOLD, theme::BAD, t));
+                    painter.circle_filled(xf.to_screen(*q), 2.5 + 2.0 * t, mix(GOLD, theme::BAD, t));
                 }
             }
             // Cursor del pincel y posición estabilizada.
-            if let Some(hp) = resp.hover_pos().or(resp.interact_pointer_pos()) {
-                let d = (self.brushes[self.brush].size * self.canvas.size_mult * scale).max(4.0);
-                painter.circle_stroke(hp, d * 0.5, Stroke::new(1.0, Color32::from_gray(60)));
-                if let Some(bp) = self.smoother.brush_position() {
-                    if self.smoother.opts.kind == SmoothingType::Estabilizador && self.drawing {
-                        let sp = rect.min + bp.to_vec2() * scale;
-                        painter.line_segment([sp, hp], Stroke::new(1.0, ACCENT.gamma_multiply(0.7)));
-                        painter.circle_filled(sp, 3.0, ACCENT);
+            if !navigating {
+                if let Some(hp) = resp.hover_pos().or(resp.interact_pointer_pos()) {
+                    let d = (self.brushes[self.brush].size * self.canvas.size_mult * xf.scale).max(4.0);
+                    painter.circle_stroke(hp, d * 0.5, Stroke::new(1.0, Color32::from_gray(60)));
+                    if let Some(bp) = self.smoother.brush_position() {
+                        if self.smoother.opts.kind == SmoothingType::Estabilizador && self.drawing {
+                            let sp = xf.to_screen(bp);
+                            painter.line_segment([sp, hp], Stroke::new(1.0, ACCENT.gamma_multiply(0.7)));
+                            painter.circle_filled(sp, 3.0, ACCENT);
+                        }
                     }
                 }
             }
             if resp.hovered() {
-                ctx.set_cursor_icon(egui::CursorIcon::Crosshair);
+                ctx.set_cursor_icon(if navigating { egui::CursorIcon::Grabbing } else { egui::CursorIcon::Crosshair });
             }
         });
         if back {
@@ -1129,6 +1319,125 @@ impl TrazoApp {
         }
         if let Some((m, e)) = nav {
             self.open_exercise(&ctx, m, e);
+        }
+    }
+
+    /// Mover (espacio o botón central + arrastrar), girar (Mayús + espacio + arrastrar) y acercar
+    /// (rueda) la vista. Devuelve si hay un gesto de vista en curso, para no dibujar mientras.
+    fn navigate_view(&mut self, ui: &Ui, resp: &egui::Response, area: Rect) -> bool {
+        let (space, shift, wheel, pinch, delta, middle, ptr) = ui.input(|i| {
+            (
+                i.key_down(egui::Key::Space),
+                i.modifiers.shift,
+                i.smooth_scroll_delta().y,
+                i.zoom_delta(),
+                i.pointer.delta(),
+                i.pointer.middle_down(),
+                i.pointer.hover_pos(),
+            )
+        });
+        let typing = ui.ctx().egui_wants_keyboard_input();
+        // Con el ratón sobre el lienzo, el foco pasa a él: así la barra espaciadora no pulsa el
+        // último botón usado.
+        if resp.hovered() && !typing {
+            resp.request_focus();
+        }
+        if resp.hovered() {
+            if let Some(at) = ptr {
+                if wheel != 0.0 {
+                    self.view.zoom_at(area, at, (wheel * 0.0015).exp());
+                }
+                if pinch != 1.0 {
+                    self.view.zoom_at(area, at, pinch);
+                }
+            }
+        }
+        let gesture = ((space && !typing) || middle) && !self.drawing;
+        if gesture && resp.dragged() {
+            if space && shift {
+                if let Some(p) = ptr {
+                    let c = area.center() + self.view.pan;
+                    let (a0, a1) = ((p - delta - c).angle(), (p - c).angle());
+                    let mut da = a1 - a0;
+                    if da > std::f32::consts::PI {
+                        da -= std::f32::consts::TAU;
+                    } else if da < -std::f32::consts::PI {
+                        da += std::f32::consts::TAU;
+                    }
+                    self.view.rotate_at(area, c, da);
+                }
+            } else {
+                self.view.pan += delta;
+            }
+        }
+        gesture
+    }
+
+    /// Controles de la vista sobre el lienzo.
+    fn view_controls(&mut self, ui: &mut Ui) {
+        let area = self.last_area;
+        if theme::button(ui, None, "−", Btn::Ghost).on_hover_text("Alejar (tecla −)").clicked() {
+            self.view.zoom_at(area, area.center(), 1.0 / 1.25);
+        }
+        ui.label(theme::caption(format!("{:.0} %", self.view.zoom * 100.0)));
+        if theme::button(ui, None, "+", Btn::Ghost).on_hover_text("Acercar (tecla +)").clicked() {
+            self.view.zoom_at(area, area.center(), 1.25);
+        }
+        if self.view.rot != 0.0 {
+            ui.label(theme::caption(format!("{:.0}°", self.view.degrees())));
+        }
+        let mirror = if self.view.mirror { Btn::Selected } else { Btn::Ghost };
+        if theme::button(ui, None, "Espejo", mirror)
+            .on_hover_text("Voltear la vista para ver los errores con ojos frescos (M, como en Krita)")
+            .clicked()
+        {
+            self.view.mirror = !self.view.mirror;
+        }
+        if self.view != View::default()
+            && theme::button(ui, None, "Ajustar", Btn::Ghost).on_hover_text("Ver el lienzo entero y derecho (tecla 0)").clicked()
+        {
+            self.view = View::default();
+        }
+        if self.screen == Screen::Free {
+            ui.add_space(8.0);
+            let g = if self.grid { Btn::Selected } else { Btn::Ghost };
+            if theme::button(ui, None, "Rejilla", g).on_hover_text("Cuadrícula de construcción (no se dibuja en la imagen)").clicked() {
+                self.grid = !self.grid;
+            }
+            let t = if self.thirds { Btn::Selected } else { Btn::Ghost };
+            if theme::button(ui, None, "Tercios", t).on_hover_text("Líneas de los tercios, para componer").clicked() {
+                self.thirds = !self.thirds;
+            }
+        }
+        ui.label(theme::caption("Espacio: mover · Mayús + espacio: girar · rueda: zoom")).on_hover_text(
+            "Espacio + arrastrar mueve la vista y Mayús + espacio + arrastrar la gira, como en Krita. El botón central del ratón también mueve. Teclas 4 y 6: girar 15°; 5: enderezar.",
+        );
+    }
+
+    /// Rejilla y tercios del lienzo libre (solo en pantalla, no en la imagen).
+    fn draw_free_aids(&self, p: &egui::Painter, xf: &Xf) {
+        let (w, h) = (W as f32, H as f32);
+        if self.grid {
+            let col = Stroke::new(1.0, Color32::from_rgba_unmultiplied(70, 150, 230, 45));
+            let step = 40.0;
+            let mut x = step;
+            while x < w {
+                p.line_segment([xf.to_screen(pos2(x, 0.0)), xf.to_screen(pos2(x, h))], col);
+                x += step;
+            }
+            let mut y = step;
+            while y < h {
+                p.line_segment([xf.to_screen(pos2(0.0, y)), xf.to_screen(pos2(w, y))], col);
+                y += step;
+            }
+        }
+        if self.thirds {
+            let col = Stroke::new(1.5, Color32::from_rgba_unmultiplied(230, 120, 70, 110));
+            for k in 1..3 {
+                let (x, y) = (w * k as f32 / 3.0, h * k as f32 / 3.0);
+                p.line_segment([xf.to_screen(pos2(x, 0.0)), xf.to_screen(pos2(x, h))], col);
+                p.line_segment([xf.to_screen(pos2(0.0, y)), xf.to_screen(pos2(w, y))], col);
+            }
         }
     }
 
@@ -1169,14 +1478,214 @@ impl TrazoApp {
         }
     }
 
+    /// Panel de capas del lienzo libre.
+    fn layers_ui(&mut self, ui: &mut Ui) {
+        theme::section(ui, "Capas");
+        let n = self.canvas.layers.len();
+        for k in (0..n).rev() {
+            ui.horizontal(|ui| {
+                let mut vis = self.canvas.layers[k].visible;
+                if ui.checkbox(&mut vis, "").on_hover_text("Mostrar u ocultar la capa").changed() {
+                    self.canvas.layers[k].visible = vis;
+                    self.canvas.mark_all();
+                }
+                let name = self.canvas.layers[k].name.clone();
+                let kind = if self.canvas.active == Some(k) { Btn::Selected } else { Btn::Ghost };
+                let w = ui.available_width();
+                if theme::button_ex(ui, None, &name, kind, w, true).clicked() {
+                    self.canvas.active = Some(k);
+                }
+            });
+        }
+        ui.horizontal(|ui| {
+            ui.add_space(26.0);
+            let kind = if self.canvas.active.is_none() { Btn::Selected } else { Btn::Ghost };
+            let w = ui.available_width();
+            if theme::button_ex(ui, None, "Fondo (papel)", kind, w, true).on_hover_text("La capa de abajo, opaca").clicked() {
+                self.canvas.active = None;
+            }
+        });
+        ui.horizontal_wrapped(|ui| {
+            if theme::button(ui, None, "+ Capa", Btn::Outline).on_hover_text("Capa nueva encima de la elegida").clicked() {
+                self.canvas.add_layer();
+            }
+            let has = self.canvas.active.is_some();
+            ui.add_enabled_ui(has, |ui| {
+                if theme::button(ui, None, "Subir", Btn::Ghost).clicked() {
+                    self.canvas.move_active_layer(true);
+                }
+                if theme::button(ui, None, "Bajar", Btn::Ghost).clicked() {
+                    self.canvas.move_active_layer(false);
+                }
+                if theme::button(ui, None, "Eliminar", Btn::Ghost).on_hover_text("Quitar la capa elegida").clicked() {
+                    self.canvas.remove_active_layer();
+                }
+            });
+        });
+        if let Some(k) = self.canvas.active {
+            ui.label(theme::caption("Opacidad de la capa"));
+            ui.spacing_mut().slider_width = (ui.available_width() - 66.0).max(60.0);
+            if ui.add(egui::Slider::new(&mut self.canvas.layers[k].opacity, 0.0..=1.0).max_decimals(2)).changed() {
+                self.canvas.mark_all();
+            }
+        }
+        ui.label(theme::caption("Como en Krita: boceto en una capa con poca opacidad y la línea final en otra encima. Deshacer afecta a la capa elegida."));
+    }
+
+    /// Imagen de referencia del lienzo libre.
+    fn reference_ui(&mut self, ui: &mut Ui) {
+        theme::section(ui, "Referencia");
+        match &self.reference {
+            Some(tex) => {
+                let w = ui.available_width();
+                let [tw, th] = tex.size();
+                let h = w * th as f32 / tw.max(1) as f32;
+                ui.add(egui::Image::new((tex.id(), vec2(w, h))).corner_radius(8));
+                if theme::button(ui, None, "Quitar la referencia", Btn::Ghost).clicked() {
+                    self.reference = None;
+                }
+            }
+            None => {
+                ui.label(theme::caption("Arrastra una imagen (PNG o JPG) a la ventana para tenerla aquí mientras dibujas, como la herramienta de imagen de referencia de Krita."));
+            }
+        }
+    }
+
+    /// Archivos soltados en la ventana: en el lienzo libre se usan como referencia.
+    fn handle_drops(&mut self, ctx: &egui::Context) {
+        let files = ctx.input(|i| i.raw.dropped_files.clone());
+        let Some(f) = files.first() else { return };
+        let img = image::open(f.path()).ok().or_else(|| f.bytes().ok().and_then(|b| image::load_from_memory(&b).ok()));
+        let now = self.now_ms();
+        match img {
+            Some(img) => {
+                // Limitar el tamaño de la textura: la referencia se ve pequeña en el panel.
+                let img = img.thumbnail(1600, 1600).to_rgba8();
+                self.reference = Some(ctx.load_texture("referencia_libre", color_image(&img), TextureOptions::LINEAR));
+                if self.screen != Screen::Free {
+                    self.open_free();
+                }
+                self.message = Some(("Referencia cargada en el lienzo libre.".into(), now));
+            }
+            None => self.message = Some(("No pude abrir ese archivo como imagen (usa PNG o JPG).".into(), now)),
+        }
+    }
+
+    /// Lee la carpeta de dibujos guardados, del más nuevo al más antiguo.
+    fn load_gallery(&mut self) {
+        let mut items: Vec<(std::time::SystemTime, std::path::PathBuf)> = std::fs::read_dir(drawings_dir())
+            .map(|rd| {
+                rd.filter_map(|e| e.ok())
+                    .map(|e| e.path())
+                    .filter(|p| p.extension().is_some_and(|x| x.eq_ignore_ascii_case("png")))
+                    .map(|p| (std::fs::metadata(&p).and_then(|m| m.modified()).unwrap_or(std::time::UNIX_EPOCH), p))
+                    .collect()
+            })
+            .unwrap_or_default();
+        items.sort_by(|a, b| b.0.cmp(&a.0));
+        self.gallery = items
+            .into_iter()
+            .map(|(_, path)| GalleryItem {
+                name: path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_default(),
+                path,
+                tex: None,
+                failed: false,
+            })
+            .collect();
+    }
+
+    fn gallery_screen(&mut self, ui: &mut Ui) {
+        let ctx = ui.ctx().clone();
+        if self.gallery.is_empty() {
+            self.load_gallery();
+        }
+        // Miniaturas poco a poco, para no congelar la ventana con muchos dibujos.
+        for it in self.gallery.iter_mut().filter(|g| g.tex.is_none() && !g.failed).take(2) {
+            match image::open(&it.path) {
+                Ok(img) => {
+                    let thumb = img.thumbnail(330, 220).to_rgba8();
+                    it.tex = Some(ctx.load_texture(it.path.to_string_lossy(), color_image(&thumb), TextureOptions::LINEAR));
+                }
+                Err(_) => it.failed = true,
+            }
+        }
+        let mut open: Option<std::path::PathBuf> = None;
+        egui::CentralPanel::default().frame(egui::Frame::new().fill(theme::BG).inner_margin(24)).show(ui, |ui| {
+            egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
+                centered(ui, 1180.0, |ui| {
+                    ui.label(theme::strong("Galería", theme::TITLE + 4.0));
+                    ui.label(theme::body("Tus dibujos guardados desde el lienzo libre, en Imágenes › TrazoAcademia. Ábrelos como capa para seguir dibujando o para calcar encima."));
+                    ui.horizontal(|ui| {
+                        if theme::button(ui, Some(Icon::Retry), "Actualizar", Btn::Outline).clicked() {
+                            self.gallery.clear();
+                        }
+                        if theme::button(ui, None, "Abrir la carpeta", Btn::Ghost).clicked() {
+                            let dir = drawings_dir();
+                            let _ = std::fs::create_dir_all(&dir);
+                            let _ = std::process::Command::new("explorer").arg(dir).spawn();
+                        }
+                    });
+                    ui.add_space(12.0);
+                    if self.gallery.is_empty() {
+                        theme::card(theme::RAISED).show(ui, |ui| {
+                            ui.set_width(ui.available_width());
+                            ui.label(theme::strong("Aún no hay dibujos", theme::LEAD));
+                            ui.label(theme::body("Dibuja algo en el lienzo libre y pulsa «Guardar como PNG»: aparecerá aquí."));
+                        });
+                        return;
+                    }
+                    ui.horizontal_wrapped(|ui| {
+                        ui.spacing_mut().item_spacing = vec2(14.0, 14.0);
+                        for it in &self.gallery {
+                            theme::card(theme::RAISED).inner_margin(10).show(ui, |ui| {
+                                ui.set_width(330.0);
+                                match &it.tex {
+                                    Some(tex) => {
+                                        let [w, h] = tex.size();
+                                        ui.add(egui::Image::new((tex.id(), vec2(w as f32, h as f32))).corner_radius(6));
+                                    }
+                                    None => {
+                                        ui.allocate_exact_size(vec2(330.0, 220.0), Sense::hover());
+                                    }
+                                }
+                                ui.label(theme::caption(&it.name));
+                                if !it.failed && theme::button(ui, Some(Icon::Brush), "Abrir como capa", Btn::Outline).clicked() {
+                                    open = Some(it.path.clone());
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+        if let Some(path) = open {
+            self.open_in_free(&path);
+        }
+    }
+
+    /// Abre un dibujo guardado como capa nueva del lienzo libre.
+    fn open_in_free(&mut self, path: &std::path::Path) {
+        let now = self.now_ms();
+        let Ok(img) = image::open(path) else {
+            self.message = Some(("No pude abrir ese dibujo.".into(), now));
+            return;
+        };
+        let img = img.resize_exact(W as u32, H as u32, image::imageops::FilterType::Triangle).to_rgba8();
+        let px: Vec<[f32; 4]> = img.pixels().map(|p| [0, 1, 2, 3].map(|k| p.0[k] as f32 / 255.0)).collect();
+        self.open_free();
+        let name = path.file_stem().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| "Dibujo".into());
+        self.canvas.add_image_layer(&name, &px);
+        self.message = Some((format!("«{name}» abierto como capa nueva. Bájale la opacidad para dibujar encima."), now));
+    }
+
     fn save_png(&mut self) {
-        let base = std::env::var_os("USERPROFILE").map(std::path::PathBuf::from).unwrap_or_default();
-        let dir = base.join("Pictures").join("TrazoAcademia");
+        let dir = drawings_dir();
         let _ = std::fs::create_dir_all(&dir);
         let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let path = dir.join(format!("dibujo-{stamp}.png"));
         let ok = image::save_buffer(&path, &self.canvas.to_rgba(), W as u32, H as u32, image::ColorType::Rgba8).is_ok();
         let msg = if ok { format!("Guardado en {}", path.display()) } else { "No se pudo guardar la imagen.".into() };
+        self.gallery.clear();
         self.message = Some((msg, self.now_ms()));
     }
 
@@ -1383,9 +1892,9 @@ const KRITA_GUIDE: &[(&str, &str)] = &[
     ("Suavizado del pincel", "En Opciones de herramienta del Pincel a mano alzada. Modos: Ninguno, Básico (por defecto), Ponderado, Estabilizador y Pixel. Krita trae Distancia 50, Agresividad de cola 0.15, Retardo activado con 50 píxeles, Terminar línea y Estabilizar sensores activados, y Suavizar presión desactivado. Son los mismos valores que usa esta app."),
     ("Curva de presión global", "Configuración › Configurar Krita › Ajustes de tableta. Por defecto es una línea recta (0,0 a 1,1). Si llegas al máximo con poco esfuerzo, baja la curva; si te cuesta llegar, súbela. La calibración de esta app te da una curva de partida."),
     ("Editor de pinceles (F5)", "Cada opción del pincel (Tamaño, Opacidad, Flujo…) puede depender de sensores: Presión, Velocidad, Inclinación, Rotación… y cada sensor tiene su curva. Por ejemplo, la tinta d) Ink-2 Fineliner usa Tamaño = Presión (de 0.75 a 1) multiplicado por Velocidad (de 1 a 0)."),
-    ("Capas", "Trabaja siempre en capas: boceto, tinta y color separados. Baja la opacidad del boceto para entintar encima. Bloquear alfa evita pintar fuera de lo ya pintado."),
+    ("Capas", "Trabaja siempre en capas: boceto, tinta y color separados. Baja la opacidad del boceto para entintar encima. Bloquear alfa evita pintar fuera de lo ya pintado. El lienzo libre de esta app también tiene capas con opacidad, para practicar el mismo flujo."),
     ("Asistentes de dibujo", "La herramienta de Asistentes coloca reglas, elipses y puntos de fuga que atraen tu trazo. Son la versión profesional de la guía magnética de esta app."),
-    ("Ver con ojos frescos", "La tecla M voltea la vista en espejo para detectar errores de proporción. También puedes rotar el lienzo para trazar en tu ángulo más cómodo."),
+    ("Mover, girar y voltear la vista", "Espacio + arrastrar mueve la vista, Mayús + espacio + arrastrar la gira y la tecla M la voltea en espejo para detectar errores de proporción. Aquí funcionan igual, en los ejercicios y en el lienzo libre."),
 ];
 
 // ------------------------------------------------------------------ dibujo auxiliar
@@ -1499,6 +2008,16 @@ fn grade_metrics(ui: &mut Ui, g: &Grade) {
     }
 }
 
+/// Carpeta de los dibujos guardados (Imágenes › TrazoAcademia).
+fn drawings_dir() -> std::path::PathBuf {
+    let base = std::env::var_os("USERPROFILE").map(std::path::PathBuf::from).unwrap_or_default();
+    base.join("Pictures").join("TrazoAcademia")
+}
+
+fn color_image(img: &image::RgbaImage) -> ColorImage {
+    ColorImage::from_rgba_unmultiplied([img.width() as usize, img.height() as usize], img.as_raw())
+}
+
 fn bar(ui: &mut Ui, label: &str, v: f32, color: Color32) {
     ui.horizontal(|ui| {
         let (r, _) = ui.allocate_exact_size(vec2(90.0, 18.0), Sense::hover());
@@ -1524,8 +2043,9 @@ fn logo(ui: &mut Ui) {
 
 /// Guías de calcar. Las de contexto se ven siempre, como líneas ya dibujadas; las de repasar,
 /// si `show`; las ocultas, solo al revisar la nota (`reveal`).
-fn draw_guides(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32, brush_size: f32, show: bool, reveal: bool) {
-    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+fn draw_guides(p: &egui::Painter, guides: &[Guide], xf: &Xf, brush_size: f32, show: bool, reveal: bool) {
+    let to = |q: Pos2| xf.to_screen(q);
+    let scale = xf.scale;
     let guide_col = Color32::from_rgba_unmultiplied(70, 150, 230, 120);
     for g in guides {
         match g.role {
@@ -1567,8 +2087,8 @@ const INK: Color32 = Color32::from_rgb(45, 45, 52);
 const VP_RED: Color32 = Color32::from_rgb(220, 80, 70);
 
 /// Punto a punto: cada par de extremos con su número.
-fn draw_points(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32) {
-    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+fn draw_points(p: &egui::Painter, guides: &[Guide], xf: &Xf) {
+    let to = |q: Pos2| xf.to_screen(q);
     for (i, g) in guides.iter().enumerate() {
         let (Some(a), Some(b)) = (g.pts.first(), g.pts.last()) else { continue };
         for q in [to(*a), to(*b)] {
@@ -1580,33 +2100,34 @@ fn draw_points(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32) {
 }
 
 /// Escena en perspectiva: horizonte, puntos de fuga, líneas dadas, puntos de salida y ayuda.
-fn draw_scene(p: &egui::Painter, s: &Scene, rect: Rect, scale: f32, aids: bool, hints: bool) {
-    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+fn draw_scene(p: &egui::Painter, s: &Scene, xf: &Xf, aids: bool, hints: bool) {
+    let to = |q: Pos2| xf.to_screen(q);
+    let (w, h) = (W as f32, H as f32);
     if aids {
-        if let Some(h) = s.horizon {
-            let y = to(pos2(0.0, h)).y;
-            if y >= rect.min.y && y <= rect.max.y {
-                p.line_segment([pos2(rect.min.x, y), pos2(rect.max.x, y)], Stroke::new(1.5, Color32::from_rgb(120, 140, 170)));
+        if let Some(hy) = s.horizon {
+            if (0.0..=h).contains(&hy) {
+                p.line_segment([to(pos2(0.0, hy)), to(pos2(w, hy))], Stroke::new(1.5, Color32::from_rgb(120, 140, 170)));
                 // A un cuarto del ancho: los puntos de fuga suelen estar en los extremos o en el centro.
-                p.text(pos2(rect.min.x + rect.width() * 0.25, y - 3.0), Align2::CENTER_BOTTOM, "Horizonte", FontId::proportional(12.0), Color32::from_rgb(90, 110, 140));
+                p.text(to(pos2(w * 0.25, hy)) + vec2(0.0, -3.0), Align2::CENTER_BOTTOM, "Horizonte", FontId::proportional(12.0), Color32::from_rgb(90, 110, 140));
             }
         }
-        let inner = rect.shrink(16.0);
+        // Margen de 16 px de pantalla, en unidades del lienzo.
+        let m = 16.0 / xf.scale;
+        let inner = Rect::from_min_max(pos2(m, m), pos2(w - m, h - m));
         for (i, vp) in s.vps.iter().enumerate() {
             let label = format!("PF{}", i + 1);
             let q = to(*vp);
-            if rect.contains(q) {
+            if (0.0..=w).contains(&vp.x) && (0.0..=h).contains(&vp.y) {
                 p.circle_stroke(q, 7.0, Stroke::new(2.0, VP_RED));
                 p.line_segment([q - vec2(10.0, 0.0), q + vec2(10.0, 0.0)], Stroke::new(1.5, VP_RED));
                 p.line_segment([q - vec2(0.0, 10.0), q + vec2(0.0, 10.0)], Stroke::new(1.5, VP_RED));
                 p.text(q + vec2(10.0, 8.0), Align2::LEFT_TOP, label, FontId::proportional(13.0), VP_RED);
             } else {
                 // Fuera del lienzo: flecha en el borde apuntando hacia él.
-                let c = inner.clamp(q);
+                let c = to(inner.clamp(*vp));
                 let d = (q - c).normalized() * 14.0;
                 p.arrow(c - d, d, Stroke::new(2.5, VP_RED));
-                let anchor = if c.y < rect.center().y { Align2::CENTER_TOP } else { Align2::CENTER_BOTTOM };
-                let off = if c.y < rect.center().y { vec2(0.0, 20.0) } else { vec2(0.0, -20.0) };
+                let (anchor, off) = if d.y < 0.0 { (Align2::CENTER_TOP, vec2(0.0, 20.0)) } else { (Align2::CENTER_BOTTOM, vec2(0.0, -20.0)) };
                 p.text(c + off, anchor, format!("{label} (fuera)"), FontId::proportional(12.0), VP_RED);
             }
         }
@@ -1630,11 +2151,11 @@ fn draw_scene(p: &egui::Painter, s: &Scene, rect: Rect, scale: f32, aids: bool, 
 }
 
 /// Número de cada guía junto a su inicio: el orden en que se construye la figura.
-fn draw_order(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32) {
+fn draw_order(p: &egui::Painter, guides: &[Guide], xf: &Xf) {
     let mut placed: Vec<Pos2> = Vec::new();
     for (i, g) in guides.iter().filter(|g| g.role == Role::Trace).enumerate() {
         let Some(a) = g.pts.first() else { continue };
-        let mut c = rect.min + a.to_vec2() * scale + vec2(-13.0, -13.0);
+        let mut c = xf.to_screen(*a) + vec2(-13.0, -13.0);
         // Si varias guías empiezan en el mismo punto, apila los números para que se vean todos.
         while placed.iter().any(|q| (*q - c).length() < 18.0) {
             c.x -= 20.0;
@@ -1646,8 +2167,8 @@ fn draw_order(p: &egui::Painter, guides: &[Guide], rect: Rect, scale: f32) {
 }
 
 /// Zonas de rayado: contorno y, al lado, una muestra con la dirección y la densidad pedidas.
-fn draw_hatch(p: &egui::Painter, regions: &[Region], rect: Rect, scale: f32) {
-    let to = |q: Pos2| rect.min + q.to_vec2() * scale;
+fn draw_hatch(p: &egui::Painter, regions: &[Region], xf: &Xf) {
+    let to = |q: Pos2| xf.to_screen(q);
     let col = Color32::from_rgba_unmultiplied(70, 150, 230, 150);
     for r in regions {
         let mut pts: Vec<Pos2> = r.pts.iter().map(|q| to(*q)).collect();
@@ -1688,13 +2209,13 @@ fn draw_hatch(p: &egui::Painter, regions: &[Region], rect: Rect, scale: f32) {
             cross: r.cross,
             label: None,
         };
-        let box_rect = Rect::from_min_max(to(origin), to(origin + vec2(side, side)));
-        p.rect(box_rect, 4, theme::PAPER, Stroke::new(1.0, col), StrokeKind::Inside);
+        let corners = [origin, origin + vec2(side, 0.0), origin + vec2(side, side), origin + vec2(0.0, side)].map(to);
+        p.add(Shape::convex_polygon(corners.to_vec(), theme::PAPER, Stroke::new(1.0, col)));
         for (a, b) in sample.ideal_lines() {
             p.line_segment([to(a), to(b)], Stroke::new(1.4, Color32::from_rgb(60, 60, 70)));
         }
         if r.angle.is_none() {
-            p.text(box_rect.center_bottom() + vec2(0.0, 2.0), Align2::CENTER_TOP, "dirección libre", FontId::proportional(11.0), Color32::from_rgb(90, 110, 140));
+            p.text(to(origin + vec2(side / 2.0, side)) + vec2(0.0, 2.0), Align2::CENTER_TOP, "dirección libre", FontId::proportional(11.0), Color32::from_rgb(90, 110, 140));
         }
         if let Some(label) = &r.label {
             p.text(to(r.centroid()), Align2::CENTER_CENTER, label, FontId::new(14.0, theme::semibold()), col);
@@ -1815,16 +2336,23 @@ impl eframe::App for TrazoApp {
         self.frame += 1;
         self.demo_step(&ctx);
         self.check_timer();
+        self.session_step(&ctx);
+        self.handle_drops(&ctx);
         self.shortcuts(&ctx);
         self.top_bar(ui);
         match self.screen {
             Screen::Home => self.home_screen(ui),
             Screen::Map => self.map_screen(ui),
+            Screen::Gallery => self.gallery_screen(ui),
             Screen::Exercise(..) | Screen::Free => self.exercise_or_free_screen(ui),
             Screen::Pressure => self.pressure_screen(ui),
             Screen::Guide => self.guide_screen(ui),
         }
-        let busy = self.drawing || self.current_exercise().is_some_and(|e| e.memory.is_some() || (e.time_limit.is_some() && !self.time_up));
+        let busy = self.drawing
+            || self.session.is_some()
+            || self.gallery.iter().any(|g| g.tex.is_none() && !g.failed) && self.screen == Screen::Gallery
+            || self.current_exercise().is_some_and(|e| e.memory.is_some())
+            || (self.time_limit().is_some() && !self.time_up);
         if let Some(shot) = &mut self.screenshot {
             ctx.request_repaint();
             if self.frame >= 120 && !shot.requested {

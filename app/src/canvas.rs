@@ -9,6 +9,27 @@ pub const W: usize = 960;
 pub const H: usize = 640;
 pub const PAPER: [f32; 3] = [0.985, 0.98, 0.965];
 
+/// Capa transparente sobre el fondo (solo en el lienzo libre).
+pub struct Layer {
+    pub name: String,
+    pub rgb: Vec<[f32; 3]>,
+    pub alpha: Vec<f32>,
+    pub opacity: f32,
+    pub visible: bool,
+}
+
+impl Layer {
+    pub fn new(name: impl Into<String>) -> Self {
+        Self { name: name.into(), rgb: vec![[0.0; 3]; W * H], alpha: vec![0.0; W * H], opacity: 1.0, visible: true }
+    }
+}
+
+/// Copia para deshacer: el fondo o una capa.
+enum Snapshot {
+    Base(Vec<[f32; 3]>),
+    Layer(usize, Vec<[f32; 3]>, Vec<f32>),
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct StrokePoint {
     pub pos: Pos2,
@@ -23,8 +44,13 @@ pub struct Canvas {
     dirty: Option<[usize; 4]>,
     display: Vec<Color32>,
     texture: Option<TextureHandle>,
-    undo: Vec<(Vec<[f32; 3]>, usize)>,
-    redo: Vec<(Vec<[f32; 3]>, usize)>,
+    undo: Vec<(Snapshot, usize)>,
+    /// Capas sobre el fondo, de abajo arriba.
+    pub layers: Vec<Layer>,
+    /// Dónde se pinta: `None` es el fondo; `Some(k)`, la capa k.
+    pub active: Option<usize>,
+    /// El trazo en curso borra (en una capa, quita transparencia).
+    stroke_erase: bool,
     next_dab: f32,
     pub strokes: Vec<Vec<StrokePoint>>,
     pub color: [f32; 3],
@@ -44,7 +70,9 @@ impl Canvas {
             display: vec![Color32::WHITE; W * H],
             texture: None,
             undo: Vec::new(),
-            redo: Vec::new(),
+            layers: Vec::new(),
+            active: None,
+            stroke_erase: false,
             next_dab: 0.0,
             strokes: Vec::new(),
             color: [0.1, 0.1, 0.12],
@@ -71,10 +99,69 @@ impl Canvas {
         });
     }
 
+    /// Lienzo libre: fondo de papel y una capa para dibujar.
+    pub fn new_free() -> Self {
+        let mut c = Self::new();
+        c.layers.push(Layer::new("Capa 1"));
+        c.active = Some(0);
+        c
+    }
+
+    /// Borra lo que haya en la capa activa (o deja el fondo en blanco).
     pub fn clear(&mut self) {
         self.push_undo();
-        self.base.fill(PAPER);
+        match self.active {
+            None => self.base.fill(PAPER),
+            Some(k) => self.layers[k].alpha.fill(0.0),
+        }
         self.strokes.clear();
+        self.mark_all();
+    }
+
+    /// Añade una capa encima de la activa y la deja activa.
+    pub fn add_layer(&mut self) {
+        let at = self.active.map_or(0, |k| k + 1);
+        let n = self.layers.len() + 1;
+        self.layers.insert(at, Layer::new(format!("Capa {n}")));
+        self.active = Some(at);
+        self.structure_changed();
+    }
+
+    pub fn remove_active_layer(&mut self) {
+        if let Some(k) = self.active {
+            self.layers.remove(k);
+            self.active = if self.layers.is_empty() { None } else { Some(k.saturating_sub(1).min(self.layers.len() - 1)) };
+            self.structure_changed();
+        }
+    }
+
+    /// Sube (`up`) o baja la capa activa un puesto.
+    pub fn move_active_layer(&mut self, up: bool) {
+        let Some(k) = self.active else { return };
+        let to = if up { k + 1 } else { k.wrapping_sub(1) };
+        if to < self.layers.len() {
+            self.layers.swap(k, to);
+            self.active = Some(to);
+            self.structure_changed();
+        }
+    }
+
+    /// Añade una imagen como capa nueva (por ejemplo, un dibujo de la galería).
+    pub fn add_image_layer(&mut self, name: &str, rgba: &[[f32; 4]]) {
+        let mut l = Layer::new(name);
+        for (i, px) in rgba.iter().enumerate().take(W * H) {
+            l.rgb[i] = [px[0], px[1], px[2]];
+            l.alpha[i] = px[3];
+        }
+        let at = self.active.map_or(0, |k| k + 1);
+        self.layers.insert(at, l);
+        self.active = Some(at);
+        self.structure_changed();
+    }
+
+    /// Las copias para deshacer apuntan a capas por su posición: al cambiar el orden ya no valen.
+    fn structure_changed(&mut self) {
+        self.undo.clear();
         self.mark_all();
     }
 
@@ -84,17 +171,21 @@ impl Canvas {
         self.stroke_a.fill(0.0);
         self.stroke_box = None;
         self.undo.clear();
-        self.redo.clear();
+        self.layers.clear();
+        self.active = None;
         self.strokes.clear();
         self.mark_all();
     }
 
     fn push_undo(&mut self) {
-        self.undo.push((self.base.clone(), self.strokes.len()));
+        let snap = match self.active {
+            None => Snapshot::Base(self.base.clone()),
+            Some(k) => Snapshot::Layer(k, self.layers[k].rgb.clone(), self.layers[k].alpha.clone()),
+        };
+        self.undo.push((snap, self.strokes.len()));
         if self.undo.len() > 20 {
             self.undo.remove(0);
         }
-        self.redo.clear();
     }
 
     pub fn can_undo(&self) -> bool {
@@ -102,9 +193,16 @@ impl Canvas {
     }
 
     pub fn undo(&mut self) {
-        if let Some((img, n)) = self.undo.pop() {
-            let cur = std::mem::replace(&mut self.base, img);
-            self.redo.push((cur, self.strokes.len()));
+        if let Some((snap, n)) = self.undo.pop() {
+            match snap {
+                Snapshot::Base(img) => self.base = img,
+                Snapshot::Layer(k, rgb, alpha) => {
+                    if let Some(l) = self.layers.get_mut(k) {
+                        l.rgb = rgb;
+                        l.alpha = alpha;
+                    }
+                }
+            }
             self.strokes.truncate(n);
             self.mark_all();
         }
@@ -123,9 +221,26 @@ impl Canvas {
                     let i = y * W + x;
                     let a = self.stroke_a[i];
                     if a > 0.0 {
-                        let b = self.base[i];
                         let c = self.stroke_c[i];
-                        self.base[i] = [b[0] + (c[0] - b[0]) * a, b[1] + (c[1] - b[1]) * a, b[2] + (c[2] - b[2]) * a];
+                        match self.active {
+                            None => {
+                                let b = self.base[i];
+                                self.base[i] = [b[0] + (c[0] - b[0]) * a, b[1] + (c[1] - b[1]) * a, b[2] + (c[2] - b[2]) * a];
+                            }
+                            Some(k) => {
+                                let l = &mut self.layers[k];
+                                if self.stroke_erase {
+                                    l.alpha[i] *= 1.0 - a;
+                                } else {
+                                    // El trazo encima de lo que ya hay en la capa.
+                                    let (lc, la) = (l.rgb[i], l.alpha[i]);
+                                    let na = a + la * (1.0 - a);
+                                    let mix = |s: f32, d: f32| (s * a + d * la * (1.0 - a)) / na;
+                                    l.rgb[i] = [mix(c[0], lc[0]), mix(c[1], lc[1]), mix(c[2], lc[2])];
+                                    l.alpha[i] = na;
+                                }
+                            }
+                        }
                         self.stroke_a[i] = 0.0;
                     }
                 }
@@ -215,12 +330,9 @@ impl Canvas {
             let mut x = cx - r;
             while x <= cx + r {
                 if x >= 0 && y >= 0 && (x as usize) < W && (y as usize) < H {
-                    let i = y as usize * W + x as usize;
-                    let a = self.stroke_a[i];
-                    let b = self.base[i];
-                    let c = self.stroke_c[i];
+                    let c = self.pixel(x as usize, y as usize);
                     for k in 0..3 {
-                        acc[k] += b[k] + (c[k] - b[k]) * a;
+                        acc[k] += c[k];
                     }
                     n += 1.0;
                 }
@@ -237,6 +349,7 @@ impl Canvas {
         let radius = diam * 0.5;
         let opacity = (brush.opacity_at(p.pressure) * self.opacity_mult).clamp(0.0, 1.0);
         let flow = brush.flow_at(p.pressure).clamp(0.0, 1.0);
+        self.stroke_erase = brush.kind == BrushKind::Eraser;
         let mut color = match brush.kind {
             BrushKind::Eraser => PAPER,
             _ => self.color,
@@ -311,13 +424,35 @@ impl Canvas {
         self.mark([x0, y0, x1, y1]);
     }
 
-    /// Color visible de un píxel (lienzo + trazo en curso).
+    /// Color visible de un píxel: fondo, capas visibles y el trazo en curso en la capa activa.
     pub fn pixel(&self, x: usize, y: usize) -> [f32; 3] {
         let i = y * W + x;
-        let a = self.stroke_a[i];
-        let b = self.base[i];
-        let c = self.stroke_c[i];
-        [b[0] + (c[0] - b[0]) * a, b[1] + (c[1] - b[1]) * a, b[2] + (c[2] - b[2]) * a]
+        let sa = self.stroke_a[i];
+        let sc = self.stroke_c[i];
+        let over = |d: [f32; 3], s: [f32; 3], a: f32| [d[0] + (s[0] - d[0]) * a, d[1] + (s[1] - d[1]) * a, d[2] + (s[2] - d[2]) * a];
+        let mut c = self.base[i];
+        if self.active.is_none() && sa > 0.0 {
+            c = over(c, sc, sa);
+        }
+        for (k, l) in self.layers.iter().enumerate() {
+            if !l.visible {
+                continue;
+            }
+            let (mut lc, mut la) = (l.rgb[i], l.alpha[i]);
+            if self.active == Some(k) && sa > 0.0 {
+                if self.stroke_erase {
+                    la *= 1.0 - sa;
+                } else {
+                    let na = sa + la * (1.0 - sa);
+                    lc = [0, 1, 2].map(|j| (sc[j] * sa + lc[j] * la * (1.0 - sa)) / na);
+                    la = na;
+                }
+            }
+            if la > 0.0 {
+                c = over(c, lc, la * l.opacity);
+            }
+        }
+        c
     }
 
     pub fn texture(&mut self, ctx: &egui::Context) -> &TextureHandle {
@@ -371,4 +506,55 @@ fn grain(x: usize, y: usize) -> f32 {
 
 pub fn luminance(c: [f32; 3]) -> f32 {
     0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::brush::presets;
+    use egui::pos2;
+
+    fn stroke(c: &mut Canvas, brush: &BrushPreset) {
+        let info = |x: f32| PInfo { pos: pos2(x, 300.0), pressure: 1.0, time: 0.0, speed: 0.0 };
+        c.begin_stroke();
+        c.paint(&Segment::Line(info(200.0), info(600.0)), brush);
+        c.end_stroke();
+    }
+
+    #[test]
+    fn layers_paint_hide_erase_and_undo() {
+        let brushes = presets();
+        let pen = brushes.iter().find(|b| b.id == "basico5").expect("pincel").clone();
+        let eraser = brushes.iter().find(|b| b.kind == BrushKind::Eraser).expect("borrador").clone();
+        let mut c = Canvas::new_free();
+        c.color = [0.0, 0.0, 0.0];
+        stroke(&mut c, &pen);
+        let dark = c.pixel(400, 300);
+        assert!(luminance(dark) < 0.3, "la línea se ve: {dark:?}");
+        assert_eq!(c.base[300 * W + 400], PAPER, "el fondo no se toca al pintar en una capa");
+        // Ocultar la capa la quita de la imagen.
+        c.layers[0].visible = false;
+        assert_eq!(c.pixel(400, 300), PAPER);
+        c.layers[0].visible = true;
+        // El borrador quita la transparencia de la capa y deja ver el papel.
+        stroke(&mut c, &eraser);
+        assert!((luminance(c.pixel(400, 300)) - luminance(PAPER)).abs() < 0.05);
+        // Deshacer devuelve la línea.
+        c.undo();
+        assert!(luminance(c.pixel(400, 300)) < 0.3);
+        // Una capa a media opacidad da un gris intermedio.
+        c.layers[0].opacity = 0.5;
+        let half = luminance(c.pixel(400, 300));
+        assert!(half > 0.35 && half < 0.65, "media opacidad: {half}");
+    }
+
+    #[test]
+    fn exercises_keep_painting_on_the_background() {
+        let pen = presets().into_iter().find(|b| b.id == "basico5").expect("pincel");
+        let mut c = Canvas::new();
+        c.color = [0.0, 0.0, 0.0];
+        stroke(&mut c, &pen);
+        assert!(c.layers.is_empty() && c.active.is_none());
+        assert!(luminance(c.base[300 * W + 400]) < 0.3, "sin capas se pinta en el fondo, como antes");
+    }
 }

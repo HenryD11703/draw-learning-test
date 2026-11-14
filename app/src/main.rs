@@ -11,6 +11,7 @@ mod pressure;
 mod progress;
 mod smoothing;
 mod theme;
+mod view;
 
 use std::path::PathBuf;
 use std::sync::Arc;
