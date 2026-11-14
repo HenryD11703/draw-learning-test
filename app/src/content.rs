@@ -8,7 +8,9 @@ use crate::lessons::{self, Dir, Exercise, Guide, Kind, Module, PaintTarget, Regi
 use crate::smoothing::SmoothingType;
 use egui::{Color32, Pos2, Vec2, pos2, vec2};
 use serde::Deserialize;
+use crate::painting::{Paint, PaintScene};
 use std::collections::HashSet;
+use std::sync::Arc;
 use std::f32::consts::{PI, TAU};
 
 /// Módulos en el orden en que aparecen en el mapa.
@@ -25,7 +27,11 @@ const FILES: &[(&str, &str)] = &[
     ("10_manos.json", include_str!("../content/10_manos.json")),
     ("11_entintado.json", include_str!("../content/11_entintado.json")),
     ("12_observacion.json", include_str!("../content/12_observacion.json")),
-    ("13_pintura.json", include_str!("../content/13_pintura.json")),
+    ("13_valor.json", include_str!("../content/13_valor.json")),
+    ("14_luz_forma.json", include_str!("../content/14_luz_forma.json")),
+    ("15_bordes.json", include_str!("../content/15_bordes.json")),
+    ("16_color.json", include_str!("../content/16_color.json")),
+    ("17_color_luz.json", include_str!("../content/17_color_luz.json")),
 ];
 
 /// Margen mínimo entre el contenido de un ejercicio y el borde del lienzo.
@@ -133,6 +139,8 @@ pub enum KindSpec {
     Paint {
         target: PaintTarget,
     },
+    /// Pintura a partir de una escena de figuras (ver `painting.rs`).
+    Painting(PaintScene),
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -513,7 +521,8 @@ impl KindSpec {
                     .collect();
                 Kind::Hatch { regions, tol: *tol }
             }
-            KindSpec::Paint { target } => Kind::Paint { target: *target },
+            KindSpec::Paint { target } => Kind::Paint(Paint::Legacy(*target)),
+            KindSpec::Painting(scene) => Kind::Paint(Paint::Scene(Arc::new(scene.clone()))),
         }
     }
 }
@@ -532,7 +541,7 @@ fn in_bounds(kind: &Kind) -> bool {
                 })
         }
         Kind::Hatch { regions, .. } => regions.iter().all(|r| r.pts.iter().all(|q| ok(*q))),
-        Kind::Paint { .. } => true,
+        Kind::Paint(_) => true,
     }
 }
 
@@ -944,7 +953,7 @@ mod tests {
                                 assert!(!r.ideal_lines().is_empty(), "{}: zona sin líneas posibles", e.id);
                             }
                         }
-                        Kind::Paint { .. } => {}
+                        Kind::Paint(_) => {}
                     }
                 }
             }

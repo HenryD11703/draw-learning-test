@@ -1,0 +1,307 @@
+{
+  "id": "bordes",
+  "title": "Bordes y mezcla",
+  "subtitle": "Bordes duros, blandos y perdidos; fundir con el pincel de mezcla",
+  "lesson": "Basado en el control de bordes de la pintura alla prima (Richard Schmid, «Alla Prima»). Donde dos manchas se tocan hay un borde, y el borde dice cómo es la forma:\n\n• Borde duro: un cambio brusco, como la arista de una caja o una silueta a contraluz.\n• Borde blando: un paso gradual, como el giro de una esfera.\n• Borde perdido: cuando dos valores casi iguales se tocan y el borde desaparece.\n\nPara fundir, usa el pincel Difuminar: no pone color, arrastra el que ya hay.",
+  "accent": [
+    180,
+    200,
+    230
+  ],
+  "exercises": [
+    {
+      "id": "bor01",
+      "title": "Borde duro y borde blando",
+      "goal": "A la izquierda, oscuro y claro con un corte limpio. A la derecha, los mismos valores con una transición corta y suave.",
+      "krita_tip": "En Krita, un pincel de borde duro (b) Basic-1) da cortes limpios y el aerógrafo, transiciones; aquí se combinan.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              120,
+              180,
+              270,
+              460
+            ],
+            "fill": 0.2
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              270,
+              180,
+              420,
+              460
+            ],
+            "fill": 0.85
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              540,
+              180,
+              640,
+              460
+            ],
+            "fill": 0.2
+          },
+          {
+            "prim": "gradient",
+            "rect": [
+              640,
+              180,
+              720,
+              460
+            ],
+            "from": 0.2,
+            "to": 0.85
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              720,
+              180,
+              840,
+              460
+            ],
+            "fill": 0.85
+          }
+        ]
+      }
+    },
+    {
+      "id": "bor02",
+      "title": "Difuminar dos valores",
+      "goal": "El lienzo empieza con dos valores planos. Usa el pincel Difuminar sobre el límite hasta que pasen de uno a otro sin corte, dejando los extremos planos.",
+      "krita_tip": "El pincel de mezcla de Krita (k) Blender Basic) funciona igual: pasadas cortas sobre el borde, sin cargar color.",
+      "brush": "difuminar",
+      "smoothing": "Ponderado",
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              200,
+              400,
+              440
+            ],
+            "fill": 0.2
+          },
+          {
+            "prim": "gradient",
+            "rect": [
+              400,
+              200,
+              560,
+              440
+            ],
+            "from": 0.2,
+            "to": 0.85
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              560,
+              200,
+              760,
+              440
+            ],
+            "fill": 0.85
+          }
+        ],
+        "start": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              200,
+              480,
+              440
+            ],
+            "fill": 0.2
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              480,
+              200,
+              760,
+              440
+            ],
+            "fill": 0.85
+          }
+        ]
+      }
+    },
+    {
+      "id": "bor03",
+      "title": "De planos a esfera suave",
+      "goal": "La esfera empieza pintada en cuatro planos. Fúndelos con Difuminar para que la luz gire suave, pero conserva el terminador: luz y sombra siguen separadas.",
+      "krita_tip": "Bloquear en planos y luego fundir es la forma habitual de pintar volúmenes en digital, también en Krita.",
+      "brush": "difuminar",
+      "smoothing": "Ponderado",
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              100,
+              760,
+              540
+            ],
+            "fill": 0.7
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              480,
+              320
+            ],
+            "r": 190,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.92,
+            "shadow": 0.18,
+            "reflected": 0.2
+          }
+        ],
+        "start": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              100,
+              760,
+              540
+            ],
+            "fill": 0.7
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              480,
+              320
+            ],
+            "r": 190,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.92,
+            "shadow": 0.18,
+            "reflected": 0.2,
+            "steps": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "bor04",
+      "title": "Bordes perdidos",
+      "goal": "Esfera sobre fondo oscuro: en el lado de la sombra el borde casi desaparece contra el fondo. Píntalo así, sin marcar un contorno.",
+      "krita_tip": "Perder bordes donde los valores se parecen hace que el cuadro respire; marcar todos los contornos lo vuelve un dibujo coloreado.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              100,
+              760,
+              540
+            ],
+            "fill": 0.24
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              480,
+              320
+            ],
+            "r": 180,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.92,
+            "shadow": 0.22,
+            "reflected": 0.08
+          }
+        ]
+      }
+    },
+    {
+      "id": "m6e4",
+      "title": "Mezcla húmeda",
+      "goal": "Funde el naranja con el azul para que pasen de uno a otro sin corte.",
+      "krita_tip": "i) Wet Paint arrastra el color del lienzo como pintura fresca. En Krita, los pinceles de mezcla usan la opción Pintura húmeda/Difuminar.",
+      "brush": "humedo",
+      "smoothing": "Basico",
+      "color": [
+        0.55,
+        0.38,
+        0.5
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "ColorBlend"
+      }
+    },
+    {
+      "id": "m5e3",
+      "title": "Rotulador: rellenar",
+      "goal": "Rellena la hoja sin salirte. Verás que los cruces de trazos se oscurecen.",
+      "krita_tip": "e) Marker: la opacidad tiene un tope por trazo. En Krita, activa Bloquear alfa en la capa para no salirte del dibujo.",
+      "brush": "marcador",
+      "smoothing": "Basico",
+      "color": [
+        0.2,
+        0.45,
+        0.85
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "Silhouette"
+      }
+    },
+    {
+      "id": "m5e5",
+      "title": "Borrador: limpieza",
+      "goal": "Borra todas las manchas del rectángulo.",
+      "krita_tip": "En Krita, la tecla E pone el pincel actual en modo borrador; púlsala otra vez para volver a pintar.",
+      "brush": "borrador",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "paint",
+        "target": "Cleanup"
+      }
+    }
+  ]
+}

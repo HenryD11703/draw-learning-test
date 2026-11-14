@@ -94,6 +94,7 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
 | Tamaños en la app | escalados al lienzo de 960×640 (p. ej. Basic-5 a 20 px, Airbrush a 90 px) | **diseño propio** |
 | Flujo del aerógrafo (0.12) y grano del lápiz | acumulación y textura de papel | **estimado** |
 | Mezcla del pincel húmedo | `color = pintura + (lienzo − pintura) · 0.8 · curva_arrastre(p)` | **estimado** (Krita usa el motor colorsmudge) |
+| Pincel Difuminar (k) Blender Basic) | sin color propio: `color = lienzo` (arrastre 1), tamaño 36, dureza 0, flujo 0.5, opacidad = presión | **estimado** (no leído de su .kpp) |
 | Espaciado entre manchas | `max(1, diámetro × espaciado)` | **estimado** |
 | Opacidad del trazo | el trazo se acumula con el flujo hasta el tope de opacidad ("lavado") | **estimado** |
 
@@ -140,6 +141,13 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
   + 10 % contención)`.
 - Ejercicios con tiempo límite (gesto): la cuenta empieza al abrir el ejercicio; al llegar a cero se
   califica lo dibujado con el calificador de su tipo y no se aceptan trazos nuevos hasta Repetir.
+- Pintura en color: además del valor (luminancia), por cada celda de 16 px se compara el tono (HSV,
+  diferencia circular en grados, pesada por la saturación del objetivo, `peso = clamp((s − 0.08) / 0.3)`)
+  y la saturación. Tono = `1 − error_medio / 40°`; saturación = `1 − error_medio / 0.3`.
+  Total = `30 % valor + 25 % tono + 15 % saturación + 15 % contención + 15 % transición`.
+- Escenas de pintura: la esfera y el cilindro usan `t = 0.3 + 0.7·(n·l)` en el lado iluminado y
+  `t = reflejada·(1 − n_z)·√(−n·l)` en la sombra, entre el color de sombra y el de luz (diseño propio,
+  siguiendo las familias de luz y sombra de Gurney). La luz se toma como `(lx, ly, 0.6)` normalizado.
 - Guías de contexto y ocultas (calcar): las de contexto no se califican; las ocultas sí, aunque no se vean.
 - Estrellas: 60 → 1, 75 → 2, 90 → 3. Un módulo se abre al conseguir al menos una estrella en la mitad
   (redondeada hacia arriba) de los ejercicios del anterior; dentro de un módulo abierto, todos los ejercicios

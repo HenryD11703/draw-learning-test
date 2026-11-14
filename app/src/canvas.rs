@@ -57,6 +57,8 @@ pub struct Canvas {
     pub size_mult: f32,
     pub opacity_mult: f32,
     pub last_dab_size: f32,
+    /// Ver el lienzo en grises (solo en pantalla) para comprobar los valores.
+    pub gray: bool,
 }
 
 impl Canvas {
@@ -79,6 +81,7 @@ impl Canvas {
             size_mult: 1.0,
             opacity_mult: 1.0,
             last_dab_size: 0.0,
+            gray: false,
         };
         c.mark_all();
         c
@@ -460,7 +463,12 @@ impl Canvas {
             for y in y0..y1 {
                 for x in x0..x1 {
                     let c = self.pixel(x, y);
-                    self.display[y * W + x] = Color32::from_rgb(to8(c[0]), to8(c[1]), to8(c[2]));
+                    self.display[y * W + x] = if self.gray {
+                        let l = to8(luminance(c));
+                        Color32::from_rgb(l, l, l)
+                    } else {
+                        Color32::from_rgb(to8(c[0]), to8(c[1]), to8(c[2]))
+                    };
                 }
             }
             let img = ColorImage::new([W, H], self.display.clone());
@@ -546,6 +554,28 @@ mod tests {
         c.layers[0].opacity = 0.5;
         let half = luminance(c.pixel(400, 300));
         assert!(half > 0.35 && half < 0.65, "media opacidad: {half}");
+    }
+
+    #[test]
+    fn blender_smears_the_values_it_crosses() {
+        let blender = presets().into_iter().find(|b| b.id == "difuminar").expect("difuminar");
+        let mut c = Canvas::new();
+        for y in 0..H {
+            for x in 0..W {
+                c.base[y * W + x] = if x < 480 { [0.2; 3] } else { [0.85; 3] };
+            }
+        }
+        // Varias pasadas de izquierda a derecha cruzando el límite.
+        for k in 0..6 {
+            let y = 290.0 + k as f32 * 4.0;
+            let info = |x: f32| PInfo { pos: pos2(x, y), pressure: 1.0, time: 0.0, speed: 0.0 };
+            c.begin_stroke();
+            c.paint(&Segment::Line(info(430.0), info(560.0)), &blender);
+            c.end_stroke();
+        }
+        let right = luminance(c.pixel(500, 300));
+        assert!(right < 0.8 && right > 0.25, "el lado claro recibe algo del oscuro: {right}");
+        assert!((luminance(c.pixel(100, 300)) - 0.2).abs() < 1e-3, "lejos del trazo no cambia");
     }
 
     #[test]

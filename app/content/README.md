@@ -40,7 +40,7 @@ El número del módulo ("5.") lo pone la app según el orden.
 ```
 
 - `id`: único en toda la app. Las estrellas se guardan con él: no lo cambies en un ejercicio publicado.
-- `brush`: `borrador`, `basico5`, `basico2`, `aero`, `lapiz`, `fineliner`, `gpen`, `marcador`, `humedo`, `pixel`.
+- `brush`: `borrador`, `basico5`, `basico2`, `aero`, `lapiz`, `fineliner`, `gpen`, `marcador`, `humedo`, `difuminar`, `pixel`.
 - `smoothing` (opcional): `Ninguno`, `Basico`, `Ponderado`, `Estabilizador`, `Pixel`.
 - `color` (opcional): RGB de 0 a 1.
 - `memory` (opcional): segundos que se ven las ayudas antes de ocultarse.
@@ -64,7 +64,8 @@ Edwards, Bert Dodson, Loomis…) y cada `goal` explicar el concepto, no solo la 
 | `copy` | La referencia al lado; dibuja donde quiera | `tol`, `guides` y/o `scene` |
 | `perspective` | Horizonte, PF, líneas dadas y puntos de salida | `tol`, `scene`, `hints` |
 | `hatch` | Zonas para rellenar con rayado, cada una con su muestra | `tol`, `regions` |
-| `paint` | Un objetivo de pintura | `target`: `ValueSteps`, `Gradient`, `Sphere`, `Cylinder`, `Silhouette`, `Cleanup`, `ColorBlend` |
+| `painting` | Una escena para pintar, con la referencia al lado | `mode`, `scene`, `start` (ver abajo) |
+| `paint` | Uno de los primeros objetivos de pintura, escritos en código | `target`: `ValueSteps`, `Gradient`, `Sphere`, `Cylinder`, `Silhouette`, `Cleanup`, `ColorBlend` |
 
 `tol` es la tolerancia en px (entre 8 y 18 en los ejercicios actuales). `hints: true` permite mostrar
 las líneas objetivo con la casilla "Mostrar ayuda".
@@ -171,3 +172,26 @@ posiciones y los tamaños.
 
 Una escena también sirve para un ejercicio de copia: `{ "type": "copy", "tol": 14, "scene": { ... } }`
 dibuja la caja completa como referencia.
+
+## Escenas de pintura (`painting`)
+
+```json
+{ "type": "painting", "mode": "value", "scene": [
+  { "prim": "rect", "rect": [160, 100, 800, 560], "fill": 0.78 },
+  { "prim": "ellipse", "c": [590, 470], "rx": 160, "ry": 36, "fill": 0.2 },
+  { "prim": "sphere", "c": [460, 330], "r": 130, "light": [-0.7, -0.7], "lit": 0.94, "shadow": 0.16, "reflected": 0.3 }
+], "start": [] }
+```
+
+- `mode`: `value` (solo lo claro y lo oscuro), `color` (tono, saturación y valor) o `coverage` (que la
+  zona quede cubierta).
+- `scene`: figuras en orden de dibujo; todo lo que pintan se califica. `fill` es un gris (`0.4`) o un
+  color RGB de 0 a 1 (`[0.9, 0.5, 0.2]`).
+- `start` (opcional): figuras con las que empieza el lienzo (por ejemplo, dos valores planos para fundir).
+
+Figuras: `rect`, `ellipse`, `poly` (`pts`), `gradient` (`rect`, `from`, `to`, `vertical`), `sphere`
+(`c`, `r`, `light`, `lit`, `shadow`, `reflected`, `highlight`, `steps`) y `cylinder` (`rect`, `light`
+de -1 a 1, `lit`, `shadow`, `reflected`, `steps`). La esfera y el cilindro siguen el principio de la
+forma de Gurney: luz plena y medio tono, terminador, sombra propia con luz reflejada y brillo. `light`
+es la dirección hacia la luz en pantalla (x a la derecha, y hacia abajo); `steps` > 0 la pinta por
+planos.

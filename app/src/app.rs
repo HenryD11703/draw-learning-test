@@ -4,7 +4,8 @@ use crate::brush::{BrushKind, BrushPreset, presets};
 use crate::canvas::{Canvas, H, PAPER, W, to8};
 use crate::curve::Curve;
 use crate::grading::{Grade, error_marks, grade_copy, grade_hatch, grade_paint, grade_perspective, grade_points, grade_trace};
-use crate::lessons::{Exercise, Guide, Kind, Module, PaintTarget, Region, Role, Scene, modules, paint_target, starting_canvas};
+use crate::lessons::{Exercise, Guide, Kind, Module, Region, Role, Scene, modules};
+use crate::painting::PaintMode;
 use crate::pressure::{MouseMode, PressureSettings, SpeedSmoother, simulated};
 use crate::progress::Progress;
 use crate::smoothing::{PInfo, Segment, SmoothingType, Smoother};
@@ -29,7 +30,7 @@ fn kind_info(kind: &Kind) -> (Icon, &'static str) {
         Kind::Copy { .. } => (Icon::Copy, "Copia"),
         Kind::Perspective(_) => (Icon::Perspective, "Perspectiva"),
         Kind::Hatch { .. } => (Icon::Hatch, "Rayado"),
-        Kind::Paint { .. } => (Icon::Paint, "Pintura"),
+        Kind::Paint(_) => (Icon::Paint, "Pintura"),
     }
 }
 
@@ -47,7 +48,8 @@ enum Screen {
 struct PaintRef {
     target: Vec<[f32; 3]>,
     mask: Vec<bool>,
-    kind: PaintTarget,
+    start: Option<Vec<[f32; 3]>>,
+    mode: PaintMode,
     reference: TextureHandle,
     outline: TextureHandle,
 }
@@ -299,12 +301,12 @@ impl TrazoApp {
             self.smoother.opts.kind = s;
         }
         match ex.kind {
-            Kind::Paint { target } => {
-                self.canvas.reset_with(starting_canvas(target));
-                let (img, mask) = paint_target(target);
-                let reference = ctx.load_texture("referencia", to_color_image(&img), TextureOptions::LINEAR);
-                let outline = ctx.load_texture("contorno", outline_image(&mask), TextureOptions::LINEAR);
-                self.paint_ref = Some(PaintRef { target: img, mask, kind: target, reference, outline });
+            Kind::Paint(paint) => {
+                let job = paint.render();
+                self.canvas.reset_with(job.start.clone());
+                let reference = ctx.load_texture("referencia", to_color_image(&job.target), TextureOptions::LINEAR);
+                let outline = ctx.load_texture("contorno", outline_image(&job.mask), TextureOptions::LINEAR);
+                self.paint_ref = Some(PaintRef { target: job.target, mask: job.mask, start: job.start, mode: job.mode, reference, outline });
             }
             _ => {
                 self.canvas.reset_with(None);
@@ -343,8 +345,8 @@ impl TrazoApp {
             Kind::Copy { guides, tol } => grade_copy(strokes, guides, *tol),
             Kind::Perspective(scene) => grade_perspective(strokes, scene),
             Kind::Hatch { regions, tol } => grade_hatch(strokes, regions, *tol),
-            Kind::Paint { .. } => match &self.paint_ref {
-                Some(r) => grade_paint(&self.canvas, &r.target, &r.mask, r.kind),
+            Kind::Paint(_) => match &self.paint_ref {
+                Some(r) => grade_paint(&self.canvas, &r.target, &r.mask, r.mode),
                 None => return,
             },
         };
@@ -520,6 +522,17 @@ impl TrazoApp {
         });
         let brush = self.brushes[self.brush].clone();
         let mut segs: Vec<Segment> = Vec::new();
+        let picking = ui.input(|i| i.modifiers.ctrl);
+        if picking && allow && (resp.drag_started_by(egui::PointerButton::Primary) || resp.clicked()) {
+            if let Some(p) = resp.interact_pointer_pos() {
+                let q = to_canvas(p);
+                if q.x >= 0.0 && q.y >= 0.0 && q.x < W as f32 && q.y < H as f32 {
+                    // Se toma el color real, aunque la vista esté en grises.
+                    self.canvas.color = self.canvas.pixel(q.x as usize, q.y as usize);
+                }
+            }
+            return;
+        }
         if resp.drag_started_by(egui::PointerButton::Primary) && !self.time_up && allow {
             if let Some(p) = resp.interact_pointer_pos() {
                 self.speed.reset();
@@ -594,6 +607,12 @@ impl TrazoApp {
             return;
         }
         let Some(ex) = self.current_exercise().cloned() else { return };
+        // Pintura: el objetivo exacto, para ver en la captura cómo queda la escena.
+        if let (Kind::Paint(_), Some(r)) = (&ex.kind, &self.paint_ref) {
+            self.canvas.base = r.target.clone();
+            self.canvas.mark_all();
+            return;
+        }
         let brush = self.brushes[self.brush].clone();
         let mut t = self.now_ms();
         // Recorre la polilínea con un pulso algo tembloroso.
@@ -641,7 +660,7 @@ impl TrazoApp {
                     shaky(&pts, None)
                 })
                 .collect(),
-            Kind::Paint { .. } => (0..12)
+            Kind::Paint(_) => (0..12)
                 .map(|k| (0..60).map(|i| (pos2(150.0 + i as f32 * 11.0, 230.0 + k as f32 * 16.0), 0.3 + 0.05 * k as f32)).collect())
                 .collect(),
         };
@@ -1048,7 +1067,7 @@ impl TrazoApp {
                     ui.add(egui::Slider::new(&mut self.canvas.size_mult, 0.15..=6.0).logarithmic(true).max_decimals(2));
                     ui.label(theme::caption("Opacidad"));
                     ui.add(egui::Slider::new(&mut self.canvas.opacity_mult, 0.05..=1.0).max_decimals(2));
-                    ui.label(theme::caption("Atajos como en Krita: [ y ] tamaño, E borrador, Ctrl+Z deshacer."));
+                    ui.label(theme::caption("Atajos como en Krita: [ y ] tamaño, E borrador, Ctrl+Z deshacer, Ctrl + clic toma un color del lienzo."));
                     theme::section(ui, "Color");
                     let mut rgb = self.canvas.color;
                     ui.horizontal(|ui| {
@@ -1086,7 +1105,7 @@ impl TrazoApp {
                     let clear_label = if self.screen == Screen::Free { "Vaciar la capa" } else { "Borrar todo" };
                     if theme::button_ex(ui, Some(Icon::Trash), clear_label, Btn::Outline, w, true).clicked() {
                         if let Some(r) = &self.paint_ref {
-                            let start = starting_canvas(r.kind);
+                            let start = r.start.clone();
                             self.canvas.reset_with(start);
                         } else {
                             self.canvas.clear();
@@ -1148,7 +1167,7 @@ impl TrazoApp {
                             theme::section(ui, "Referencia");
                             draw_reference(ui, guides);
                         }
-                        if let (Kind::Paint { .. }, Some(r)) = (&ex.kind, &self.paint_ref) {
+                        if let (Kind::Paint(_), Some(r)) = (&ex.kind, &self.paint_ref) {
                             theme::section(ui, "Referencia");
                             let w = ui.available_width();
                             ui.add(egui::Image::new((r.reference.id(), vec2(w, w * H as f32 / W as f32))).corner_radius(8));
@@ -1385,6 +1404,14 @@ impl TrazoApp {
         }
         if self.view.rot != 0.0 {
             ui.label(theme::caption(format!("{:.0}°", self.view.degrees())));
+        }
+        let gray = if self.canvas.gray { Btn::Selected } else { Btn::Ghost };
+        if theme::button(ui, None, "Grises", gray)
+            .on_hover_text("Ver el lienzo en grises para comprobar los valores (solo en pantalla). En Krita se consigue con una capa de relleno negra en modo Color encima de todo.")
+            .clicked()
+        {
+            self.canvas.gray = !self.canvas.gray;
+            self.canvas.mark_all();
         }
         let mirror = if self.view.mirror { Btn::Selected } else { Btn::Ghost };
         if theme::button(ui, None, "Espejo", mirror)
