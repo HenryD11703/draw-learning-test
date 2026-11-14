@@ -1,7 +1,8 @@
 //! Calificación de los ejercicios (diseño propio, MECHANICS.md §4).
 
 use crate::canvas::{Canvas, H, StrokePoint, W, luminance};
-use crate::lessons::{CELL, Guide, Kind, PaintTarget, Region, Role, Scene};
+use crate::lessons::{CELL, Guide, Kind, Region, Role, Scene};
+use crate::painting::{PaintMode, hsv};
 use egui::Pos2;
 use std::collections::BTreeMap;
 
@@ -229,7 +230,7 @@ pub fn error_marks(kind: &Kind, strokes: &[Vec<StrokePoint>]) -> Vec<(Pos2, f32)
             }
             out
         }
-        Kind::Copy { .. } | Kind::Paint { .. } => Vec::new(),
+        Kind::Copy { .. } | Kind::Paint(_) => Vec::new(),
     }
 }
 
@@ -696,11 +697,12 @@ fn cell_mean(f: impl Fn(usize, usize) -> [f32; 3], cx: usize, cy: usize) -> [f32
     [acc[0] / n, acc[1] / n, acc[2] / n]
 }
 
-pub fn grade_paint(canvas: &Canvas, target: &[[f32; 3]], mask: &[bool], kind: PaintTarget) -> Grade {
+pub fn grade_paint(canvas: &Canvas, target: &[[f32; 3]], mask: &[bool], mode: PaintMode) -> Grade {
     let cols = W / CELL;
     let rows = H / CELL;
-    let use_color = kind == PaintTarget::ColorBlend || kind == PaintTarget::Silhouette;
     let paper = luminance(crate::canvas::PAPER);
+    // Color: error de tono (grados, pesado por la saturación del objetivo) y de saturación.
+    let (mut hue_err, mut hue_w, mut sat_err) = (0.0f32, 0.0f32, 0.0f32);
     let mut err = 0.0;
     let mut n_in = 0.0;
     let mut outside = 0.0;
@@ -714,14 +716,22 @@ pub fn grade_paint(canvas: &Canvas, target: &[[f32; 3]], mask: &[bool], kind: Pa
             let c = cell_mean(|x, y| canvas.pixel(x, y), cx, cy);
             if inside {
                 let t = cell_mean(|x, y| target[y * W + x], cx, cy);
-                let e = if kind == PaintTarget::Silhouette {
+                let e = match mode {
                     // Silueta: cuenta que esté cubierta, no el tono exacto del rotulador.
-                    if (luminance(c) - paper).abs() > 0.08 { 0.0 } else { 0.3 }
-                } else if use_color {
-                    ((c[0] - t[0]).abs() + (c[1] - t[1]).abs() + (c[2] - t[2]).abs()) / 3.0
-                } else {
-                    (luminance(c) - luminance(t)).abs()
+                    PaintMode::Coverage => {
+                        if (luminance(c) - paper).abs() > 0.08 { 0.0 } else { 0.3 }
+                    }
+                    PaintMode::Value | PaintMode::Color => (luminance(c) - luminance(t)).abs(),
                 };
+                if mode == PaintMode::Color {
+                    let ((hc, sc, _), (ht, st, _)) = (hsv(c), hsv(t));
+                    // El tono de un gris no significa nada: pesa según lo saturado que es el objetivo.
+                    let w = ((st - 0.08) / 0.3).clamp(0.0, 1.0);
+                    let dh = (hc - ht).rem_euclid(360.0);
+                    hue_err += dh.min(360.0 - dh) * w;
+                    hue_w += w;
+                    sat_err += (sc - st).abs();
+                }
                 err += e;
                 n_in += 1.0;
                 mine[cy * cols + cx] = Some(luminance(c));
@@ -755,12 +765,19 @@ pub fn grade_paint(canvas: &Canvas, target: &[[f32; 3]], mask: &[bool], kind: Pa
         }
     }
     let blend = if n_tr == 0.0 { 0.0 } else { (1.0 - (tr / n_tr) / 0.08).clamp(0.0, 1.0) };
-    let metrics = vec![
+    let mut metrics = vec![
         Metric { name: "Valor", value, help: "Qué tanto se parecen tus claros y oscuros a la referencia." },
         Metric { name: "Contención", value: containment, help: "Si pintaste dentro de la zona sin salirte." },
         Metric { name: "Transición", value: blend, help: "Si los cambios de tono son suaves donde deben serlo." },
     ];
-    let total = ((0.60 * value + 0.25 * containment + 0.15 * blend) * 100.0).round();
+    let mut total = ((0.60 * value + 0.25 * containment + 0.15 * blend) * 100.0).round();
+    if mode == PaintMode::Color && n_in > 0.0 {
+        let hue = if hue_w < 1e-3 { 1.0 } else { (1.0 - (hue_err / hue_w) / 40.0).clamp(0.0, 1.0) };
+        let sat = (1.0 - (sat_err / n_in) / 0.3).clamp(0.0, 1.0);
+        metrics.insert(1, Metric { name: "Tono", value: hue, help: "Si el color tira hacia el mismo lado del círculo cromático (rojo, amarillo, azul…)." });
+        metrics.insert(2, Metric { name: "Saturación", value: sat, help: "Si el color es igual de intenso o de apagado que el de la referencia." });
+        total = ((0.30 * value + 0.25 * hue + 0.15 * sat + 0.15 * containment + 0.15 * blend) * 100.0).round();
+    }
     let advice = advice_for(&metrics, 0.0);
     Grade { total, stars: stars_for(total), metrics, advice, assist_penalty: 0.0 }
 }
@@ -783,6 +800,8 @@ fn advice_for(metrics: &[Metric], penalty: f32) -> String {
         Some(("Dirección", _)) => "Las líneas no son paralelas o no van en la dirección de la muestra. Gira el lienzo para trazarlas en tu dirección cómoda.".into(),
         Some(("Regularidad", _)) => "La separación entre líneas cambia mucho. Coloca cada línea a la misma distancia de la anterior, sin prisa.".into(),
         Some(("Densidad", _)) => "La separación no da el tono pedido: más juntas oscurecen, más separadas aclaran. Compara con la muestra de cada zona.".into(),
+        Some(("Tono", _)) => "El color tira hacia otro lado del círculo cromático. Compara con la referencia: ¿es más amarillo, más rojo, más azul?".into(),
+        Some(("Saturación", _)) => "El color es más intenso o más apagado que el de la referencia. Para apagarlo, mézclalo con un gris de su mismo valor.".into(),
         Some(("Convergencia", _)) => "Tus líneas no apuntan al punto de fuga. Antes de trazar, imagina la recta que une el punto verde con su PF.".into(),
         _ => "Sigue practicando.".into(),
     };
@@ -997,6 +1016,37 @@ mod tests {
     }
 
     #[test]
+    fn color_grading_separates_hue_saturation_and_value() {
+        let orange = [0.85, 0.35, 0.2];
+        let (mut target, mut mask) = (vec![crate::canvas::PAPER; W * H], vec![false; W * H]);
+        for y in 200..440 {
+            for x in 200..760 {
+                target[y * W + x] = orange;
+                mask[y * W + x] = true;
+            }
+        }
+        let paint = |c: [f32; 3]| {
+            let mut cv = Canvas::new();
+            for y in 200..440 {
+                for x in 200..760 {
+                    cv.base[y * W + x] = c;
+                }
+            }
+            grade_paint(&cv, &target, &mask, PaintMode::Color)
+        };
+        let exact = paint(orange);
+        assert_eq!(exact.stars, 3, "total {}", exact.total);
+        // Azul de casi el mismo valor: el tono falla, el valor no.
+        let blue = paint([0.2, 0.45, 0.85]);
+        assert!(metric(&blue, "Tono") < 0.1, "tono {}", metric(&blue, "Tono"));
+        assert!(metric(&blue, "Valor") > 0.9, "valor {}", metric(&blue, "Valor"));
+        // Gris del mismo valor: falla la saturación.
+        let l = luminance(orange);
+        let gray = paint([l, l, l]);
+        assert!(metric(&gray, "Saturación") < 0.1, "saturación {}", metric(&gray, "Saturación"));
+    }
+
+    #[test]
     fn transition_sees_vertical_gradients() {
         // Referencia: degradado vertical en las filas de celdas 10..20; saltos de 0.09 por celda.
         let rows = 10..20;
@@ -1017,8 +1067,8 @@ mod tests {
                 exact.base[y * W + x] = [tone(y); 3];
             }
         }
-        let f = grade_paint(&flat, &target, &mask, PaintTarget::Gradient);
-        let e = grade_paint(&exact, &target, &mask, PaintTarget::Gradient);
+        let f = grade_paint(&flat, &target, &mask, PaintMode::Value);
+        let e = grade_paint(&exact, &target, &mask, PaintMode::Value);
         assert!(metric(&e, "Transición") >= 0.99);
         assert!(metric(&f, "Transición") < 0.6, "transición del tono plano {}", metric(&f, "Transición"));
     }

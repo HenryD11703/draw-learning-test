@@ -1,0 +1,487 @@
+{
+  "id": "valor",
+  "title": "Valor",
+  "subtitle": "Lo claro y lo oscuro: escalas, notan y miniaturas",
+  "lesson": "Basado en James Gurney («Color and Light») y en la práctica del notan. El valor es lo claro u oscuro de un color, y es lo que más pesa para que una imagen se lea: si los valores funcionan, el color puede ser casi cualquiera.\n\n• Antes de pintar, se planifica con pocos valores: dos (notan) o tres (luz, medio, oscuro).\n• Agrupa: muchas zonas con valores parecidos se leen mejor como una sola mancha.\n• Comprueba tus valores con el botón Grises, encima del lienzo.\n\nCon el pincel de opacidad, la presión decide lo oscuro; también puedes elegir el gris en el selector de color o tomarlo del lienzo con Ctrl + clic.",
+  "accent": [
+    210,
+    210,
+    220
+  ],
+  "exercises": [
+    {
+      "id": "m6e1",
+      "title": "Escala de valores",
+      "goal": "Pinta los 5 recuadros igualando los grises de la referencia.",
+      "krita_tip": "Con b) Basic-2 Opacity la presión decide lo oscuro del gris; prueba distintas presiones sobre el mismo recuadro.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "ValueSteps"
+      }
+    },
+    {
+      "id": "val01",
+      "title": "Escala de nueve valores",
+      "goal": "Nueve recuadros del blanco al negro, en saltos iguales. El valor del centro debe quedar justo a medio camino entre los extremos.",
+      "krita_tip": "En Krita, pinta en escala de grises en una capa y comprueba los valores con una capa de relleno negra en modo Color encima de todo: es lo mismo que el botón Grises de esta app.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              48,
+              220,
+              140,
+              420
+            ],
+            "fill": 0.95
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              144,
+              220,
+              236,
+              420
+            ],
+            "fill": 0.837
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              240,
+              220,
+              332,
+              420
+            ],
+            "fill": 0.725
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              336,
+              220,
+              428,
+              420
+            ],
+            "fill": 0.612
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              432,
+              220,
+              524,
+              420
+            ],
+            "fill": 0.5
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              528,
+              220,
+              620,
+              420
+            ],
+            "fill": 0.387
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              624,
+              220,
+              716,
+              420
+            ],
+            "fill": 0.275
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              720,
+              220,
+              812,
+              420
+            ],
+            "fill": 0.162
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              816,
+              220,
+              908,
+              420
+            ],
+            "fill": 0.05
+          }
+        ]
+      }
+    },
+    {
+      "id": "val02",
+      "title": "Valores sueltos",
+      "goal": "Cuatro recuadros sin orden. Compara cada uno con los otros antes de pintarlo: ¿es más claro o más oscuro que su vecino?",
+      "krita_tip": "En Krita, el selector de color avanzado tiene un triángulo de valor y saturación: practica a elegir el gris exacto a ojo.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              130,
+              460,
+              300
+            ],
+            "fill": 0.8
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              500,
+              130,
+              740,
+              300
+            ],
+            "fill": 0.25
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              340,
+              460,
+              510
+            ],
+            "fill": 0.55
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              500,
+              340,
+              740,
+              510
+            ],
+            "fill": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "val03",
+      "title": "Notan: dos valores",
+      "goal": "Solo blanco y negro: el árbol y la colina van oscuros sobre el fondo claro. Sin grises intermedios.",
+      "krita_tip": "El notan es el esquema de luces y sombras de un cuadro reducido a dos valores; en Krita se hace rápido con la herramienta de relleno.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              180,
+              120,
+              780,
+              520
+            ],
+            "fill": 0.95
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                180,
+                520
+              ],
+              [
+                180,
+                430
+              ],
+              [
+                380,
+                380
+              ],
+              [
+                600,
+                420
+              ],
+              [
+                780,
+                400
+              ],
+              [
+                780,
+                520
+              ]
+            ],
+            "fill": 0.1
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              455,
+              300,
+              485,
+              420
+            ],
+            "fill": 0.1
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              470,
+              250
+            ],
+            "rx": 95,
+            "ry": 85,
+            "fill": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "val04",
+      "title": "Tres valores: paisaje",
+      "goal": "Cielo claro, montañas en un gris medio y primer plano oscuro. Tres valores bien separados y nada más.",
+      "krita_tip": "Planificar en tres valores es el primer paso de casi cualquier ilustración: en Krita, hazlo en una miniatura pequeña antes del cuadro.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              180,
+              120,
+              780,
+              520
+            ],
+            "fill": 0.88
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                180,
+                400
+              ],
+              [
+                300,
+                260
+              ],
+              [
+                420,
+                330
+              ],
+              [
+                560,
+                220
+              ],
+              [
+                700,
+                320
+              ],
+              [
+                780,
+                290
+              ],
+              [
+                780,
+                430
+              ],
+              [
+                180,
+                430
+              ]
+            ],
+            "fill": 0.5
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                180,
+                520
+              ],
+              [
+                180,
+                440
+              ],
+              [
+                420,
+                410
+              ],
+              [
+                780,
+                450
+              ],
+              [
+                780,
+                520
+              ]
+            ],
+            "fill": 0.15
+          }
+        ]
+      }
+    },
+    {
+      "id": "val05",
+      "title": "Miniatura de bodegón",
+      "goal": "Fondo gris claro, mesa oscura, jarrón muy oscuro y una fruta de valor medio. Agrupa: cada objeto, una sola mancha.",
+      "krita_tip": "Las miniaturas se pintan pequeñas a propósito: en Krita, aleja la vista para no caer en el detalle.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              120,
+              740,
+              520
+            ],
+            "fill": 0.75
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              400,
+              740,
+              520
+            ],
+            "fill": 0.35
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              420,
+              220,
+              500,
+              410
+            ],
+            "fill": 0.12
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              460,
+              220
+            ],
+            "rx": 40,
+            "ry": 14,
+            "fill": 0.12
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              600,
+              380
+            ],
+            "rx": 50,
+            "ry": 45,
+            "fill": 0.55
+          }
+        ]
+      }
+    },
+    {
+      "id": "m5e4",
+      "title": "Aerógrafo: degradado",
+      "goal": "Haz un degradado de oscuro (izquierda) a claro (derecha) dentro del rectángulo.",
+      "krita_tip": "b) Airbrush Soft acumula color al pasar. En Krita también tienes la herramienta Degradado (tecla G) para fondos.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "Gradient"
+      }
+    },
+    {
+      "id": "val06",
+      "title": "Degradado de cielo",
+      "goal": "Un cielo de arriba abajo: más oscuro arriba y más claro junto al horizonte, sin saltos.",
+      "krita_tip": "Los cielos casi siempre aclaran hacia el horizonte. En Krita, la herramienta Degradado (G) lo hace de un trazo; aquí, a mano con el aerógrafo.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "gradient",
+            "rect": [
+              200,
+              120,
+              760,
+              520
+            ],
+            "from": 0.35,
+            "to": 0.9,
+            "vertical": true
+          }
+        ]
+      }
+    }
+  ]
+}

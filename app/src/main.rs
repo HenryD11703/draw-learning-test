@@ -7,6 +7,7 @@ mod content;
 mod curve;
 mod grading;
 mod lessons;
+mod painting;
 mod pressure;
 mod progress;
 mod smoothing;

@@ -1,0 +1,568 @@
+{
+  "id": "color_luz",
+  "title": "Color y luz",
+  "subtitle": "Luz cálida y fría, sombras de color y perspectiva atmosférica",
+  "lesson": "Basado en James Gurney («Color and Light»). El color que vemos es el color propio del objeto modificado por la luz que le llega:\n\n• Una luz cálida (sol, bombilla) da luces cálidas y sombras que se ven más frías; una luz fría, al revés.\n• La sombra no es el color propio con negro: recibe la luz del cielo y del entorno.\n• A lo lejos, el aire aclara los colores, los desatura y los acerca al color del cielo (perspectiva atmosférica).",
+  "accent": [
+    255,
+    160,
+    90
+  ],
+  "exercises": [
+    {
+      "id": "cyl01",
+      "title": "Esfera roja con luz cálida",
+      "goal": "Luz cálida desde arriba a la izquierda: la luz de la esfera tira a naranja y su sombra, a un rojo violáceo más frío.",
+      "krita_tip": "En Krita, pinta primero la escena en grises y colorea después con capas en modo Color o Multiplicar.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": [
+              0.85,
+              0.8,
+              0.7
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              410,
+              800,
+              560
+            ],
+            "fill": [
+              0.7,
+              0.62,
+              0.5
+            ]
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              590,
+              470
+            ],
+            "rx": 160,
+            "ry": 36,
+            "fill": [
+              0.35,
+              0.3,
+              0.38
+            ]
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              460,
+              330
+            ],
+            "r": 130,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": [
+              0.98,
+              0.55,
+              0.35
+            ],
+            "shadow": [
+              0.35,
+              0.12,
+              0.22
+            ],
+            "reflected": 0.25,
+            "highlight": 0.6
+          }
+        ]
+      }
+    },
+    {
+      "id": "cyl02",
+      "title": "Esfera blanca con luz fría",
+      "goal": "Luz fría y azulada sobre una esfera blanca: las luces son azul pálido y la sombra tira a un marrón cálido por la luz que rebota del suelo.",
+      "krita_tip": "Un objeto blanco casi nunca se pinta con blanco puro ni con gris: toma el color de la luz y del entorno.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": [
+              0.55,
+              0.6,
+              0.7
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              410,
+              800,
+              560
+            ],
+            "fill": [
+              0.6,
+              0.5,
+              0.4
+            ]
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              590,
+              470
+            ],
+            "rx": 160,
+            "ry": 36,
+            "fill": [
+              0.3,
+              0.27,
+              0.3
+            ]
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              460,
+              330
+            ],
+            "r": 130,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": [
+              0.8,
+              0.87,
+              0.97
+            ],
+            "shadow": [
+              0.42,
+              0.33,
+              0.27
+            ],
+            "reflected": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "id": "cyl03",
+      "title": "Caja de color",
+      "goal": "Una caja de madera con luz cálida: tapa amarilla clara, cara izquierda naranja y cara derecha en sombra violácea, con su sombra fría en el suelo.",
+      "krita_tip": "En el selector de color avanzado de Krita, el anillo cambia el tono y el triángulo, la saturación y el valor: cámbialos de uno en uno.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": [
+              0.78,
+              0.74,
+              0.66
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                540,
+                500
+              ],
+              [
+                660,
+                400
+              ],
+              [
+                820,
+                430
+              ],
+              [
+                700,
+                540
+              ]
+            ],
+            "fill": [
+              0.3,
+              0.3,
+              0.45
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                300,
+                280
+              ],
+              [
+                420,
+                180
+              ],
+              [
+                660,
+                180
+              ],
+              [
+                540,
+                280
+              ]
+            ],
+            "fill": [
+              0.95,
+              0.85,
+              0.55
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                300,
+                280
+              ],
+              [
+                540,
+                280
+              ],
+              [
+                540,
+                500
+              ],
+              [
+                300,
+                500
+              ]
+            ],
+            "fill": [
+              0.8,
+              0.55,
+              0.3
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                540,
+                280
+              ],
+              [
+                660,
+                180
+              ],
+              [
+                660,
+                400
+              ],
+              [
+                540,
+                500
+              ]
+            ],
+            "fill": [
+              0.4,
+              0.25,
+              0.32
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cyl04",
+      "title": "Perspectiva atmosférica",
+      "goal": "Cielo azul que aclara hacia el horizonte, montañas lejanas casi del color del cielo, colinas medias y un primer plano oscuro y saturado.",
+      "krita_tip": "Cuanto más lejos, más claro, más apagado y más azul: es la regla más útil para dar profundidad a un paisaje.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "gradient",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "from": [
+              0.55,
+              0.7,
+              0.9
+            ],
+            "to": [
+              0.9,
+              0.85,
+              0.8
+            ],
+            "vertical": true
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                160,
+                360
+              ],
+              [
+                280,
+                250
+              ],
+              [
+                400,
+                300
+              ],
+              [
+                540,
+                220
+              ],
+              [
+                680,
+                300
+              ],
+              [
+                800,
+                260
+              ],
+              [
+                800,
+                400
+              ],
+              [
+                160,
+                400
+              ]
+            ],
+            "fill": [
+              0.62,
+              0.68,
+              0.82
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                160,
+                440
+              ],
+              [
+                300,
+                360
+              ],
+              [
+                480,
+                400
+              ],
+              [
+                640,
+                350
+              ],
+              [
+                800,
+                400
+              ],
+              [
+                800,
+                470
+              ],
+              [
+                160,
+                470
+              ]
+            ],
+            "fill": [
+              0.38,
+              0.5,
+              0.52
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                160,
+                560
+              ],
+              [
+                160,
+                470
+              ],
+              [
+                420,
+                450
+              ],
+              [
+                800,
+                480
+              ],
+              [
+                800,
+                560
+              ]
+            ],
+            "fill": [
+              0.2,
+              0.3,
+              0.14
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cyl05",
+      "title": "Atardecer",
+      "goal": "Cielo naranja que aclara hacia el sol, montañas en silueta violácea y primer plano casi negro. Los valores oscuros siguen teniendo color.",
+      "krita_tip": "A contraluz, las formas se vuelven siluetas: en Krita, pinta el cielo en una capa y las siluetas en otra encima.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "gradient",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "from": [
+              0.95,
+              0.55,
+              0.3
+            ],
+            "to": [
+              0.98,
+              0.85,
+              0.5
+            ],
+            "vertical": true
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              600,
+              330
+            ],
+            "rx": 45,
+            "ry": 45,
+            "fill": [
+              1.0,
+              0.95,
+              0.8
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                160,
+                420
+              ],
+              [
+                300,
+                300
+              ],
+              [
+                420,
+                360
+              ],
+              [
+                560,
+                280
+              ],
+              [
+                700,
+                370
+              ],
+              [
+                800,
+                330
+              ],
+              [
+                800,
+                460
+              ],
+              [
+                160,
+                460
+              ]
+            ],
+            "fill": [
+              0.35,
+              0.2,
+              0.3
+            ]
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                160,
+                560
+              ],
+              [
+                160,
+                460
+              ],
+              [
+                460,
+                440
+              ],
+              [
+                800,
+                470
+              ],
+              [
+                800,
+                560
+              ]
+            ],
+            "fill": [
+              0.12,
+              0.08,
+              0.12
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

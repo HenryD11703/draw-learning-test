@@ -52,7 +52,8 @@ pub enum Kind {
     Perspective(Scene),
     /// Rellenar zonas con líneas paralelas (rayado o trama cruzada) a una densidad dada.
     Hatch { regions: Vec<Region>, tol: f32 },
-    Paint { target: PaintTarget },
+    /// Pintar una zona para igualar una imagen objetivo.
+    Paint(crate::painting::Paint),
 }
 
 /// Zona de un ejercicio de rayado (polígono convexo).
