@@ -217,6 +217,8 @@ pub struct Exercise {
     pub memory: Option<f32>,
     /// Numerar las guías en el lienzo para indicar el orden de construcción.
     pub numbered: bool,
+    /// Segundos para hacer el ejercicio (gestos): al acabar se califica y se bloquea el lienzo.
+    pub time_limit: Option<f32>,
     pub spec: KindSpec,
     pub vary: Vary,
 }

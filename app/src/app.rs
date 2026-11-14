@@ -95,6 +95,8 @@ pub struct TrazoApp {
     show_marks: bool,
     /// Módulo al que desplazar el mapa al abrirlo.
     map_focus: Option<usize>,
+    /// Se acabó el tiempo del ejercicio: ya se calificó y no se puede seguir dibujando.
+    time_up: bool,
 }
 
 impl TrazoApp {
@@ -134,6 +136,7 @@ impl TrazoApp {
             marks: Vec::new(),
             show_marks: true,
             map_focus: None,
+            time_up: false,
         }
     }
 
@@ -236,6 +239,7 @@ impl TrazoApp {
         self.screen = Screen::Exercise(m, e);
         self.grade = None;
         self.clear_result();
+        self.time_up = false;
         self.show_guide = true;
         self.ex_started = self.now_ms();
         if let Some(i) = self.brushes.iter().position(|b| b.id == ex.brush) {
@@ -337,6 +341,15 @@ impl TrazoApp {
         p + (best.1 - p) * (strength * fall)
     }
 
+    /// Ejercicios con tiempo límite: al acabarse, califica lo dibujado y bloquea el lienzo.
+    fn check_timer(&mut self) {
+        let Some(limit) = self.current_exercise().and_then(|e| e.time_limit) else { return };
+        if !self.time_up && self.now_ms() - self.ex_started >= limit as f64 * 1000.0 {
+            self.time_up = true;
+            self.grade_now();
+        }
+    }
+
     fn guide_visible(&self) -> bool {
         self.show_guide && self.memory_visible()
     }
@@ -385,7 +398,7 @@ impl TrazoApp {
         });
         let brush = self.brushes[self.brush].clone();
         let mut segs: Vec<Segment> = Vec::new();
-        if resp.drag_started_by(egui::PointerButton::Primary) {
+        if resp.drag_started_by(egui::PointerButton::Primary) && !self.time_up {
             if let Some(p) = resp.interact_pointer_pos() {
                 self.speed.reset();
                 let cp = self.magnet(to_canvas(p));
@@ -929,6 +942,21 @@ impl TrazoApp {
                         ui.label(theme::caption(format!("Ejercicio {} de {}", e + 1, count)));
                         ui.label(theme::strong(ex.title, theme::TITLE));
                         ui.label(RichText::new(ex.goal).size(theme::BODY).color(theme::TEXT));
+                        if let Some(sec) = ex.time_limit {
+                            let left = (sec as f64 - (self.now_ms() - self.ex_started) / 1000.0).max(0.0);
+                            if self.time_up {
+                                ui.label(theme::strong("¡Tiempo!", theme::LEAD).color(GOLD));
+                                ui.label(theme::caption("Pulsa Repetir para otra pose."));
+                            } else {
+                                ui.horizontal(|ui| {
+                                    theme::icon_widget(ui, Icon::Play, 16.0, GOLD);
+                                    ui.label(theme::strong(format!("Tiempo: {:.0} s", left.ceil()), theme::LEAD).color(GOLD));
+                                });
+                                let frac = (left / sec as f64) as f32;
+                                let w = ui.available_width();
+                                theme::progress(ui, frac, GOLD, w, 6.0);
+                            }
+                        }
                         if let Some(sec) = ex.memory {
                             let left = sec as f64 - (self.now_ms() - self.ex_started) / 1000.0;
                             if left > 0.0 {
@@ -1786,6 +1814,7 @@ impl eframe::App for TrazoApp {
         let ctx = ui.ctx().clone();
         self.frame += 1;
         self.demo_step(&ctx);
+        self.check_timer();
         self.shortcuts(&ctx);
         self.top_bar(ui);
         match self.screen {
@@ -1795,7 +1824,7 @@ impl eframe::App for TrazoApp {
             Screen::Pressure => self.pressure_screen(ui),
             Screen::Guide => self.guide_screen(ui),
         }
-        let busy = self.drawing || self.current_exercise().is_some_and(|e| e.memory.is_some());
+        let busy = self.drawing || self.current_exercise().is_some_and(|e| e.memory.is_some() || (e.time_limit.is_some() && !self.time_up));
         if let Some(shot) = &mut self.screenshot {
             ctx.request_repaint();
             if self.frame >= 120 && !shot.requested {

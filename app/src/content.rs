@@ -20,9 +20,12 @@ const FILES: &[(&str, &str)] = &[
     ("05_perspectiva.json", include_str!("../content/05_perspectiva.json")),
     ("06_volumen.json", include_str!("../content/06_volumen.json")),
     ("07_sombreado.json", include_str!("../content/07_sombreado.json")),
-    ("08_entintado.json", include_str!("../content/08_entintado.json")),
-    ("09_observacion.json", include_str!("../content/09_observacion.json")),
-    ("10_pintura.json", include_str!("../content/10_pintura.json")),
+    ("08_figura.json", include_str!("../content/08_figura.json")),
+    ("09_cabeza.json", include_str!("../content/09_cabeza.json")),
+    ("10_manos.json", include_str!("../content/10_manos.json")),
+    ("11_entintado.json", include_str!("../content/11_entintado.json")),
+    ("12_observacion.json", include_str!("../content/12_observacion.json")),
+    ("13_pintura.json", include_str!("../content/13_pintura.json")),
 ];
 
 /// Margen mínimo entre el contenido de un ejercicio y el borde del lienzo.
@@ -63,6 +66,8 @@ struct ExerciseSpec {
     memory: Option<f32>,
     #[serde(default)]
     numbered: bool,
+    #[serde(default)]
+    time_limit: Option<f32>,
     #[serde(default)]
     vary: Vary,
     kind: KindSpec,
@@ -238,6 +243,25 @@ enum Shape {
     },
     /// Cono: base elíptica y dos lados hasta el vértice.
     Cone { c: P, rx: f32, ry: f32, apex: P },
+    /// Figura humana esquemática (maniquí de Loomis): cabeza, columna, hombros, caderas,
+    /// brazos y piernas. Con `volume`, añade caja torácica, pelvis y articulaciones.
+    /// Los pares van como [izquierda, derecha] del dibujo.
+    Figure {
+        head: P,
+        r: f32,
+        neck: P,
+        #[serde(default)]
+        chest: Option<P>,
+        hip: P,
+        shoulders: [P; 2],
+        hips: [P; 2],
+        elbows: [P; 2],
+        hands: [P; 2],
+        knees: [P; 2],
+        feet: [P; 2],
+        #[serde(default)]
+        volume: bool,
+    },
     /// «Salchicha» (forma orgánica simple): dos círculos unidos y anillos de contorno.
     Sausage {
         a: P,
@@ -384,6 +408,7 @@ pub fn modules() -> Vec<Module> {
                         kind,
                         memory: e.memory,
                         numbered: e.numbered,
+                        time_limit: e.time_limit,
                         spec: e.kind,
                         vary: e.vary,
                     }
@@ -689,6 +714,32 @@ impl Shape {
             Shape::Cone { c, rx, ry, apex } => {
                 let (c, ap) = (p(*c), p(*apex));
                 vec![lessons::ellipse(c, *rx, *ry, 0.0, 0.0, TAU), vec![c - vec2(*rx, 0.0), ap], vec![c + vec2(*rx, 0.0), ap]]
+            }
+            Shape::Figure { head, r, neck, chest, hip, shoulders, hips, elbows, hands, knees, feet, volume } => {
+                let (neck, hip) = (p(*neck), p(*hip));
+                let spine = match chest {
+                    Some(c) => lessons::bezier(neck, p(*c), p(*c), hip),
+                    None => vec![neck, hip],
+                };
+                let mut out = vec![lessons::circle(p(*head), *r), spine, vec![p(shoulders[0]), p(shoulders[1])], vec![p(hips[0]), p(hips[1])]];
+                for i in 0..2 {
+                    out.push(vec![p(shoulders[i]), p(elbows[i]), p(hands[i])]);
+                    out.push(vec![p(hips[i]), p(knees[i]), p(feet[i])]);
+                }
+                if *volume {
+                    // Caja torácica y pelvis como óvalos orientados con la columna.
+                    let d = hip - neck;
+                    let rot = d.y.atan2(d.x) - PI / 2.0;
+                    let len = d.length();
+                    let sw = (p(shoulders[1]) - p(shoulders[0])).length();
+                    let hw = (p(hips[1]) - p(hips[0])).length();
+                    out.push(lessons::ellipse(neck + d * 0.3, sw * 0.42, len * 0.3, rot, 0.0, TAU));
+                    out.push(lessons::ellipse(hip - d * 0.02, hw * 0.75, len * 0.13, rot, 0.0, TAU));
+                    for j in [elbows[0], elbows[1], knees[0], knees[1]] {
+                        out.push(lessons::circle(p(j), r * 0.2));
+                    }
+                }
+                out
             }
             Shape::Sausage { a, b, r, rings, outline } => {
                 let (a, b) = (p(*a), p(*b));

@@ -49,6 +49,8 @@ El número del módulo ("5.") lo pone la app según el orden.
   en rayado solo se aplican desplazamiento y escala. `"turn": 180` es un giro fijo que se aplica
   siempre (para copiar del revés).
 - `numbered` (opcional): numera las guías de calcar en el lienzo para indicar el orden de construcción.
+- `time_limit` (opcional): segundos para hacer el ejercicio (gestos). Se ve una cuenta atrás; al
+  llegar a cero se califica lo dibujado y el lienzo se bloquea hasta Repetir.
 
 Cada módulo debería decir en su lección en qué libro, guía o concepto se basa (Drawabox, Betty
 Edwards, Bert Dodson, Loomis…) y cada `goal` explicar el concepto, no solo la acción.
@@ -105,6 +107,18 @@ Cualquier guía acepta `"pressure"` para pedir un perfil de presión: `"taper_ou
   líneas medias opcionales. `"outline": false` quita el contorno.
 - `cylinder`, `sphere`, `sausage`: los anillos de contorno son la mitad de delante de cada elipse.
   `"outline": false` deja solo los anillos.
+
+Figura humana (maniquí de Loomis). Los pares van como [izquierda, derecha] del dibujo; `chest` curva
+la columna y `volume` añade caja torácica, pelvis y articulaciones:
+
+```json
+{ "shape": "figure", "head": [480, 75], "r": 32, "neck": [480, 125], "chest": [480, 200], "hip": [480, 300],
+  "shoulders": [[410, 150], [550, 150]], "hips": [[445, 300], [515, 300]],
+  "elbows": [[395, 262], [565, 262]], "hands": [[392, 368], [568, 368]],
+  "knees": [[452, 452], [508, 452]], "feet": [[448, 600], [512, 600]], "volume": true }
+```
+
+Con una cabeza de 70 px, una figura de 8 cabezas va de y = 40 a y = 600.
 
 ### Papel de cada guía (`role`)
 

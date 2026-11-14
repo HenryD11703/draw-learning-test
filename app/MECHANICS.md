@@ -138,6 +138,8 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
   contención = `1 − (parte de la tinta fuera de toda zona) / 0.3`. Las zonas pesan según su área.
   Total = `25 % cobertura + min(1, cobertura / 0.6) × (25 % dirección + 20 % regularidad + 20 % densidad
   + 10 % contención)`.
+- Ejercicios con tiempo límite (gesto): la cuenta empieza al abrir el ejercicio; al llegar a cero se
+  califica lo dibujado con el calificador de su tipo y no se aceptan trazos nuevos hasta Repetir.
 - Guías de contexto y ocultas (calcar): las de contexto no se califican; las ocultas sí, aunque no se vean.
 - Estrellas: 60 → 1, 75 → 2, 90 → 3. Un módulo se abre al conseguir al menos una estrella en la mitad
   (redondeada hacia arriba) de los ejercicios del anterior; dentro de un módulo abierto, todos los ejercicios
