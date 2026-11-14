@@ -4,7 +4,7 @@
 //! El formato está explicado en `content/README.md`.
 
 use crate::canvas::{H, W};
-use crate::lessons::{self, Dir, Exercise, Guide, Kind, Module, PaintTarget, Scene, Task};
+use crate::lessons::{self, Dir, Exercise, Guide, Kind, Module, PaintTarget, Region, Role, Scene, Task};
 use crate::smoothing::SmoothingType;
 use egui::{Color32, Pos2, Vec2, pos2, vec2};
 use serde::Deserialize;
@@ -13,14 +13,16 @@ use std::f32::consts::{PI, TAU};
 
 /// Módulos en el orden en que aparecen en el mapa.
 const FILES: &[(&str, &str)] = &[
-    ("01_fundamentos.json", include_str!("../content/01_fundamentos.json")),
-    ("02_presion.json", include_str!("../content/02_presion.json")),
-    ("03_asistente.json", include_str!("../content/03_asistente.json")),
+    ("01_lineas.json", include_str!("../content/01_lineas.json")),
+    ("02_elipses.json", include_str!("../content/02_elipses.json")),
+    ("03_peso.json", include_str!("../content/03_peso.json")),
     ("04_formas.json", include_str!("../content/04_formas.json")),
     ("05_perspectiva.json", include_str!("../content/05_perspectiva.json")),
-    ("06_pinceles.json", include_str!("../content/06_pinceles.json")),
-    ("07_valor.json", include_str!("../content/07_valor.json")),
-    ("08_memoria.json", include_str!("../content/08_memoria.json")),
+    ("06_volumen.json", include_str!("../content/06_volumen.json")),
+    ("07_sombreado.json", include_str!("../content/07_sombreado.json")),
+    ("08_entintado.json", include_str!("../content/08_entintado.json")),
+    ("09_observacion.json", include_str!("../content/09_observacion.json")),
+    ("10_pintura.json", include_str!("../content/10_pintura.json")),
 ];
 
 /// Margen mínimo entre el contenido de un ejercicio y el borde del lienzo.
@@ -60,11 +62,14 @@ struct ExerciseSpec {
     #[serde(default)]
     memory: Option<f32>,
     #[serde(default)]
+    numbered: bool,
+    #[serde(default)]
     vary: Vary,
     kind: KindSpec,
 }
 
 /// Variación aleatoria de todo el ejercicio: desplazamiento (px), escala y giro (grados).
+/// `turn` es un giro fijo que se aplica siempre (por ejemplo 180 para copiar del revés).
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Vary {
@@ -74,6 +79,22 @@ pub struct Vary {
     pub scale: Option<[f32; 2]>,
     #[serde(default)]
     pub rotate: f32,
+    #[serde(default)]
+    pub turn: f32,
+}
+
+/// Zona de un ejercicio de rayado.
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RegionSpec {
+    pts: Vec<P>,
+    #[serde(default)]
+    angle: Option<f32>,
+    spacing: f32,
+    #[serde(default)]
+    cross: bool,
+    #[serde(default)]
+    label: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -100,6 +121,10 @@ pub enum KindSpec {
         hints: bool,
         scene: SceneSpec,
     },
+    Hatch {
+        tol: f32,
+        regions: Vec<RegionSpec>,
+    },
     Paint {
         target: PaintTarget,
     },
@@ -111,6 +136,13 @@ pub struct GuideSpec {
     shape: Shape,
     #[serde(default)]
     pressure: Option<Profile>,
+    /// `context`: ya dibujada, no se califica. `hidden`: no se ve, pero se califica.
+    #[serde(default)]
+    role: Role,
+}
+
+fn yes() -> bool {
+    true
 }
 
 /// Figuras de las guías. Los ángulos van en grados.
@@ -154,6 +186,68 @@ enum Shape {
     Loops { x0: f32, x1: f32, y: f32, rx: f32, ry: f32, turns: f32 },
     /// Pétalos curvos alrededor de `c`.
     Petals { c: P, inner: f32, outer: f32, count: usize },
+    /// Embudo: elipses a lo largo de un eje, con el eje menor sobre él (Drawabox, lección 1).
+    /// `r0`/`r1` son los radios mayores en cada extremo y `d0`/`d1` el grado (alto/ancho, 0..1).
+    /// `frame` es el eje y los lados; `ellipses`, las elipses (para dar uno y pedir el otro).
+    Funnel {
+        a: P,
+        b: P,
+        count: usize,
+        r0: f32,
+        r1: f32,
+        d0: f32,
+        d1: f32,
+        #[serde(default = "yes")]
+        frame: bool,
+        #[serde(default = "yes")]
+        ellipses: bool,
+    },
+    /// Plano en perspectiva: cuadrilátero con, opcionalmente, su círculo inscrito (que se ve como
+    /// elipse), sus diagonales y sus líneas medias.
+    Plane {
+        quad: [P; 4],
+        #[serde(default = "yes")]
+        outline: bool,
+        #[serde(default)]
+        circle: bool,
+        #[serde(default)]
+        diagonals: bool,
+        #[serde(default)]
+        cross: bool,
+    },
+    /// Cilindro vertical con anillos de contorno (la mitad de delante de cada elipse intermedia).
+    Cylinder {
+        c: P,
+        rx: f32,
+        ry: f32,
+        h: f32,
+        #[serde(default)]
+        rings: usize,
+        #[serde(default = "yes")]
+        outline: bool,
+    },
+    /// Esfera con paralelos de contorno; `tilt` es el grado de las elipses (0..1).
+    Sphere {
+        c: P,
+        r: f32,
+        tilt: f32,
+        #[serde(default)]
+        rings: usize,
+        #[serde(default = "yes")]
+        outline: bool,
+    },
+    /// Cono: base elíptica y dos lados hasta el vértice.
+    Cone { c: P, rx: f32, ry: f32, apex: P },
+    /// «Salchicha» (forma orgánica simple): dos círculos unidos y anillos de contorno.
+    Sausage {
+        a: P,
+        b: P,
+        r: f32,
+        #[serde(default)]
+        rings: usize,
+        #[serde(default = "yes")]
+        outline: bool,
+    },
 }
 
 /// Presión objetivo a lo largo de la guía.
@@ -289,6 +383,7 @@ pub fn modules() -> Vec<Module> {
                         color: e.color,
                         kind,
                         memory: e.memory,
+                        numbered: e.numbered,
                         spec: e.kind,
                         vary: e.vary,
                     }
@@ -376,6 +471,23 @@ impl KindSpec {
                 Kind::Copy { guides: transform(all, vary, j), tol: *tol }
             }
             KindSpec::Perspective { tol, hints, scene } => Kind::Perspective(build_scene(scene, j, *tol, *hints)),
+            KindSpec::Hatch { tol, regions } => {
+                // Solo desplazamiento y escala: girar cambiaría la dirección pedida.
+                let s = vary.scale.map_or(1.0, |[lo, hi]| j.fac(lo, hi));
+                let t = vec2(j.off(vary.shift), j.off(vary.shift));
+                let c = pos2(W as f32 / 2.0, H as f32 / 2.0);
+                let regions = regions
+                    .iter()
+                    .map(|r| Region {
+                        pts: r.pts.iter().map(|q| c + (p(*q) - c) * s + t).collect(),
+                        angle: r.angle,
+                        spacing: r.spacing,
+                        cross: r.cross,
+                        label: r.label.clone(),
+                    })
+                    .collect();
+                Kind::Hatch { regions, tol: *tol }
+            }
             KindSpec::Paint { target } => Kind::Paint { target: *target },
         }
     }
@@ -394,12 +506,13 @@ fn in_bounds(kind: &Kind) -> bool {
                     ok(a) && ok(b)
                 })
         }
+        Kind::Hatch { regions, .. } => regions.iter().all(|r| r.pts.iter().all(|q| ok(*q))),
         Kind::Paint { .. } => true,
     }
 }
 
 fn guide(pts: &[Pos2]) -> Guide {
-    Guide { pts: lessons::resample(pts), pressure: None }
+    Guide { pts: lessons::resample(pts), pressure: None, role: Role::Trace }
 }
 
 fn build_guides(specs: &[GuideSpec]) -> Vec<Guide> {
@@ -411,7 +524,7 @@ fn build_guides(specs: &[GuideSpec]) -> Vec<Guide> {
                 let n = pts.len().max(2) as f32 - 1.0;
                 (0..pts.len()).map(|i| pr.value(i as f32 / n)).collect()
             });
-            out.push(Guide { pts, pressure });
+            out.push(Guide { pts, pressure, role: s.role });
         }
     }
     out
@@ -420,7 +533,7 @@ fn build_guides(specs: &[GuideSpec]) -> Vec<Guide> {
 /// Desplaza, escala y gira todas las guías alrededor del centro del lienzo.
 fn transform(guides: Vec<Guide>, vary: &Vary, j: &mut Jit) -> Vec<Guide> {
     let s = vary.scale.map_or(1.0, |[lo, hi]| j.fac(lo, hi));
-    let rot = j.off(vary.rotate).to_radians();
+    let rot = (vary.turn + j.off(vary.rotate)).to_radians();
     let t = vec2(j.off(vary.shift), j.off(vary.shift));
     if s == 1.0 && rot == 0.0 && t == Vec2::ZERO {
         return guides;
@@ -431,7 +544,7 @@ fn transform(guides: Vec<Guide>, vary: &Vary, j: &mut Jit) -> Vec<Guide> {
         let d = (q - c) * s;
         c + vec2(d.x * cs - d.y * sn, d.x * sn + d.y * cs) + t
     };
-    guides.into_iter().map(|g| Guide { pts: g.pts.into_iter().map(f).collect(), pressure: g.pressure }).collect()
+    guides.into_iter().map(|g| Guide { pts: g.pts.into_iter().map(f).collect(), pressure: g.pressure, role: g.role }).collect()
 }
 
 impl Shape {
@@ -494,7 +607,122 @@ impl Shape {
                     lessons::bezier(p0, p0 + d * 50.0 + n * 60.0, tip + n * 30.0, tip)
                 })
                 .collect(),
+            Shape::Funnel { a, b, count, r0, r1, d0, d1, frame, ellipses } => {
+                let (a, b) = (p(*a), p(*b));
+                let axis = (b - a).normalized();
+                let perp = vec2(-axis.y, axis.x);
+                // El eje mayor de cada elipse va perpendicular al eje del embudo.
+                let rot = perp.y.atan2(perp.x);
+                let n = (*count).max(2);
+                let mut out = Vec::new();
+                let mut ends = Vec::new();
+                for i in 0..n {
+                    let t = i as f32 / (n - 1) as f32;
+                    let c = a + (b - a) * t;
+                    let rx = r0 + (r1 - r0) * t;
+                    if *ellipses {
+                        out.push(lessons::ellipse(c, rx, rx * (d0 + (d1 - d0) * t), rot, 0.0, TAU));
+                    }
+                    ends.push((c - perp * rx, c + perp * rx));
+                }
+                if *frame {
+                    out.push(vec![a, b]);
+                    out.push(vec![ends[0].0, ends[n - 1].0]);
+                    out.push(vec![ends[0].1, ends[n - 1].1]);
+                }
+                out
+            }
+            Shape::Plane { quad, outline, circle, diagonals, cross } => {
+                let q: Vec<Pos2> = quad.iter().map(|x| p(*x)).collect();
+                let h = homography(&q);
+                let mut out = if *outline { vec![vec![q[0], q[1], q[2], q[3], q[0]]] } else { Vec::new() };
+                if *diagonals {
+                    out.push(vec![q[0], q[2]]);
+                    out.push(vec![q[1], q[3]]);
+                }
+                if *cross {
+                    out.push(vec![h(0.5, 0.0), h(0.5, 1.0)]);
+                    out.push(vec![h(0.0, 0.5), h(1.0, 0.5)]);
+                }
+                if *circle {
+                    out.push(
+                        (0..=160)
+                            .map(|i| {
+                                let t = i as f32 / 160.0 * TAU;
+                                h(0.5 + 0.5 * t.cos(), 0.5 + 0.5 * t.sin())
+                            })
+                            .collect(),
+                    );
+                }
+                out
+            }
+            Shape::Cylinder { c, rx, ry, h, rings, outline } => {
+                let c = p(*c);
+                let bot = c + vec2(0.0, *h);
+                let mut out = if *outline {
+                    vec![
+                        lessons::ellipse(c, *rx, *ry, 0.0, 0.0, TAU),
+                        lessons::ellipse(bot, *rx, *ry, 0.0, 0.0, TAU),
+                        vec![c - vec2(*rx, 0.0), bot - vec2(*rx, 0.0)],
+                        vec![c + vec2(*rx, 0.0), bot + vec2(*rx, 0.0)],
+                    ]
+                } else {
+                    Vec::new()
+                };
+                for k in 1..=*rings {
+                    let t = k as f32 / (*rings + 1) as f32;
+                    // Solo la mitad de delante: es la que se ve.
+                    out.push(lessons::ellipse(c + vec2(0.0, h * t), *rx, *ry, 0.0, 0.0, PI));
+                }
+                out
+            }
+            Shape::Sphere { c, r, tilt, rings, outline } => {
+                let c = p(*c);
+                let mut out = if *outline { vec![lessons::circle(c, *r)] } else { Vec::new() };
+                for k in 0..*rings {
+                    let lat = (-1.0 + 2.0 * (k as f32 + 0.5) / *rings as f32) * PI / 3.0;
+                    let rx = r * lat.cos();
+                    out.push(lessons::ellipse(c + vec2(0.0, r * lat.sin()), rx, rx * tilt, 0.0, 0.0, PI));
+                }
+                out
+            }
+            Shape::Cone { c, rx, ry, apex } => {
+                let (c, ap) = (p(*c), p(*apex));
+                vec![lessons::ellipse(c, *rx, *ry, 0.0, 0.0, TAU), vec![c - vec2(*rx, 0.0), ap], vec![c + vec2(*rx, 0.0), ap]]
+            }
+            Shape::Sausage { a, b, r, rings, outline } => {
+                let (a, b) = (p(*a), p(*b));
+                let axis = (b - a).normalized();
+                let perp = vec2(-axis.y, axis.x);
+                let rot = perp.y.atan2(perp.x);
+                let mut out = if *outline {
+                    vec![lessons::circle(a, *r), lessons::circle(b, *r), vec![a + perp * *r, b + perp * *r], vec![a - perp * *r, b - perp * *r]]
+                } else {
+                    Vec::new()
+                };
+                for k in 1..=*rings {
+                    let t = k as f32 / (*rings + 1) as f32;
+                    out.push(lessons::ellipse(a + (b - a) * t, *r, r * 0.35, rot, 0.0, PI));
+                }
+                out
+            }
         }
+    }
+}
+
+/// Proyección del cuadrado unidad sobre un cuadrilátero (Heckbert):
+/// (0,0)→q0, (1,0)→q1, (1,1)→q2, (0,1)→q3. Con ella, un círculo inscrito se ve en perspectiva.
+fn homography(q: &[Pos2]) -> impl Fn(f32, f32) -> Pos2 {
+    let (x0, y0, x1, y1, x2, y2, x3, y3) = (q[0].x, q[0].y, q[1].x, q[1].y, q[2].x, q[2].y, q[3].x, q[3].y);
+    let (dx1, dx2, dx3) = (x1 - x2, x3 - x2, x0 - x1 + x2 - x3);
+    let (dy1, dy2, dy3) = (y1 - y2, y3 - y2, y0 - y1 + y2 - y3);
+    let den = dx1 * dy2 - dx2 * dy1;
+    let (g, h) = if den.abs() < 1e-6 { (0.0, 0.0) } else { ((dx3 * dy2 - dx2 * dy3) / den, (dx1 * dy3 - dx3 * dy1) / den) };
+    let (a, b, c) = (x1 - x0 + g * x1, x3 - x0 + h * x3, x0);
+    let (d, e, f) = (y1 - y0 + g * y1, y3 - y0 + h * y3, y0);
+    move |u: f32, v: f32| {
+        let w = g * u + h * v + 1.0;
+        pos2((a * u + b * v + c) / w, (d * u + e * v + f) / w)
     }
 }
 
@@ -658,6 +886,13 @@ mod tests {
                             assert!(!s.tasks.is_empty(), "{} sin tareas", e.id);
                             assert!(s.tasks.iter().all(|t| t.len > 10.0), "{} tiene tareas demasiado cortas", e.id);
                         }
+                        Kind::Hatch { regions, .. } => {
+                            assert!(!regions.is_empty(), "{} sin zonas", e.id);
+                            for r in regions {
+                                assert!(r.pts.len() >= 3 && r.spacing >= 3.0, "{}: zona mal definida", e.id);
+                                assert!(!r.ideal_lines().is_empty(), "{}: zona sin líneas posibles", e.id);
+                            }
+                        }
                         Kind::Paint { .. } => {}
                     }
                 }
@@ -675,6 +910,18 @@ mod tests {
         };
         assert_eq!(first(&e.build(0)), first(&e.build(0)));
         assert_ne!(first(&e.build(0)), first(&e.build(7)));
+    }
+
+    #[test]
+    fn homography_maps_the_unit_square_onto_the_quad() {
+        let q = [pos2(100.0, 400.0), pos2(500.0, 380.0), pos2(420.0, 250.0), pos2(180.0, 260.0)];
+        let h = homography(&q);
+        for (uv, want) in [((0.0, 0.0), q[0]), ((1.0, 0.0), q[1]), ((1.0, 1.0), q[2]), ((0.0, 1.0), q[3])] {
+            assert!((h(uv.0, uv.1) - want).length() < 1e-2, "{uv:?}");
+        }
+        // El centro del cuadrado cae en el cruce de las diagonales del cuadrilátero.
+        let x = intersect(q[0], q[2], q[1], q[3]);
+        assert!((h(0.5, 0.5) - x).length() < 0.5, "{:?} vs {x:?}", h(0.5, 0.5));
     }
 
     #[test]

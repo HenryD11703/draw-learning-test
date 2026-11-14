@@ -1,7 +1,7 @@
 //! Calificación de los ejercicios (diseño propio, MECHANICS.md §4).
 
 use crate::canvas::{Canvas, H, StrokePoint, W, luminance};
-use crate::lessons::{CELL, Guide, Kind, PaintTarget, Scene};
+use crate::lessons::{CELL, Guide, Kind, PaintTarget, Region, Role, Scene};
 use egui::Pos2;
 use std::collections::BTreeMap;
 
@@ -189,11 +189,14 @@ pub fn grade_trace(strokes: &[Vec<StrokePoint>], guides: &[Guide], tol: f32, mag
 /// lienzo después de calificar. Los ejercicios de copia y de pintura no tienen marcas.
 pub fn error_marks(kind: &Kind, strokes: &[Vec<StrokePoint>]) -> Vec<(Pos2, f32)> {
     match kind {
-        Kind::Trace { guides, tol } | Kind::Points { guides, tol } => strokes
-            .iter()
-            .flat_map(|s| resample_uniform(s, 6.0))
-            .map(|p| (p, (nearest(p, guides).0 / (2.0 * tol)).clamp(0.0, 1.0)))
-            .collect(),
+        Kind::Trace { guides, tol } | Kind::Points { guides, tol } => {
+            let graded: Vec<Guide> = guides.iter().filter(|g| g.role != Role::Context).cloned().collect();
+            strokes
+                .iter()
+                .flat_map(|s| resample_uniform(s, 6.0))
+                .map(|p| (p, (nearest(p, &graded).0 / (2.0 * tol)).clamp(0.0, 1.0)))
+                .collect()
+        }
         Kind::Perspective(scene) => {
             let dirs = scene.dirs();
             let mut out = Vec::new();
@@ -202,6 +205,27 @@ pub fn error_marks(kind: &Kind, strokes: &[Vec<StrokePoint>]) -> Vec<(Pos2, f32)
                 let err = dirs.iter().map(|d| line_angle(f.u, scene.dir_at(f.c, *d))).fold(f32::MAX, f32::min);
                 let sev = (err / 8.0).clamp(0.0, 1.0);
                 out.extend(resample_uniform(s, 6.0).into_iter().map(|p| (p, sev)));
+            }
+            out
+        }
+        Kind::Hatch { regions, tol } => {
+            let mut out = Vec::new();
+            for s in strokes {
+                let Some(f) = fit_line(s).filter(|f| f.len >= 8.0) else { continue };
+                // Gravedad del trazo por su dirección; fuera de toda zona, máxima.
+                let sev = match regions.iter().find(|r| r.contains(f.c)) {
+                    None => 1.0,
+                    Some(r) if r.angle.is_some() => {
+                        let a = hatch_angle(f.u);
+                        let err = region_targets(r, &[]).iter().map(|t| angle_diff(a, *t)).fold(f32::MAX, f32::min);
+                        (err / 12.0).clamp(0.0, 1.0)
+                    }
+                    Some(_) => 0.0,
+                };
+                for q in resample_uniform(s, 6.0) {
+                    let outside = !regions.iter().any(|r| r.contains(q) || dist_to_polygon(q, &r.pts) <= tol * 0.5);
+                    out.push((q, if outside { 1.0 } else { sev }));
+                }
             }
             out
         }
@@ -451,6 +475,154 @@ fn line_angle(u: egui::Vec2, v: egui::Vec2) -> f32 {
     u.dot(v).abs().clamp(0.0, 1.0).acos().to_degrees()
 }
 
+fn polygon_area(pts: &[Pos2]) -> f32 {
+    let n = pts.len();
+    (0..n).map(|i| pts[i].x * pts[(i + 1) % n].y - pts[(i + 1) % n].x * pts[i].y).sum::<f32>().abs() / 2.0
+}
+
+fn dist_to_polygon(p: Pos2, pts: &[Pos2]) -> f32 {
+    let n = pts.len();
+    (0..n).map(|i| dist_to_segment(p, pts[i], pts[(i + 1) % n]).0).fold(f32::MAX, f32::min)
+}
+
+/// Ángulo de una dirección en grados, con el mismo criterio que las zonas (0 = horizontal,
+/// 90 = vertical, 45 = «/»), entre 0 y 180.
+fn hatch_angle(u: egui::Vec2) -> f32 {
+    (-u.y).atan2(u.x).to_degrees().rem_euclid(180.0)
+}
+
+fn angle_diff(a: f32, b: f32) -> f32 {
+    let d = (a - b).rem_euclid(180.0);
+    d.min(180.0 - d)
+}
+
+/// Direcciones pedidas en una zona. Si la zona no fija dirección, vale la media de las líneas.
+fn region_targets(r: &Region, fits: &[&Fit]) -> Vec<f32> {
+    let base = r.angle.unwrap_or_else(|| {
+        // Media circular sobre el doble del ángulo (las rectas no tienen sentido).
+        let (mut sx, mut sy) = (0.0f32, 0.0f32);
+        for f in fits {
+            let a = (2.0 * hatch_angle(f.u)).to_radians();
+            sx += a.cos() * f.len;
+            sy += a.sin() * f.len;
+        }
+        (sy.atan2(sx).to_degrees() / 2.0).rem_euclid(180.0)
+    });
+    if r.cross { vec![base, (base + 90.0).rem_euclid(180.0)] } else { vec![base] }
+}
+
+/// Dirección, regularidad y densidad de las líneas de una zona (0..1 cada una).
+fn region_lines(r: &Region, fits: &[&Fit]) -> (f32, f32, f32) {
+    let targets = region_targets(r, fits);
+    let c = r.centroid();
+    let (mut dir, mut reg, mut val) = (0.0, 0.0, 0.0);
+    for (k, t) in targets.iter().enumerate() {
+        // Cada línea va a la familia cuya dirección tiene más cerca.
+        let fam: Vec<&&Fit> = fits
+            .iter()
+            .filter(|f| {
+                let a = hatch_angle(f.u);
+                targets.iter().enumerate().min_by(|x, y| angle_diff(a, *x.1).total_cmp(&angle_diff(a, *y.1))).map(|m| m.0) == Some(k)
+            })
+            .collect();
+        if fam.is_empty() {
+            continue;
+        }
+        let wl: f32 = fam.iter().map(|f| f.len).sum();
+        let err = fam.iter().map(|f| angle_diff(hatch_angle(f.u), *t) * f.len).sum::<f32>() / wl;
+        dir += (1.0 - err / 12.0).clamp(0.0, 1.0);
+        let d = Region::dir(*t);
+        let nrm = egui::vec2(-d.y, d.x);
+        let mut offs: Vec<f32> = fam.iter().map(|f| (f.c - c).dot(nrm)).collect();
+        offs.sort_by(|a, b| a.total_cmp(b));
+        // Dos trazos casi encima del otro cuentan como una sola línea.
+        let gaps: Vec<f32> = offs.windows(2).map(|w| w[1] - w[0]).filter(|g| *g > 2.0).collect();
+        if gaps.len() >= 2 {
+            let mut sorted = gaps.clone();
+            sorted.sort_by(|a, b| a.total_cmp(b));
+            let median = sorted[sorted.len() / 2];
+            val += (1.0 - (median / r.spacing).ln().abs() / 0.6).clamp(0.0, 1.0);
+            let mean = gaps.iter().sum::<f32>() / gaps.len() as f32;
+            let sd = (gaps.iter().map(|g| (g - mean).powi(2)).sum::<f32>() / gaps.len() as f32).sqrt();
+            reg += (1.0 - ((sd / mean) - 0.2).max(0.0) / 0.6).clamp(0.0, 1.0);
+        }
+    }
+    let n = targets.len() as f32;
+    (dir / n, reg / n, val / n)
+}
+
+/// Parte de la zona que tiene alguna línea cerca (a menos de 3/4 de la separación pedida).
+fn region_coverage(r: &Region, ink: &[Pos2]) -> f32 {
+    let radius = (r.spacing * 0.75).max(6.0);
+    let mut bins: std::collections::HashMap<(i32, i32), Vec<Pos2>> = std::collections::HashMap::new();
+    for q in ink {
+        bins.entry(((q.x / radius).floor() as i32, (q.y / radius).floor() as i32)).or_default().push(*q);
+    }
+    let (mut lo, mut hi) = (Pos2::new(f32::MAX, f32::MAX), Pos2::new(f32::MIN, f32::MIN));
+    for p in &r.pts {
+        lo = lo.min(*p);
+        hi = hi.max(*p);
+    }
+    let (mut total, mut covered) = (0usize, 0usize);
+    let mut y = lo.y + 4.0;
+    while y < hi.y {
+        let mut x = lo.x + 4.0;
+        while x < hi.x {
+            let q = Pos2::new(x, y);
+            if r.contains(q) {
+                total += 1;
+                let (cx, cy) = ((x / radius).floor() as i32, (y / radius).floor() as i32);
+                let near = (-1..=1).any(|dx| {
+                    (-1..=1).any(|dy| bins.get(&(cx + dx, cy + dy)).is_some_and(|v| v.iter().any(|p| (*p - q).length() <= radius)))
+                });
+                if near {
+                    covered += 1;
+                }
+            }
+            x += 8.0;
+        }
+        y += 8.0;
+    }
+    if total == 0 { 0.0 } else { covered as f32 / total as f32 }
+}
+
+/// Rayado: líneas paralelas dentro de cada zona, en la dirección y con la separación pedidas
+/// (Bert Dodson, «Keys to Drawing»: el tono sale de la densidad de las líneas).
+pub fn grade_hatch(strokes: &[Vec<StrokePoint>], regions: &[Region], tol: f32) -> Grade {
+    let fits: Vec<(usize, Fit)> = strokes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, s)| fit_line(s).filter(|f| f.len >= 8.0).map(|f| (i, f)))
+        .collect();
+    if fits.is_empty() || regions.is_empty() {
+        return no_strokes("Aún no hay rayado que calificar. Rellena las zonas con líneas paralelas y vuelve a pulsar Calificar.");
+    }
+    let ink: Vec<Pos2> = fits.iter().flat_map(|(i, _)| resample_uniform(&strokes[*i], 3.0)).collect();
+    let inside = ink.iter().filter(|q| regions.iter().any(|r| r.contains(**q) || dist_to_polygon(**q, &r.pts) <= tol * 0.5)).count();
+    let containment = (1.0 - (1.0 - inside as f32 / ink.len().max(1) as f32) / 0.3).clamp(0.0, 1.0);
+    let (mut wsum, mut dir, mut reg, mut val, mut cov) = (0.0, 0.0, 0.0, 0.0, 0.0);
+    for r in regions {
+        let w = polygon_area(&r.pts).max(1.0);
+        let mine: Vec<&Fit> = fits.iter().map(|(_, f)| f).filter(|f| r.contains(f.c)).collect();
+        let (d, g, v) = if mine.is_empty() { (0.0, 0.0, 0.0) } else { region_lines(r, &mine) };
+        dir += d * w;
+        reg += g * w;
+        val += v * w;
+        cov += region_coverage(r, &ink) * w;
+        wsum += w;
+    }
+    let (dir, reg, val, cov) = (dir / wsum, reg / wsum, val / wsum, cov / wsum);
+    let done = (cov / 0.6).min(1.0);
+    let metrics = vec![
+        Metric { name: "Dirección", value: dir, help: "Si las líneas son paralelas y van en la dirección pedida." },
+        Metric { name: "Regularidad", value: reg, help: "Si la separación entre líneas es pareja." },
+        Metric { name: "Densidad", value: val, help: "Si la separación da el tono pedido: más juntas, más oscuro." },
+        Metric { name: "Cobertura", value: cov, help: "Qué parte de cada zona rellenaste." },
+        Metric { name: "Contención", value: containment, help: "Si las líneas se quedan dentro de las zonas." },
+    ];
+    finish(metrics, 0.25 * cov + done * (0.25 * dir + 0.2 * reg + 0.2 * val + 0.1 * containment))
+}
+
 /// Perspectiva: cada línea debe apuntar a su punto de fuga (o ser vertical u horizontal) y
 /// salir de su punto verde. No se exige calcar la longitud exacta.
 pub fn grade_perspective(strokes: &[Vec<StrokePoint>], scene: &Scene) -> Grade {
@@ -608,6 +780,9 @@ fn advice_for(metrics: &[Metric], penalty: f32) -> String {
         Some(("Completadas", _)) => "Te faltan líneas por trazar o se quedan cortas. Revisa que hayas salido de todos los puntos.".into(),
         Some(("Forma", _)) => "La forma no coincide con la referencia. Compara ángulos y distancias entre las partes antes de trazar.".into(),
         Some(("Proporción", _)) => "Tu dibujo es más ancho o más alto que la referencia. Mide cuántas veces cabe el ancho en el alto.".into(),
+        Some(("Dirección", _)) => "Las líneas no son paralelas o no van en la dirección de la muestra. Gira el lienzo para trazarlas en tu dirección cómoda.".into(),
+        Some(("Regularidad", _)) => "La separación entre líneas cambia mucho. Coloca cada línea a la misma distancia de la anterior, sin prisa.".into(),
+        Some(("Densidad", _)) => "La separación no da el tono pedido: más juntas oscurecen, más separadas aclaran. Compara con la muestra de cada zona.".into(),
         Some(("Convergencia", _)) => "Tus líneas no apuntan al punto de fuga. Antes de trazar, imagina la recta que une el punto verde con su PF.".into(),
         _ => "Sigue practicando.".into(),
     };
@@ -634,7 +809,7 @@ mod tests {
 
     fn line_guide() -> Vec<Guide> {
         let pts = (0..=100).map(|i| pos2(100.0 + i as f32 * 3.0, 200.0)).collect();
-        vec![Guide { pts, pressure: None }]
+        vec![Guide { pts, pressure: None, role: Role::Trace }]
     }
 
     fn circle(r: f32) -> impl Fn(f32) -> Pos2 {
@@ -645,7 +820,7 @@ mod tests {
     fn clean_small_circle_keeps_full_steadiness() {
         for r in [20.0, 40.0] {
             let n = (std::f32::consts::TAU * r) as usize;
-            let guides = vec![Guide { pts: stroke(n / 3, circle(r)).iter().map(|p| p.pos).collect(), pressure: None }];
+            let guides = vec![Guide { pts: stroke(n / 3, circle(r)).iter().map(|p| p.pos).collect(), pressure: None, role: Role::Trace }];
             let g = grade_trace(&[stroke(n, circle(r))], &guides, 6.0, 0.0);
             assert!(metric(&g, "Pulso") >= 0.95, "radio {r}: pulso {}", metric(&g, "Pulso"));
             assert_eq!(g.stars, 3, "radio {r}: total {}", g.total);
@@ -693,7 +868,7 @@ mod tests {
     }
 
     fn g2(a: Pos2, b: Pos2) -> Guide {
-        Guide { pts: vec![a, b], pressure: None }
+        Guide { pts: vec![a, b], pressure: None, role: Role::Trace }
     }
 
     #[test]
@@ -711,7 +886,7 @@ mod tests {
     }
 
     fn house() -> Vec<Guide> {
-        let poly = |v: &[(f32, f32)]| Guide { pts: crate::lessons::resample(&v.iter().map(|&(x, y)| pos2(x, y)).collect::<Vec<_>>()), pressure: None };
+        let poly = |v: &[(f32, f32)]| Guide { pts: crate::lessons::resample(&v.iter().map(|&(x, y)| pos2(x, y)).collect::<Vec<_>>()), pressure: None, role: Role::Trace };
         vec![
             poly(&[(330.0, 290.0), (630.0, 290.0), (630.0, 520.0), (330.0, 520.0), (330.0, 290.0)]),
             poly(&[(300.0, 300.0), (480.0, 140.0), (660.0, 300.0)]),
@@ -762,6 +937,49 @@ mod tests {
         // Solo la mitad de las líneas.
         let half = grade_perspective(&good[..2], &s);
         assert!((metric(&half, "Completadas") - 0.5).abs() < 0.05);
+    }
+
+    fn square(angle: Option<f32>, spacing: f32, cross: bool) -> Region {
+        Region { pts: vec![pos2(300.0, 200.0), pos2(500.0, 200.0), pos2(500.0, 400.0), pos2(300.0, 400.0)], angle, spacing, cross, label: None }
+    }
+
+    fn hatch_with(r: &Region) -> Vec<Vec<StrokePoint>> {
+        r.ideal_lines().into_iter().map(|(a, b)| seg(a, b)).collect()
+    }
+
+    #[test]
+    fn hatch_rewards_the_requested_direction_and_density() {
+        let r = square(Some(45.0), 12.0, false);
+        let good = grade_hatch(&hatch_with(&r), std::slice::from_ref(&r), 10.0);
+        assert_eq!(good.stars, 3, "total {}", good.total);
+        // El doble de separación: tono más claro del pedido.
+        let sparse = grade_hatch(&hatch_with(&square(Some(45.0), 24.0, false)), std::slice::from_ref(&r), 10.0);
+        assert!(metric(&sparse, "Densidad") < 0.1, "densidad {}", metric(&sparse, "Densidad"));
+        // Dirección contraria («\» en vez de «/»).
+        let wrong = grade_hatch(&hatch_with(&square(Some(135.0), 12.0, false)), std::slice::from_ref(&r), 10.0);
+        assert!(metric(&wrong, "Dirección") < 0.1);
+        assert!(wrong.total < 60.0, "total {}", wrong.total);
+        // Dirección libre: cualquier dirección vale si es pareja.
+        let free = grade_hatch(&hatch_with(&square(Some(135.0), 12.0, false)), &[square(None, 12.0, false)], 10.0);
+        assert_eq!(free.stars, 3, "total {}", free.total);
+    }
+
+    #[test]
+    fn crosshatch_needs_both_directions() {
+        let r = square(Some(0.0), 14.0, true);
+        let both = grade_hatch(&hatch_with(&r), std::slice::from_ref(&r), 10.0);
+        assert_eq!(both.stars, 3, "total {}", both.total);
+        let one = grade_hatch(&hatch_with(&square(Some(0.0), 14.0, false)), std::slice::from_ref(&r), 10.0);
+        assert!(one.total < both.total - 15.0, "una sola familia {} vs {}", one.total, both.total);
+    }
+
+    #[test]
+    fn hatch_outside_the_region_loses_containment() {
+        let r = square(Some(90.0), 12.0, false);
+        let mut strokes = hatch_with(&r);
+        strokes.extend(hatch_with(&Region { pts: vec![pos2(600.0, 200.0), pos2(800.0, 200.0), pos2(800.0, 400.0), pos2(600.0, 400.0)], ..r.clone() }));
+        let g = grade_hatch(&strokes, std::slice::from_ref(&r), 10.0);
+        assert!(metric(&g, "Contención") < 0.1, "contención {}", metric(&g, "Contención"));
     }
 
     #[test]

@@ -1,0 +1,221 @@
+{
+  "id": "volumen",
+  "title": "Cajas y volumen",
+  "subtitle": "Cajas, cilindros, esferas y líneas de contorno",
+  "lesson": "Basado en Drawabox (lecciones 1 y 2): cualquier objeto se puede construir con formas simples —cajas, cilindros, esferas, conos— y hay que pensarlas como sólidos, no como contornos.\n\n• Dibuja también las aristas ocultas: comprueban que la forma es correcta.\n• Las líneas de contorno envuelven la superficie como anillos y muestran hacia dónde gira.\n• En un cilindro recto, los anillos son elipses paralelas a las tapas, con el eje menor sobre el eje del cilindro.\n• Una forma orgánica sencilla (la «salchicha» de Drawabox) es una esfera estirada: sus anillos rodean el eje igual que en el cilindro.",
+  "accent": [255, 140, 100],
+  "exercises": [
+    {
+      "id": "m4e3",
+      "title": "Cubo en perspectiva",
+      "goal": "Dibuja las aristas del cubo, incluidas las de atrás.",
+      "krita_tip": "La herramienta de Asistentes de Krita tiene un asistente de Perspectiva que dirige tus líneas al punto de fuga.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.1] },
+      "kind": {
+        "type": "trace",
+        "tol": 11,
+        "guides": [
+          { "shape": "poly", "pts": [[300, 260], [520, 260], [520, 480], [300, 480]], "closed": true },
+          { "shape": "poly", "pts": [[420, 170], [640, 170], [640, 390], [420, 390]], "closed": true },
+          { "shape": "line", "a": [300, 260], "b": [420, 170] },
+          { "shape": "line", "a": [520, 260], "b": [640, 170] },
+          { "shape": "line", "a": [520, 480], "b": [640, 390] },
+          { "shape": "line", "a": [300, 480], "b": [420, 390] }
+        ]
+      }
+    },
+    {
+      "id": "m4e4",
+      "title": "Cilindro",
+      "goal": "Dos elipses y dos lados. Haz la elipse de abajo completa, aunque no se vea.",
+      "krita_tip": "Para dibujos limpios en Krita: boceto en una capa con baja opacidad y línea final en otra capa.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "ellipse", "c": [480, 170], "rx": 150, "ry": 50 },
+          { "shape": "ellipse", "c": [480, 470], "rx": 150, "ry": 50 },
+          { "shape": "line", "a": [330, 170], "b": [330, 470] },
+          { "shape": "line", "a": [630, 170], "b": [630, 470] }
+        ]
+      }
+    },
+    {
+      "id": "vol01",
+      "title": "Cilindro con anillos (con guía)",
+      "goal": "Repasa el cilindro y sus anillos de contorno. Fíjate en que todos los anillos son la misma elipse, solo que más abajo.",
+      "krita_tip": "Las líneas de contorno no suelen quedar en el dibujo final: en Krita, ponlas en una capa de construcción.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "cylinder", "c": [480, 140], "rx": 140, "ry": 40, "h": 380, "rings": 3 }]
+      }
+    },
+    {
+      "id": "vol02",
+      "title": "Anillos de contorno",
+      "goal": "Los cilindros ya están. Añade sus anillos de contorno: la mitad de delante de una elipse igual a la de arriba, repartidos a lo largo.",
+      "krita_tip": "Si un anillo sale más abierto o más cerrado que la tapa, el cilindro parece doblarse: compáralos antes de seguir.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "cylinder", "c": [300, 130], "rx": 110, "ry": 30, "h": 400, "role": "context" },
+          { "shape": "cylinder", "c": [300, 130], "rx": 110, "ry": 30, "h": 400, "rings": 3, "outline": false, "role": "hidden" },
+          { "shape": "cylinder", "c": [680, 180], "rx": 130, "ry": 45, "h": 300, "role": "context" },
+          { "shape": "cylinder", "c": [680, 180], "rx": 130, "ry": 45, "h": 300, "rings": 2, "outline": false, "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "vol03",
+      "title": "Esfera con paralelos (con guía)",
+      "goal": "Repasa la esfera y sus paralelos. Los del centro son más anchos y los de los extremos, más estrechos: así se nota que la superficie gira.",
+      "krita_tip": "Una esfera con contornos es la base para cabezas, frutas y articulaciones; en Krita, bocétala primero con el pincel por defecto.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "sphere", "c": [480, 320], "r": 220, "tilt": 0.3, "rings": 3 }]
+      }
+    },
+    {
+      "id": "vol04",
+      "title": "Paralelos de una esfera",
+      "goal": "Las esferas ya están. Dibuja sus paralelos: arcos que van de borde a borde, más anchos en el centro y más estrechos hacia arriba y hacia abajo.",
+      "krita_tip": "Cuanto más abiertas dibujes las elipses de contorno, más desde arriba parecerá que miras la esfera.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 15,
+        "guides": [
+          { "shape": "sphere", "c": [280, 300], "r": 170, "tilt": 0.35, "role": "context" },
+          { "shape": "sphere", "c": [280, 300], "r": 170, "tilt": 0.35, "rings": 3, "outline": false, "role": "hidden" },
+          { "shape": "sphere", "c": [720, 330], "r": 140, "tilt": 0.25, "role": "context" },
+          { "shape": "sphere", "c": [720, 330], "r": 140, "tilt": 0.25, "rings": 2, "outline": false, "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "vol05",
+      "title": "Conos",
+      "goal": "Repasa los conos: base elíptica y dos lados que llegan al vértice tocando la elipse justo en sus extremos.",
+      "krita_tip": "El vértice del cono está sobre el eje de la base: si se desplaza, el cono parece inclinado.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "cone", "c": [360, 500], "rx": 170, "ry": 45, "apex": [360, 90] },
+          { "shape": "cone", "c": [740, 180], "rx": 90, "ry": 26, "apex": [740, 540] }
+        ]
+      }
+    },
+    {
+      "id": "vol06",
+      "title": "Salchichas (con guía)",
+      "goal": "Repasa las dos formas: dos esferas unidas por los lados y anillos de contorno que las rodean.",
+      "krita_tip": "Las «salchichas» de Drawabox son la base de brazos, piernas y troncos; practícalas también en Krita.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 15 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "sausage", "a": [200, 200], "b": [420, 420], "r": 70, "rings": 3 },
+          { "shape": "sausage", "a": [560, 160], "b": [800, 320], "r": 60, "rings": 3 }
+        ]
+      }
+    },
+    {
+      "id": "vol07",
+      "title": "Salchichas: líneas de contorno",
+      "goal": "Las formas ya están. Dibuja tres anillos de contorno en cada una, perpendiculares al eje y todos con el mismo grado.",
+      "krita_tip": "Un anillo de contorno bien puesto vale más que muchos mal puestos: pocos, pero claros.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 15 },
+      "kind": {
+        "type": "trace",
+        "tol": 15,
+        "guides": [
+          { "shape": "sausage", "a": [180, 430], "b": [460, 220], "r": 80, "role": "context" },
+          { "shape": "sausage", "a": [180, 430], "b": [460, 220], "r": 80, "rings": 3, "outline": false, "role": "hidden" },
+          { "shape": "sausage", "a": [600, 480], "b": [800, 240], "r": 65, "role": "context" },
+          { "shape": "sausage", "a": [600, 480], "b": [800, 240], "r": 65, "rings": 3, "outline": false, "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "vol08",
+      "title": "Copia: dos cajas en dos puntos",
+      "goal": "Copia las dos cajas. Fíjate en que todas sus aristas van hacia los mismos dos puntos de fuga, aunque no se vean.",
+      "krita_tip": "Al copiar, prolonga dos aristas paralelas en una capa aparte hasta que se crucen: ahí está su punto de fuga.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "scene": {
+          "gen": "box2",
+          "horizon": 200,
+          "vps": [40, 920],
+          "boxes": [
+            { "x": 300, "top": 300, "bottom": 470, "left": 0.25, "right": 0.3 },
+            { "x": 660, "top": 330, "bottom": 520, "left": 0.3, "right": 0.2 }
+          ],
+          "far": true
+        }
+      }
+    },
+    {
+      "id": "vol09",
+      "title": "Copia: caja en tres puntos",
+      "goal": "Copia la caja vista desde abajo: sus aristas verticales se juntan hacia arriba. Compara el ancho de arriba con el de abajo.",
+      "krita_tip": "En tres puntos, las verticales convergen: en Krita lo resuelves con un tercer asistente Punto de fuga.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "scene": { "gen": "box3", "horizon": 570, "vps": [60, 900], "vp3": [520, -600], "boxes": [{ "x": 500, "y": 480, "height": 280, "left": 0.28, "right": 0.33 }], "far": true }
+      }
+    },
+    {
+      "id": "vol10",
+      "title": "Copia: formas juntas",
+      "goal": "Copia el grupo de formas: un cilindro, una esfera y un cono. Mide la altura de cada una frente a las otras y cuánto espacio queda entre ellas.",
+      "krita_tip": "Construir con formas simples antes de detallar es el primer paso de casi cualquier dibujo; en Krita, deja esta capa debajo y detalla encima.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "copy",
+        "tol": 15,
+        "guides": [
+          { "shape": "cylinder", "c": [250, 300], "rx": 80, "ry": 22, "h": 220 },
+          { "shape": "sphere", "c": [490, 420], "r": 110, "tilt": 0.3 },
+          { "shape": "cone", "c": [730, 500], "rx": 90, "ry": 25, "apex": [730, 250] }
+        ]
+      }
+    }
+  ]
+}

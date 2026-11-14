@@ -1,0 +1,162 @@
+{
+  "id": "observacion",
+  "title": "Observación y memoria",
+  "subtitle": "Copiar del revés y dibujar de memoria",
+  "lesson": "Basado en Betty Edwards, «Dibujar con el lado derecho del cerebro». Copiar algo del revés obliga a dibujar lo que ves —ángulos, distancias, formas— en lugar de lo que crees que es el objeto. No le des la vuelta al dibujo: cópialo tal como está.\n\nDibujar de memoria entrena a retener esas relaciones. En esos ejercicios la guía se ve unos segundos y luego se oculta: obsérvala, imagina el trazo y dibújalo sin referencia. Al calificar vuelve a aparecer para que compares.",
+  "accent": [120, 220, 220],
+  "exercises": [
+    {
+      "id": "obs01",
+      "title": "Copia del revés: mesa",
+      "goal": "La mesa está boca abajo. Cópiala así, sin girarla: fíjate solo en líneas, ángulos y distancias.",
+      "krita_tip": "En Krita puedes girar la vista 180° para copiar del revés una referencia sin tocar el archivo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "turn": 180, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[200, 250], [760, 250], [760, 290], [200, 290]], "closed": true },
+          { "shape": "poly", "pts": [[240, 290], [270, 290], [265, 520], [245, 520]], "closed": true },
+          { "shape": "poly", "pts": [[690, 290], [720, 290], [715, 520], [695, 520]], "closed": true },
+          { "shape": "line", "a": [268, 440], "b": [692, 440] }
+        ]
+      }
+    },
+    {
+      "id": "obs02",
+      "title": "Copia del revés: botella",
+      "goal": "Copia la botella boca abajo. Si te sorprendes pensando «esto es el cuello», vuelve a mirar solo la forma.",
+      "krita_tip": "Edwards propone este ejercicio para callar al «nombre de las cosas»: dibujas formas, no objetos.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "turn": 180, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "ellipse", "c": [480, 110], "rx": 25, "ry": 7 },
+          { "shape": "line", "a": [455, 110], "b": [455, 180] },
+          { "shape": "line", "a": [505, 110], "b": [505, 180] },
+          { "shape": "bezier", "p": [[455, 180], [450, 220], [400, 230], [400, 280]] },
+          { "shape": "bezier", "p": [[505, 180], [510, 220], [560, 230], [560, 280]] },
+          { "shape": "line", "a": [400, 280], "b": [400, 540] },
+          { "shape": "line", "a": [560, 280], "b": [560, 540] },
+          { "shape": "ellipse", "c": [480, 540], "rx": 80, "ry": 18, "a1": 180 }
+        ]
+      }
+    },
+    {
+      "id": "obs03",
+      "title": "Copia del revés: casita",
+      "goal": "Copia la casita boca abajo. Empieza por la línea más larga y mide todo lo demás comparándolo con ella.",
+      "krita_tip": "Al terminar, gira tu dibujo en Krita (Imagen › Rotar) para verlo derecho: suele salir mejor de lo esperado.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "turn": 180, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[330, 290], [630, 290], [630, 520], [330, 520]], "closed": true },
+          { "shape": "poly", "pts": [[300, 300], [480, 140], [660, 300]] },
+          { "shape": "poly", "pts": [[400, 520], [400, 410], [470, 410], [470, 520]] },
+          { "shape": "poly", "pts": [[530, 340], [590, 340], [590, 400], [530, 400]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m7e1",
+      "title": "Círculo de memoria",
+      "goal": "Memoriza el círculo y dibújalo cuando desaparezca.",
+      "krita_tip": "En Krita puedes activar el modo espejo (M) para revisar tus proporciones con ojos frescos.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 3,
+      "vary": { "shift": 60, "scale": [0.75, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [{ "shape": "circle", "c": [480, 320], "r": 170 }]
+      }
+    },
+    {
+      "id": "m7e2",
+      "title": "Ola de memoria",
+      "goal": "Memoriza la ola y repítela sin guía.",
+      "krita_tip": "Usa el Estabilizador en Krita cuando necesites curvas largas muy limpias, pero entrena también sin él.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 3,
+      "vary": { "shift": 40, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [{ "shape": "wave", "x0": 140, "x1": 820, "y": 320, "amp": 110, "cycles": 1.5 }]
+      }
+    },
+    {
+      "id": "obs04",
+      "title": "Cubo de memoria",
+      "goal": "Mira el cubo cinco segundos: fíjate en la inclinación de las aristas que se alejan. Luego dibújalo entero, también las aristas de atrás.",
+      "krita_tip": "Memorizar formas simples es la base de dibujar sin modelo; en Krita, compara con la referencia en una capa al terminar.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "memory": 5,
+      "vary": { "shift": 40, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          { "shape": "poly", "pts": [[300, 260], [520, 260], [520, 480], [300, 480]], "closed": true },
+          { "shape": "poly", "pts": [[420, 170], [640, 170], [640, 390], [420, 390]], "closed": true },
+          { "shape": "line", "a": [300, 260], "b": [420, 170] },
+          { "shape": "line", "a": [520, 260], "b": [640, 170] },
+          { "shape": "line", "a": [520, 480], "b": [640, 390] },
+          { "shape": "line", "a": [300, 480], "b": [420, 390] }
+        ]
+      }
+    },
+    {
+      "id": "obs05",
+      "title": "Casa de memoria",
+      "goal": "Seis segundos para mirar la casita. Después, dibújala en el mismo sitio y con las mismas proporciones.",
+      "krita_tip": "Cuantas más relaciones recuerdes (la puerta a un tercio, el tejado tan alto como media pared…), mejor saldrá.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 6,
+      "vary": { "shift": 40, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          { "shape": "poly", "pts": [[330, 290], [630, 290], [630, 520], [330, 520]], "closed": true },
+          { "shape": "poly", "pts": [[300, 300], [480, 140], [660, 300]] },
+          { "shape": "poly", "pts": [[400, 520], [400, 410], [470, 410], [470, 520]] },
+          { "shape": "poly", "pts": [[530, 340], [590, 340], [590, 400], [530, 400]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m7e3",
+      "title": "Cabeza simple",
+      "goal": "Círculo, eje vertical y línea de ojos: la base de un retrato.",
+      "krita_tip": "En Krita, dibuja la construcción en una capa y bájale la opacidad antes de detallar.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "memory": 4,
+      "vary": { "shift": 50, "scale": [0.85, 1.0], "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          { "shape": "circle", "c": [480, 290], "r": 150 },
+          { "shape": "line", "a": [480, 140], "b": [480, 560] },
+          { "shape": "ellipse", "c": [480, 300], "rx": 150, "ry": 40, "a1": 180 },
+          { "shape": "bezier", "p": [[380, 400], [400, 520], [560, 520], [580, 400]] }
+        ]
+      }
+    }
+  ]
+}
