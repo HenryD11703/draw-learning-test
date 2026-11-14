@@ -1,7 +1,7 @@
 //! Calificación de los ejercicios (diseño propio, MECHANICS.md §4).
 
 use crate::canvas::{Canvas, H, StrokePoint, W, luminance};
-use crate::lessons::{CELL, Guide, PaintTarget, Scene};
+use crate::lessons::{CELL, Guide, Kind, PaintTarget, Scene};
 use egui::Pos2;
 use std::collections::BTreeMap;
 
@@ -183,6 +183,30 @@ pub fn grade_trace(strokes: &[Vec<StrokePoint>], guides: &[Guide], tol: f32, mag
         advice.push_str(" (Cubriste menos de la mitad de la guía: las demás medidas cuentan en proporción.)");
     }
     Grade { total, stars: stars_for(total), metrics, advice, assist_penalty: penalty }
+}
+
+/// Puntos del dibujo con su gravedad (0 = bien, 1 = muy desviado), para marcar los errores en el
+/// lienzo después de calificar. Los ejercicios de copia y de pintura no tienen marcas.
+pub fn error_marks(kind: &Kind, strokes: &[Vec<StrokePoint>]) -> Vec<(Pos2, f32)> {
+    match kind {
+        Kind::Trace { guides, tol } | Kind::Points { guides, tol } => strokes
+            .iter()
+            .flat_map(|s| resample_uniform(s, 6.0))
+            .map(|p| (p, (nearest(p, guides).0 / (2.0 * tol)).clamp(0.0, 1.0)))
+            .collect(),
+        Kind::Perspective(scene) => {
+            let dirs = scene.dirs();
+            let mut out = Vec::new();
+            for s in strokes {
+                let Some(f) = fit_line(s).filter(|f| f.len >= 20.0) else { continue };
+                let err = dirs.iter().map(|d| line_angle(f.u, scene.dir_at(f.c, *d))).fold(f32::MAX, f32::min);
+                let sev = (err / 8.0).clamp(0.0, 1.0);
+                out.extend(resample_uniform(s, 6.0).into_iter().map(|p| (p, sev)));
+            }
+            out
+        }
+        Kind::Copy { .. } | Kind::Paint { .. } => Vec::new(),
+    }
 }
 
 /// Pulso: cuánto cambia la flecha (desvío con signo del punto central respecto a la cuerda de
@@ -738,6 +762,20 @@ mod tests {
         // Solo la mitad de las líneas.
         let half = grade_perspective(&good[..2], &s);
         assert!((metric(&half, "Completadas") - 0.5).abs() < 0.05);
+    }
+
+    #[test]
+    fn error_marks_flag_only_the_part_that_strays() {
+        let guides = line_guide();
+        let kind = Kind::Trace { guides, tol: 12.0 };
+        // Primera mitad sobre la guía, segunda mitad 30 px por debajo.
+        let s = vec![stroke(300, |t| pos2(100.0 + t * 300.0, if t < 0.5 { 200.0 } else { 230.0 }))];
+        let marks = error_marks(&kind, &s);
+        let bad: Vec<_> = marks.iter().filter(|m| m.1 >= 0.35).collect();
+        assert!(!bad.is_empty());
+        assert!(bad.iter().all(|m| m.0.x > 240.0), "solo se marca el tramo desviado");
+        assert!(marks.iter().filter(|m| m.0.x < 240.0).all(|m| m.1 < 0.1));
+        assert!(error_marks(&Kind::Copy { guides: vec![], tol: 12.0 }, &s).is_empty());
     }
 
     #[test]
