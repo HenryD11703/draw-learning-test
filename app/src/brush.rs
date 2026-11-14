@@ -169,6 +169,16 @@ pub fn presets() -> Vec<BrushPreset> {
                 "Arrastra y mezcla el color que ya hay en el lienzo, como óleo fresco; cuanto más presionas, más arrastra.")
         },
         BrushPreset {
+            size: 36.0,
+            hardness: 0.0,
+            spacing: 0.08,
+            flow: 0.5,
+            smudge: 1.0,
+            opacity_pressure: c("0,0;1,1;"),
+            ..base("difuminar", "k) Blender Basic", "Difuminar", "k) Mezcladores",
+                "No pinta color propio: arrastra y funde el que ya hay en el lienzo. Para suavizar transiciones entre valores o colores.")
+        },
+        BrushPreset {
             kind: BrushKind::Pixel,
             size: 4.0,
             hardness: 1.0,

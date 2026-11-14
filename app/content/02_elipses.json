@@ -1,0 +1,235 @@
+{
+  "id": "elipses",
+  "title": "Elipses",
+  "subtitle": "Círculos, grados y elipses en planos y embudos",
+  "lesson": "Basado en la lección de elipses de Drawabox. Una elipse es un círculo visto de lado; su «grado» es lo abierta que está: casi una línea si la ves de canto, un círculo si la ves de frente.\n\n• Dibuja cada elipse de un solo gesto y repásala dos o tres veces sin parar: el movimiento continuo da la forma.\n• Las elipses van con el hombro, igual que las líneas largas.\n• Un círculo dentro de un cuadrado en perspectiva se ve como una elipse que toca los cuatro lados del cuadrilátero, cada uno una vez.\n• En un embudo o un cilindro, el eje menor de cada elipse cae sobre el eje del objeto.",
+  "accent": [64, 196, 220],
+  "exercises": [
+    {
+      "id": "eli01",
+      "title": "Círculos con varias pasadas",
+      "goal": "Dibuja cada círculo dando dos o tres vueltas seguidas, sin levantar el lápiz. Las vueltas deben quedar juntas, no como una espiral.",
+      "krita_tip": "Si el círculo se deforma siempre hacia el mismo lado, gira el lienzo: en Krita, Mayús + barra espaciadora y arrastrar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "circle", "c": [220, 210], "r": 100 },
+          { "shape": "circle", "c": [520, 190], "r": 80 },
+          { "shape": "circle", "c": [760, 330], "r": 95 },
+          { "shape": "circle", "c": [380, 470], "r": 90 }
+        ]
+      }
+    },
+    {
+      "id": "m1e5",
+      "title": "Círculos",
+      "goal": "Dibuja cada círculo de una vez. Puedes \"fantasmear\": mueve el lápiz en el aire antes de apoyar.",
+      "krita_tip": "Krita tiene un asistente de Elipse que atrae el trazo; aquí lo sustituye la guía magnética, pero intenta no usarla.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.85, 1.1] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "circle", "c": [230, 320], "r": 120 },
+          { "shape": "circle", "c": [500, 320], "r": 90 },
+          { "shape": "circle", "c": [730, 320], "r": 60 }
+        ]
+      }
+    },
+    {
+      "id": "m1e6",
+      "title": "Elipses",
+      "goal": "Repasa las elipses: son círculos vistos en perspectiva.",
+      "krita_tip": "En Krita, la herramienta Elipse (no el pincel) dibuja elipses perfectas, pero saber hacerlas a mano es clave para bocetar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "ellipse", "c": [240, 320], "rx": 140, "ry": 60 },
+          { "shape": "ellipse", "c": [520, 320], "rx": 120, "ry": 80, "rot": 34.377468 },
+          { "shape": "ellipse", "c": [760, 320], "rx": 50, "ry": 150 }
+        ]
+      }
+    },
+    {
+      "id": "eli02",
+      "title": "Tabla de elipses",
+      "goal": "Cada fila tiene un grado distinto, de la más estrecha a la más abierta. Dibuja las tres de cada fila con la misma forma, con dos vueltas por elipse.",
+      "krita_tip": "Para comprobar tus elipses, traza una perfecta con la herramienta Elipse de Krita en otra capa y compara.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 15 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "ellipse", "c": [180, 120], "rx": 110, "ry": 28 },
+          { "shape": "ellipse", "c": [480, 120], "rx": 110, "ry": 28 },
+          { "shape": "ellipse", "c": [780, 120], "rx": 110, "ry": 28 },
+          { "shape": "ellipse", "c": [180, 300], "rx": 110, "ry": 55 },
+          { "shape": "ellipse", "c": [480, 300], "rx": 110, "ry": 55 },
+          { "shape": "ellipse", "c": [780, 300], "rx": 110, "ry": 55 },
+          { "shape": "ellipse", "c": [180, 515], "rx": 110, "ry": 88 },
+          { "shape": "ellipse", "c": [480, 515], "rx": 110, "ry": 88 },
+          { "shape": "ellipse", "c": [780, 515], "rx": 110, "ry": 88 }
+        ]
+      }
+    },
+    {
+      "id": "eli03",
+      "title": "Elipses giradas",
+      "goal": "La misma elipse en seis ángulos. Gira el lienzo si un ángulo te incomoda, pero no la deformes: mismo ancho y mismo grado en todas.",
+      "krita_tip": "En Krita puedes girar la vista sin girar el dibujo: Mayús + barra espaciadora y arrastrar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "ellipse", "c": [180, 180], "rx": 110, "ry": 45 },
+          { "shape": "ellipse", "c": [480, 180], "rx": 110, "ry": 45, "rot": 30 },
+          { "shape": "ellipse", "c": [780, 180], "rx": 110, "ry": 45, "rot": 60 },
+          { "shape": "ellipse", "c": [180, 460], "rx": 110, "ry": 45, "rot": 90 },
+          { "shape": "ellipse", "c": [480, 460], "rx": 110, "ry": 45, "rot": -30 },
+          { "shape": "ellipse", "c": [780, 460], "rx": 110, "ry": 45, "rot": -60 }
+        ]
+      }
+    },
+    {
+      "id": "eli04",
+      "title": "Elipses en un marco",
+      "goal": "Dibuja dentro de cada rectángulo una elipse que toque los cuatro lados, cada uno en su punto medio.",
+      "krita_tip": "En Krita, la herramienta Elipse dibuja desde una esquina del rectángulo que la encierra: es la misma idea que este ejercicio.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "plane", "quad": [[100, 110], [380, 110], [380, 270], [100, 270]], "role": "context" },
+          { "shape": "plane", "quad": [[100, 110], [380, 110], [380, 270], [100, 270]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[480, 90], [620, 90], [620, 310], [480, 310]], "role": "context" },
+          { "shape": "plane", "quad": [[480, 90], [620, 90], [620, 310], [480, 310]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[700, 140], [870, 140], [870, 250], [700, 250]], "role": "context" },
+          { "shape": "plane", "quad": [[700, 140], [870, 140], [870, 250], [700, 250]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[160, 370], [460, 370], [460, 580], [160, 580]], "role": "context" },
+          { "shape": "plane", "quad": [[160, 370], [460, 370], [460, 580], [160, 580]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[560, 390], [860, 390], [860, 530], [560, 530]], "role": "context" },
+          { "shape": "plane", "quad": [[560, 390], [860, 390], [860, 530], [560, 530]], "outline": false, "circle": true }
+        ]
+      }
+    },
+    {
+      "id": "eli05",
+      "title": "Elipses en planos (con guía)",
+      "goal": "Cada plano está en perspectiva. Repasa la elipse: fíjate en que toca cada lado justo donde lo cruza una línea media.",
+      "krita_tip": "Krita 5 tiene un asistente de Elipse en perspectiva: lo ajustas a un plano como estos y te ayuda a trazar el círculo que le corresponde.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "plane", "quad": [[100, 250], [400, 200], [440, 350], [120, 400]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[100, 250], [400, 200], [440, 350], [120, 400]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[520, 110], [820, 140], [760, 300], [540, 270]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[520, 110], [820, 140], [760, 300], [540, 270]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[520, 400], [860, 380], [880, 560], [500, 590]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[520, 400], [860, 380], [880, 560], [500, 590]], "outline": false, "circle": true },
+          { "shape": "plane", "quad": [[130, 460], [390, 450], [360, 600], [90, 610]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[130, 460], [390, 450], [360, 600], [90, 610]], "outline": false, "circle": true }
+        ]
+      }
+    },
+    {
+      "id": "eli06",
+      "title": "Elipses en planos",
+      "goal": "Ahora encuentra tú la elipse de cada plano: debe tocar cada lado una sola vez, en el punto donde lo cruza la línea media.",
+      "krita_tip": "Cuando no tengas asistentes, traza primero las líneas medias del plano en una capa de construcción: la elipse cae sola entre ellas.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "plane", "quad": [[110, 120], [420, 150], [380, 320], [100, 280]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[110, 120], [420, 150], [380, 320], [100, 280]], "outline": false, "circle": true, "role": "hidden" },
+          { "shape": "plane", "quad": [[540, 160], [850, 120], [870, 300], [520, 330]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[540, 160], [850, 120], [870, 300], [520, 330]], "outline": false, "circle": true, "role": "hidden" },
+          { "shape": "plane", "quad": [[180, 400], [520, 420], [470, 600], [120, 570]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[180, 400], [520, 420], [470, 600], [120, 570]], "outline": false, "circle": true, "role": "hidden" },
+          { "shape": "plane", "quad": [[620, 420], [860, 400], [840, 590], [640, 600]], "cross": true, "role": "context" },
+          { "shape": "plane", "quad": [[620, 420], [860, 400], [840, 590], [640, 600]], "outline": false, "circle": true, "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "eli07",
+      "title": "Embudos (con guía)",
+      "goal": "Repasa las elipses de cada embudo. Todas tienen el eje menor sobre la línea central; fíjate en cómo cambia su grado de un extremo a otro.",
+      "krita_tip": "Los embudos de Drawabox preparan para dibujar vasos, botellas y cilindros: practícalos también en Krita con el pincel por defecto.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "funnel", "a": [250, 100], "b": [250, 530], "count": 5, "r0": 60, "r1": 150, "d0": 0.15, "d1": 0.45 },
+          { "shape": "funnel", "a": [660, 100], "b": [720, 560], "count": 5, "r0": 150, "r1": 70, "d0": 0.45, "d1": 0.15 }
+        ]
+      }
+    },
+    {
+      "id": "eli08",
+      "title": "Embudos",
+      "goal": "El eje y los lados de cada embudo ya están. Dibuja cinco elipses en cada uno: tocan los dos lados y tienen el eje menor sobre el eje del embudo.",
+      "krita_tip": "Si el eje está inclinado, gira el lienzo en Krita hasta dejarlo vertical: las elipses salen mucho más fáciles.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 15,
+        "guides": [
+          { "shape": "funnel", "a": [300, 100], "b": [260, 510], "count": 5, "r0": 50, "r1": 150, "d0": 0.12, "d1": 0.5, "ellipses": false, "role": "context" },
+          { "shape": "funnel", "a": [300, 100], "b": [260, 510], "count": 5, "r0": 50, "r1": 150, "d0": 0.12, "d1": 0.5, "frame": false, "role": "hidden" },
+          { "shape": "funnel", "a": [680, 510], "b": [700, 100], "count": 5, "r0": 140, "r1": 60, "d0": 0.5, "d1": 0.15, "ellipses": false, "role": "context" },
+          { "shape": "funnel", "a": [680, 510], "b": [700, 100], "count": 5, "r0": 140, "r1": 60, "d0": 0.5, "d1": 0.15, "frame": false, "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "eli09",
+      "title": "Elipses de memoria",
+      "goal": "Mira las elipses unos segundos. Cuando desaparezcan, dibújalas con el mismo tamaño, grado e inclinación.",
+      "krita_tip": "Comparar de memoria entrena a ver el grado: en Krita, vuelve a mostrar la capa de referencia al terminar y compara.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 4,
+      "vary": { "shift": 40, "scale": [0.85, 1.05], "rotate": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [
+          { "shape": "ellipse", "c": [260, 230], "rx": 150, "ry": 60, "rot": 15 },
+          { "shape": "ellipse", "c": [680, 300], "rx": 120, "ry": 90 },
+          { "shape": "ellipse", "c": [360, 480], "rx": 160, "ry": 40, "rot": -10 }
+        ]
+      }
+    }
+  ]
+}

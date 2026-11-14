@@ -1,0 +1,517 @@
+{
+  "id": "color",
+  "title": "Color",
+  "subtitle": "Tono, saturación y valor, uno por uno",
+  "lesson": "Basado en James Gurney («Color and Light») y en el sistema de Munsell. Todo color tiene tres dimensiones:\n\n• Tono: qué color es (rojo, amarillo, azul…).\n• Saturación (o croma): lo intenso o lo apagado que es.\n• Valor: lo claro o lo oscuro.\n\nAprende a ver y a cambiar cada una por separado. Un error frecuente es oscurecer un color añadiéndole negro: baja el valor, pero también lo ensucia. En estos ejercicios se califican las tres por separado.",
+  "accent": [
+    240,
+    120,
+    120
+  ],
+  "exercises": [
+    {
+      "id": "col01",
+      "title": "Copiar colores",
+      "goal": "Cuatro muestras: pinta cada recuadro con el mismo color que su referencia. Fíjate primero en el tono, luego en lo intenso y por último en lo claro.",
+      "krita_tip": "En el selector de color avanzado de Krita, el anillo cambia el tono y el triángulo, la saturación y el valor: cámbialos de uno en uno.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              130,
+              460,
+              300
+            ],
+            "fill": [
+              0.9,
+              0.55,
+              0.2
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              500,
+              130,
+              740,
+              300
+            ],
+            "fill": [
+              0.2,
+              0.6,
+              0.6
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              220,
+              340,
+              460,
+              510
+            ],
+            "fill": [
+              0.5,
+              0.3,
+              0.65
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              500,
+              340,
+              740,
+              510
+            ],
+            "fill": [
+              0.55,
+              0.55,
+              0.25
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "col02",
+      "title": "Escala de saturación",
+      "goal": "Cinco recuadros del gris al rojo intenso, todos del mismo valor. Solo cambia la saturación: comprueba con Grises que los cinco se ven iguales.",
+      "krita_tip": "Para bajar la saturación sin cambiar el valor, mezcla el color con un gris igual de claro, no con negro ni con blanco.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              112,
+              220,
+              242,
+              420
+            ],
+            "fill": [
+              0.35,
+              0.35,
+              0.35
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              262,
+              220,
+              392,
+              420
+            ],
+            "fill": [
+              0.501,
+              0.31,
+              0.298
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              412,
+              220,
+              542,
+              420
+            ],
+            "fill": [
+              0.652,
+              0.27,
+              0.246
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              562,
+              220,
+              692,
+              420
+            ],
+            "fill": [
+              0.804,
+              0.231,
+              0.195
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              712,
+              220,
+              842,
+              420
+            ],
+            "fill": [
+              0.955,
+              0.191,
+              0.143
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "col03",
+      "title": "Valores de un color",
+      "goal": "Cinco azules del más claro al más oscuro. Mantén el tono: que todos sigan siendo el mismo azul.",
+      "krita_tip": "Los colores claros de un tono se llaman tintes y los oscuros, sombras; en Krita los encuentras moviéndote en vertical por el triángulo del selector.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              112,
+              220,
+              242,
+              420
+            ],
+            "fill": [
+              0.85,
+              0.9,
+              1.0
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              262,
+              220,
+              392,
+              420
+            ],
+            "fill": [
+              0.55,
+              0.7,
+              1.0
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              412,
+              220,
+              542,
+              420
+            ],
+            "fill": [
+              0.25,
+              0.45,
+              0.9
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              562,
+              220,
+              692,
+              420
+            ],
+            "fill": [
+              0.15,
+              0.28,
+              0.6
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              712,
+              220,
+              842,
+              420
+            ],
+            "fill": [
+              0.07,
+              0.13,
+              0.3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "col04",
+      "title": "Mismo valor, distinto tono",
+      "goal": "Rojo, amarillo, verde y azul con exactamente el mismo valor. Al activar Grises, los cuatro deben verse del mismo gris.",
+      "krita_tip": "El amarillo puro es muy claro y el azul, muy oscuro: para igualarlos hay que oscurecer el amarillo y aclarar el azul.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              150,
+              220,
+              300,
+              420
+            ],
+            "fill": [
+              1.0,
+              0.369,
+              0.293
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              320,
+              220,
+              470,
+              420
+            ],
+            "fill": [
+              0.604,
+              0.513,
+              0.06
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              490,
+              220,
+              640,
+              420
+            ],
+            "fill": [
+              0.158,
+              0.632,
+              0.198
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              660,
+              220,
+              810,
+              420
+            ],
+            "fill": [
+              0.301,
+              0.506,
+              1.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "col05",
+      "title": "Complementarios",
+      "goal": "Tres parejas de complementarios: naranja y azul, rojo y verde, amarillo y violeta. Cada pareja, una junto a la otra.",
+      "krita_tip": "Los complementarios están opuestos en el círculo cromático y se hacen vibrar uno al otro; mezclados, se apagan.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              90,
+              230,
+              210,
+              410
+            ],
+            "fill": [
+              0.95,
+              0.55,
+              0.15
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              223,
+              230,
+              343,
+              410
+            ],
+            "fill": [
+              0.15,
+              0.4,
+              0.9
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              356,
+              230,
+              476,
+              410
+            ],
+            "fill": [
+              0.85,
+              0.15,
+              0.15
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              489,
+              230,
+              609,
+              410
+            ],
+            "fill": [
+              0.15,
+              0.65,
+              0.25
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              622,
+              230,
+              742,
+              410
+            ],
+            "fill": [
+              0.95,
+              0.85,
+              0.15
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              755,
+              230,
+              875,
+              410
+            ],
+            "fill": [
+              0.5,
+              0.25,
+              0.75
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "col06",
+      "title": "Cálidos y fríos",
+      "goal": "Arriba, tres colores cálidos (rojo anaranjado, naranja, amarillo); abajo, tres fríos (azul, azul verdoso, violeta).",
+      "krita_tip": "La temperatura del color es relativa: un violeta puede parecer cálido junto a un azul. Compara siempre con lo que tiene al lado.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "painting",
+        "mode": "color",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              140,
+              370,
+              300
+            ],
+            "fill": [
+              0.9,
+              0.3,
+              0.15
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              390,
+              140,
+              560,
+              300
+            ],
+            "fill": [
+              0.95,
+              0.55,
+              0.15
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              580,
+              140,
+              750,
+              300
+            ],
+            "fill": [
+              0.95,
+              0.8,
+              0.2
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              340,
+              370,
+              500
+            ],
+            "fill": [
+              0.15,
+              0.35,
+              0.85
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              390,
+              340,
+              560,
+              500
+            ],
+            "fill": [
+              0.1,
+              0.55,
+              0.6
+            ]
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              580,
+              340,
+              750,
+              500
+            ],
+            "fill": [
+              0.45,
+              0.3,
+              0.75
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

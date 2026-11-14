@@ -3,12 +3,18 @@
 mod app;
 mod brush;
 mod canvas;
+mod content;
 mod curve;
 mod grading;
 mod lessons;
+mod painting;
 mod pressure;
+mod program;
 mod progress;
 mod smoothing;
+mod study;
+mod theme;
+mod view;
 
 use std::path::PathBuf;
 use std::sync::Arc;

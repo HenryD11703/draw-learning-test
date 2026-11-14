@@ -1,0 +1,142 @@
+{
+  "id": "peso",
+  "title": "Peso de línea",
+  "subtitle": "Presión, grosor y jerarquía de líneas",
+  "lesson": "Con una tableta, la presión es tu herramienta expresiva: un mismo trazo puede empezar fino, engordar y terminar en punta. Krita lee la presión, la pasa por una curva global (Ajustes de tableta) y luego por la curva de cada pincel.\n\nEl peso de línea también ordena el dibujo, como enseñan Drawabox y los manuales de entintado: el contorno exterior y lo que está cerca, más grueso; los detalles interiores y lo lejano, más fino. Así el dibujo se lee de un vistazo.\n\nLa guía muestra el grosor esperado. Si usas ratón, la app simula la presión con la velocidad (lento = más presión); puedes cambiarlo en Presión.",
+  "accent": [255, 170, 70],
+  "exercises": [
+    {
+      "id": "m2e1",
+      "title": "Trazos que se afinan",
+      "goal": "Empieza presionando y suelta poco a poco hasta terminar en punta.",
+      "krita_tip": "En el Editor de pinceles de Krita (F5), la opción Tamaño usa el sensor Presión con su propia curva.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [{ "shape": "lines", "a": [180, 150], "b": [780, 150], "step": [0, 110], "count": 4, "pressure": "taper_out" }]
+      }
+    },
+    {
+      "id": "m2e2",
+      "title": "Trazos que engordan",
+      "goal": "Empieza muy suave y aumenta la presión hasta el final.",
+      "krita_tip": "La curva global de presión está en Configuración › Configurar Krita › Ajustes de tableta. Aquí la ajustas en la pestaña Presión.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 20 },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [{ "shape": "lines", "a": [180, 150], "b": [780, 150], "step": [0, 110], "count": 4, "pressure": "taper_in" }]
+      }
+    },
+    {
+      "id": "m2e3",
+      "title": "Husos",
+      "goal": "Fino › grueso › fino. Es el trazo base del entintado.",
+      "krita_tip": "Con la plumilla (d) Ink-3 Gpen) la diferencia entre poca y mucha presión es enorme; practica aquí antes de entintar en Krita.",
+      "brush": "gpen",
+      "smoothing": "Basico",
+      "vary": { "shift": 20, "scale": [0.92, 1.0] },
+      "kind": {
+        "type": "trace",
+        "tol": 15,
+        "guides": [
+          { "shape": "bezier", "p": [[150, 180], [350, 80], [600, 280], [810, 160]], "pressure": "spindle" },
+          { "shape": "bezier", "p": [[150, 340], [350, 240], [600, 440], [810, 320]], "pressure": "spindle" },
+          { "shape": "bezier", "p": [[150, 500], [350, 400], [600, 600], [810, 480]], "pressure": "spindle" }
+        ]
+      }
+    },
+    {
+      "id": "m2e4",
+      "title": "Ola con presión",
+      "goal": "Presiona en las crestas y aligera en los valles.",
+      "krita_tip": "Si tu tableta llega a presión máxima demasiado pronto, suaviza la curva: es lo primero que se ajusta al instalar Krita.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30 },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [{ "shape": "wave", "x0": 140, "x1": 820, "y": 320, "amp": 120, "cycles": 2, "pressure": { "wave": 2 } }]
+      }
+    },
+    {
+      "id": "m2e5",
+      "title": "Escalera de presión",
+      "goal": "Haz cada tramo con un nivel distinto: suave, medio, firme y máximo.",
+      "krita_tip": "La calibración de la pestaña Presión adapta la curva a tu mano: así tu \"suave\" y tu \"fuerte\" cubren todo el rango.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "vary": { "shift": 40 },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "line", "a": [160, 320], "b": [300, 320], "pressure": { "const": 0.25 } },
+          { "shape": "line", "a": [330, 320], "b": [470, 320], "pressure": { "const": 0.5 } },
+          { "shape": "line", "a": [500, 320], "b": [640, 320], "pressure": { "const": 0.75 } },
+          { "shape": "line", "a": [670, 320], "b": [810, 320], "pressure": { "const": 1.0 } }
+        ]
+      }
+    },
+    {
+      "id": "pes01",
+      "title": "Contorno grueso, interior fino",
+      "goal": "El contorno exterior del cubo va grueso y las aristas interiores, finas. Así el cubo se separa del fondo.",
+      "krita_tip": "Al entintar en Krita, muchos dibujantes repasan al final solo el contorno exterior con un pincel algo más grande.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.1] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "poly", "pts": [[300, 260], [420, 170], [640, 170], [640, 390], [520, 480], [300, 480]], "closed": true, "pressure": { "const": 0.9 } },
+          { "shape": "line", "a": [300, 260], "b": [520, 260], "pressure": { "const": 0.3 } },
+          { "shape": "line", "a": [520, 260], "b": [520, 480], "pressure": { "const": 0.3 } },
+          { "shape": "line", "a": [520, 260], "b": [640, 170], "pressure": { "const": 0.3 } }
+        ]
+      }
+    },
+    {
+      "id": "pes02",
+      "title": "Lo de delante, más grueso",
+      "goal": "El círculo está delante: su contorno va grueso y completo. El cuadrado queda detrás: más fino y cortado donde lo tapa el círculo.",
+      "krita_tip": "Cuando dos formas se tapan, en Krita conviene dibujarlas en capas distintas y borrar la parte oculta de la de atrás.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 40, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "circle", "c": [400, 380], "r": 170, "pressure": { "const": 0.9 } },
+          { "shape": "poly", "pts": [[420, 211], [420, 160], [760, 160], [760, 480], [537.5, 480]], "pressure": { "const": 0.3 } }
+        ]
+      }
+    },
+    {
+      "id": "pes03",
+      "title": "Cerca grueso, lejos fino",
+      "goal": "Tres círculos: el grande está cerca y va grueso; el pequeño, lejos y fino. El peso de línea refuerza la sensación de profundidad.",
+      "krita_tip": "En Krita, cambia el tamaño con [ y ] entre un círculo y otro, o deja que la presión lo haga por ti.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30 },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "circle", "c": [250, 420], "r": 150, "pressure": { "const": 0.95 } },
+          { "shape": "circle", "c": [560, 260], "r": 90, "pressure": { "const": 0.6 } },
+          { "shape": "circle", "c": [780, 140], "r": 50, "pressure": { "const": 0.3 } }
+        ]
+      }
+    }
+  ]
+}

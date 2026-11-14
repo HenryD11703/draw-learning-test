@@ -1,0 +1,231 @@
+{
+  "id": "formas",
+  "title": "Formas y proporción",
+  "subtitle": "Ver relaciones, medir a ojo y copiar",
+  "lesson": "Basado en Betty Edwards, «Dibujar con el lado derecho del cerebro». Antes de dibujar un objeto, míralo como formas simples y relaciones: cuánto mide de ancho frente a alto, dónde está su mitad, qué ángulo tiene cada borde. Edwards lo llama ver las relaciones y las proporciones: se toma una medida como unidad (por ejemplo, el ancho) y se compara todo con ella.\n\nEn los ejercicios de copia no hay guía en el lienzo: dibuja donde quieras y del tamaño que quieras. Se califica la forma y las proporciones, no la posición. En los de mitades y simetría, parte del dibujo ya está y el resto lo encuentras tú a ojo; al calificar verás dónde estaba.",
+  "accent": [200, 130, 255],
+  "exercises": [
+    {
+      "id": "m4e1",
+      "title": "Cuadrados",
+      "goal": "Cada lado de un trazo. Intenta que las esquinas cierren.",
+      "krita_tip": "En Krita, mantener Mayús mientras dibujas con la herramienta Rectángulo hace un cuadrado; aquí es a mano alzada.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 12 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[140, 180], [400, 180], [400, 440], [140, 440]], "closed": true },
+          { "shape": "poly", "pts": [[560, 200], [800, 200], [800, 440], [560, 440]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m4e2",
+      "title": "Triángulo y estrella",
+      "goal": "Repasa el triángulo y la estrella sin levantar el lápiz en cada lado.",
+      "krita_tip": "Las formas cerradas se pueden rellenar en Krita con la herramienta Relleno (tecla F).",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 25, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[250, 140], [410, 470], [90, 470]], "closed": true },
+          { "shape": "star", "c": [660, 320], "r_out": 200, "r_in": 80 }
+        ]
+      }
+    },
+    {
+      "id": "for01",
+      "title": "Mitades a ojo",
+      "goal": "Divide cada rectángulo en cuatro partes iguales con una línea vertical y otra horizontal, a ojo. Mira las dos mitades a la vez antes de trazar.",
+      "krita_tip": "En Krita, la rejilla (menú Ver) y el asistente Regla dan medidas exactas; aquí entrenas el ojo para cuando no los tienes.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[140, 140], [440, 140], [440, 320], [140, 320]], "closed": true, "role": "context" },
+          { "shape": "line", "a": [290, 140], "b": [290, 320], "role": "hidden" },
+          { "shape": "line", "a": [140, 230], "b": [440, 230], "role": "hidden" },
+          { "shape": "poly", "pts": [[540, 120], [820, 120], [820, 480], [540, 480]], "closed": true, "role": "context" },
+          { "shape": "line", "a": [680, 120], "b": [680, 480], "role": "hidden" },
+          { "shape": "line", "a": [540, 300], "b": [820, 300], "role": "hidden" },
+          { "shape": "poly", "pts": [[160, 400], [460, 400], [460, 580], [160, 580]], "closed": true, "role": "context" },
+          { "shape": "line", "a": [310, 400], "b": [310, 580], "role": "hidden" },
+          { "shape": "line", "a": [160, 490], "b": [460, 490], "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "for02",
+      "title": "Tercios a ojo",
+      "goal": "Divide el primer rectángulo en tres columnas iguales y el segundo en tres filas iguales.",
+      "krita_tip": "Los tercios aparecen en composición (la regla de los tercios); en Krita puedes poner una rejilla de tres por tres para encuadrar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [
+          { "shape": "poly", "pts": [[120, 150], [480, 150], [480, 450], [120, 450]], "closed": true, "role": "context" },
+          { "shape": "line", "a": [240, 150], "b": [240, 450], "role": "hidden" },
+          { "shape": "line", "a": [360, 150], "b": [360, 450], "role": "hidden" },
+          { "shape": "poly", "pts": [[560, 120], [860, 120], [860, 540], [560, 540]], "closed": true, "role": "context" },
+          { "shape": "line", "a": [560, 260], "b": [860, 260], "role": "hidden" },
+          { "shape": "line", "a": [560, 400], "b": [860, 400], "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "for03",
+      "title": "Copia: rectángulos y proporción",
+      "goal": "Copia los tres rectángulos. Toma el ancho del primero como unidad y compara con él el alto de cada uno y las distancias entre ellos.",
+      "krita_tip": "Mide como Edwards: con el lápiz a brazo estirado frente a la pantalla, compara una longitud con otra antes de trazar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[150, 200], [450, 200], [450, 350], [150, 350]], "closed": true },
+          { "shape": "poly", "pts": [[520, 150], [620, 150], [620, 350], [520, 350]], "closed": true },
+          { "shape": "poly", "pts": [[680, 220], [830, 220], [830, 370], [680, 370]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m4e5",
+      "title": "Copia: casita",
+      "goal": "Copia la casita de la referencia en cualquier parte del lienzo y del tamaño que quieras. Fíjate en las proporciones: cuánto mide el tejado frente a la pared.",
+      "krita_tip": "En Krita, la herramienta de imagen de referencia pone una imagen flotante sobre el lienzo para copiarla sin mezclarla con tu dibujo.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1], "rotate": 6 },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[330, 290], [630, 290], [630, 520], [330, 520]], "closed": true },
+          { "shape": "poly", "pts": [[300, 300], [480, 140], [660, 300]] },
+          { "shape": "poly", "pts": [[400, 520], [400, 410], [470, 410], [470, 520]] },
+          { "shape": "poly", "pts": [[530, 340], [590, 340], [590, 400], [530, 400]], "closed": true }
+        ]
+      }
+    },
+    {
+      "id": "m4e6",
+      "title": "Copia: taza",
+      "goal": "Copia la taza: elipse de arriba, lados, fondo curvo y asa. Mide primero lo ancha que es frente a lo alta.",
+      "krita_tip": "Para comprobar proporciones en Krita, voltea la vista con M: los errores saltan a la vista.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1], "rotate": 6 },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "ellipse", "c": [440, 210], "rx": 130, "ry": 40 },
+          { "shape": "line", "a": [310, 210], "b": [330, 470] },
+          { "shape": "line", "a": [570, 210], "b": [550, 470] },
+          { "shape": "ellipse", "c": [440, 470], "rx": 110, "ry": 34, "a1": 180 },
+          { "shape": "bezier", "p": [[568, 260], [690, 250], [690, 420], [556, 410]] }
+        ]
+      }
+    },
+    {
+      "id": "for04",
+      "title": "Copia: mesa",
+      "goal": "Copia la mesa vista de frente. Compara el grosor del tablero con el alto de las patas y fíjate en a qué altura va el travesaño.",
+      "krita_tip": "En Krita puedes medir distancias exactas con la herramienta Medir; úsala para comprobar tu copia al terminar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.1] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "poly", "pts": [[200, 250], [760, 250], [760, 290], [200, 290]], "closed": true },
+          { "shape": "poly", "pts": [[240, 290], [270, 290], [265, 520], [245, 520]], "closed": true },
+          { "shape": "poly", "pts": [[690, 290], [720, 290], [715, 520], [695, 520]], "closed": true },
+          { "shape": "line", "a": [268, 440], "b": [692, 440] }
+        ]
+      }
+    },
+    {
+      "id": "for05",
+      "title": "Copia: botella",
+      "goal": "Copia la botella. Antes de empezar, compara: ¿cuántas veces cabe el ancho del cuello en el del cuerpo? ¿Y el alto del cuello en el de la botella?",
+      "krita_tip": "Las botellas son embudos y cilindros unidos: lo que practicaste en Elipses te sirve aquí.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "scale": [0.85, 1.05] },
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "guides": [
+          { "shape": "ellipse", "c": [480, 110], "rx": 25, "ry": 7 },
+          { "shape": "line", "a": [455, 110], "b": [455, 180] },
+          { "shape": "line", "a": [505, 110], "b": [505, 180] },
+          { "shape": "bezier", "p": [[455, 180], [450, 220], [400, 230], [400, 280]] },
+          { "shape": "bezier", "p": [[505, 180], [510, 220], [560, 230], [560, 280]] },
+          { "shape": "line", "a": [400, 280], "b": [400, 540] },
+          { "shape": "line", "a": [560, 280], "b": [560, 540] },
+          { "shape": "ellipse", "c": [480, 540], "rx": 80, "ry": 18, "a1": 180 }
+        ]
+      }
+    },
+    {
+      "id": "for06",
+      "title": "Simetría: jarrón",
+      "goal": "La mitad izquierda del jarrón ya está. Dibuja la derecha como su reflejo: mide la distancia al eje en tres o cuatro alturas antes de trazar.",
+      "krita_tip": "En Krita, la herramienta de espejo horizontal (en la barra superior) dibuja las dos mitades a la vez; aquí entrenas a verla tú.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "line", "a": [480, 80], "b": [480, 570], "role": "context" },
+          { "shape": "ellipse", "c": [480, 110], "rx": 50, "ry": 12, "role": "context" },
+          { "shape": "line", "a": [420, 540], "b": [540, 540], "role": "context" },
+          { "shape": "bezier", "p": [[430, 110], [450, 200], [270, 330], [420, 540]], "role": "context" },
+          { "shape": "bezier", "p": [[530, 110], [510, 200], [690, 330], [540, 540]], "role": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "for07",
+      "title": "Simetría: hoja",
+      "goal": "Completa la hoja: el contorno derecho y sus tres nervios, como reflejo de los de la izquierda.",
+      "krita_tip": "Muchas formas naturales son casi simétricas: en Krita, esboza la mitad, duplica la capa y voltéala (Capa › Transformar) para comprobar.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "scale": [0.9, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [
+          { "shape": "line", "a": [480, 100], "b": [480, 600], "role": "context" },
+          { "shape": "bezier", "p": [[480, 100], [330, 200], [320, 420], [480, 560]], "role": "context" },
+          { "shape": "line", "a": [480, 250], "b": [400, 200], "role": "context" },
+          { "shape": "line", "a": [480, 350], "b": [380, 300], "role": "context" },
+          { "shape": "line", "a": [480, 450], "b": [400, 420], "role": "context" },
+          { "shape": "bezier", "p": [[480, 100], [630, 200], [640, 420], [480, 560]], "role": "hidden" },
+          { "shape": "line", "a": [480, 250], "b": [560, 200], "role": "hidden" },
+          { "shape": "line", "a": [480, 350], "b": [580, 300], "role": "hidden" },
+          { "shape": "line", "a": [480, 450], "b": [560, 420], "role": "hidden" }
+        ]
+      }
+    }
+  ]
+}

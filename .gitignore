@@ -1,4 +1,6 @@
 # Rust / Cargo build artifacts
+# Configuración local de compilación (ver app/.cargo/config.toml.example)
+app/.cargo/config.toml
 app/target/
 app/shots/
 app/tools/

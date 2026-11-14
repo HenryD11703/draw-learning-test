@@ -1,0 +1,577 @@
+{
+  "id": "luz",
+  "title": "Luz y forma",
+  "subtitle": "El principio de la forma: luz, sombra y sombra proyectada",
+  "lesson": "Basado en el principio de la forma de James Gurney («Color and Light»). Una forma iluminada por una sola luz se divide en dos familias:\n\n• Luz: la luz plena, el medio tono hacia el borde y el brillo.\n• Sombra: la sombra propia y, en su borde, la luz reflejada que rebota del suelo.\n• Entre las dos, el terminador; fuera de la forma, la sombra proyectada, más oscura junto al objeto.\n\nMantén las familias separadas: nada en la sombra debe ser tan claro como la luz, ni siquiera la luz reflejada.",
+  "accent": [
+    240,
+    200,
+    120
+  ],
+  "exercises": [
+    {
+      "id": "m6e2",
+      "title": "Sombrear una esfera",
+      "goal": "Pinta la esfera: luz arriba a la izquierda, sombra abajo a la derecha.",
+      "krita_tip": "En Krita usa el selector de color avanzado para elegir grises exactos, o el atajo para tomar color del lienzo (Ctrl + clic).",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "Sphere"
+      }
+    },
+    {
+      "id": "luz01",
+      "title": "Esfera por planos",
+      "goal": "Pinta la esfera en cuatro valores planos, como un mosaico. Primero la mitad en luz y la mitad en sombra; después divide cada una.",
+      "krita_tip": "Separa primero la luz de la sombra con dos valores planos; en Krita, bloquea el alfa de la capa (botón de la lista de capas) para no salirte de la forma.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              200,
+              100,
+              760,
+              540
+            ],
+            "fill": 0.7
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              480,
+              320
+            ],
+            "r": 190,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.92,
+            "shadow": 0.18,
+            "reflected": 0.2,
+            "steps": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "luz02",
+      "title": "Esfera con luz reflejada y sombra proyectada",
+      "goal": "La luz viene de arriba a la izquierda. Pinta la esfera, su luz reflejada en el borde de la sombra y la sombra que proyecta en el suelo.",
+      "krita_tip": "La sombra proyectada es la más oscura de la escena, sobre todo justo debajo del objeto: allí no llega ninguna luz.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": 0.78
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              410,
+              800,
+              560
+            ],
+            "fill": 0.6
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              590,
+              470
+            ],
+            "rx": 160,
+            "ry": 36,
+            "fill": 0.2
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              460,
+              330
+            ],
+            "r": 130,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.94,
+            "shadow": 0.16,
+            "reflected": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "id": "luz03",
+      "title": "Luz desde la derecha",
+      "goal": "La misma escena con la luz a la derecha: la sombra propia pasa a la izquierda y la proyectada también.",
+      "krita_tip": "Cambiar la luz de lado es un buen ejercicio de comprensión: en Krita, voltea la imagen en horizontal (menú Imagen) y compara.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": 0.78
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              410,
+              800,
+              560
+            ],
+            "fill": 0.6
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              370,
+              470
+            ],
+            "rx": 160,
+            "ry": 36,
+            "fill": 0.2
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              500,
+              330
+            ],
+            "r": 130,
+            "light": [
+              0.75,
+              -0.6
+            ],
+            "lit": 0.94,
+            "shadow": 0.16,
+            "reflected": 0.3
+          }
+        ]
+      }
+    },
+    {
+      "id": "m6e3",
+      "title": "Cilindro sombreado",
+      "goal": "Sombrea el cilindro: el borde derecho es el más oscuro.",
+      "krita_tip": "Las luces suaves salen mejor con pinceles de borde difuso; los bordes nítidos, con uno duro.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "paint",
+        "target": "Cylinder"
+      }
+    },
+    {
+      "id": "luz04",
+      "title": "Cilindro con sombra proyectada",
+      "goal": "Un cilindro con luz por la izquierda: tapa clara, cuerpo que oscurece hacia la derecha y sombra proyectada en el suelo.",
+      "krita_tip": "En un cilindro el sombreado va en franjas verticales; en Krita, un aerógrafo grande y suave las funde bien.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": 0.76
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                470,
+                470
+              ],
+              [
+                560,
+                462
+              ],
+              [
+                770,
+                500
+              ],
+              [
+                700,
+                536
+              ],
+              [
+                470,
+                494
+              ]
+            ],
+            "fill": 0.18
+          },
+          {
+            "prim": "cylinder",
+            "rect": [
+              380,
+              170,
+              560,
+              470
+            ],
+            "light": -0.6,
+            "lit": 0.9,
+            "shadow": 0.18,
+            "reflected": 0.25
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              470,
+              470
+            ],
+            "rx": 90,
+            "ry": 22,
+            "fill": 0.45
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              470,
+              170
+            ],
+            "rx": 90,
+            "ry": 22,
+            "fill": 0.95
+          }
+        ]
+      }
+    },
+    {
+      "id": "luz05",
+      "title": "Cubo: tres valores",
+      "goal": "Luz desde arriba a la izquierda: tapa clara, cara izquierda en medio tono, cara derecha en sombra, y su sombra proyectada.",
+      "krita_tip": "En una caja cada cara tiene un solo valor: en Krita, pinta cada cara con la herramienta de relleno y luego ajusta a pincel.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": 0.74
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                540,
+                500
+              ],
+              [
+                660,
+                400
+              ],
+              [
+                820,
+                430
+              ],
+              [
+                700,
+                540
+              ]
+            ],
+            "fill": 0.15
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                300,
+                280
+              ],
+              [
+                420,
+                180
+              ],
+              [
+                660,
+                180
+              ],
+              [
+                540,
+                280
+              ]
+            ],
+            "fill": 0.93
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                300,
+                280
+              ],
+              [
+                540,
+                280
+              ],
+              [
+                540,
+                500
+              ],
+              [
+                300,
+                500
+              ]
+            ],
+            "fill": 0.6
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                540,
+                280
+              ],
+              [
+                660,
+                180
+              ],
+              [
+                660,
+                400
+              ],
+              [
+                540,
+                500
+              ]
+            ],
+            "fill": 0.25
+          }
+        ]
+      }
+    },
+    {
+      "id": "luz06",
+      "title": "Bodegón en grises",
+      "goal": "Una caja y una esfera sobre una mesa, con luz por la izquierda. Primero las dos familias (luz y sombra) en toda la escena; después los matices.",
+      "krita_tip": "En Krita, pinta en escala de grises en una capa y comprueba los valores con una capa de relleno negra en modo Color encima de todo: es lo mismo que el botón Grises de esta app.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [
+        0.1,
+        0.1,
+        0.12
+      ],
+      "kind": {
+        "type": "painting",
+        "mode": "value",
+        "scene": [
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              100,
+              800,
+              560
+            ],
+            "fill": 0.7
+          },
+          {
+            "prim": "rect",
+            "rect": [
+              160,
+              420,
+              800,
+              560
+            ],
+            "fill": 0.48
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                330,
+                470
+              ],
+              [
+                420,
+                410
+              ],
+              [
+                600,
+                440
+              ],
+              [
+                520,
+                500
+              ]
+            ],
+            "fill": 0.18
+          },
+          {
+            "prim": "ellipse",
+            "c": [
+              690,
+              500
+            ],
+            "rx": 110,
+            "ry": 26,
+            "fill": 0.2
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                240,
+                300
+              ],
+              [
+                330,
+                240
+              ],
+              [
+                470,
+                240
+              ],
+              [
+                380,
+                300
+              ]
+            ],
+            "fill": 0.92
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                240,
+                300
+              ],
+              [
+                380,
+                300
+              ],
+              [
+                380,
+                470
+              ],
+              [
+                240,
+                470
+              ]
+            ],
+            "fill": 0.62
+          },
+          {
+            "prim": "poly",
+            "pts": [
+              [
+                380,
+                300
+              ],
+              [
+                470,
+                240
+              ],
+              [
+                470,
+                410
+              ],
+              [
+                380,
+                470
+              ]
+            ],
+            "fill": 0.26
+          },
+          {
+            "prim": "sphere",
+            "c": [
+              610,
+              380
+            ],
+            "r": 100,
+            "light": [
+              -0.7,
+              -0.7
+            ],
+            "lit": 0.93,
+            "shadow": 0.17,
+            "reflected": 0.28
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -19,6 +19,9 @@ pub struct Progress {
     pub pressure: PressureSettings,
     pub smoothing: SmoothingOptions,
     pub unlock_all: bool,
+    /// Dónde va el alumno en el programa del año.
+    #[serde(default)]
+    pub program: crate::program::ProgramState,
 }
 
 fn path() -> Option<PathBuf> {
