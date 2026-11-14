@@ -521,6 +521,9 @@ impl TrazoApp {
                 let mean = s.scores.iter().sum::<f32>() / n.max(1) as f32;
                 self.message = Some((format!("Sesión terminada: {n} poses, media {mean:.0}/100."), now));
                 self.session = None;
+                // Cuenta como el gesto del día en el recorrido.
+                self.progress.program.record_gesture(&crate::program::today());
+                self.save();
             }
         }
     }
@@ -2455,7 +2458,7 @@ impl eframe::App for TrazoApp {
         self.demo_step(&ctx);
         self.check_timer();
         self.session_step(&ctx);
-        self.study_step();
+        self.study_step(&ctx);
         self.handle_drops(&ctx);
         self.shortcuts(&ctx);
         self.top_bar(ui);

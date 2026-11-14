@@ -1,9 +1,9 @@
 {
-  "months": [
+  "blocks": [
     {
       "title": "Línea y contorno",
       "goal": "Trazar con seguridad y empezar a ver formas, bordes y espacios en vez de símbolos.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Líneas seguras",
           "source": "Drawabox, lección 1 (método fantasma)",
@@ -45,7 +45,7 @@
     {
       "title": "Elipses, cajas y perspectiva",
       "goal": "Entender que lo que dibujas tiene volumen y vive en un espacio con horizonte.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Elipses y su eje menor",
           "source": "Drawabox, lección 1, y Scott Robertson, «How to Draw»",
@@ -87,7 +87,7 @@
     {
       "title": "Construcción de objetos",
       "goal": "Pensar los objetos como formas simples que se combinan, y dibujarlos con intención.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Las formas básicas",
           "source": "Drawabox, lección 2 (formas y contornos)",
@@ -129,7 +129,7 @@
     {
       "title": "Valor",
       "goal": "Ver la luz y la sombra como grandes masas y dibujarlas con pocos valores bien elegidos.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Pensar en grises",
           "source": "Bert Dodson, «Keys to Drawing», y Betty Edwards (percibir luces y sombras)",
@@ -171,7 +171,7 @@
     {
       "title": "Gesto",
       "goal": "Captar el movimiento y la intención de una pose antes que su contorno.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Dibujar lo que la pose hace",
           "source": "Kimon Nicolaïdes, «The Natural Way to Draw»",
@@ -213,7 +213,7 @@
     {
       "title": "Proporción y maniquí",
       "goal": "Construir una figura creíble con medidas de referencia y masas simples.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Medir la figura en cabezas",
           "source": "Andrew Loomis, «Figure Drawing for All It's Worth»",
@@ -244,7 +244,7 @@
         {
           "title": "Del gesto a la estructura",
           "source": "Michael Hampton y Andrew Loomis",
-          "lesson": "Une todo el mes en un proceso: gesto en un minuto, masas de tórax y pelvis, cilindros de los miembros, comprobación de proporciones y, por último, el contorno por encima, en otra capa.\n\nCada paso corrige el anterior. Si al llegar al contorno algo no encaja, vuelve a la estructura en vez de retocar la línea final.",
+          "lesson": "Une todo el bloque en un proceso: gesto en un minuto, masas de tórax y pelvis, cilindros de los miembros, comprobación de proporciones y, por último, el contorno por encima, en otra capa.\n\nCada paso corrige el anterior. Si al llegar al contorno algo no encaja, vuelve a la estructura en vez de retocar la línea final.",
           "warmup": ["figura", "formas"],
           "topic": "figure",
           "study": "Figuras de 10 a 15 minutos siguiendo los cuatro pasos, cada uno en su capa. Al comparar, mira qué paso falló.",
@@ -255,7 +255,7 @@
     {
       "title": "Anatomía para dibujar",
       "goal": "Conocer los puntos óseos y las grandes masas musculares que cambian la silueta.",
-      "weeks": [
+      "lessons": [
         {
           "title": "El torso y sus puntos óseos",
           "source": "George Bridgman, «Constructive Anatomy», y Michael Hampton",
@@ -297,7 +297,7 @@
     {
       "title": "La cabeza",
       "goal": "Construir la cabeza en cualquier ángulo y colocar los rasgos con sus proporciones.",
-      "weeks": [
+      "lessons": [
         {
           "title": "La bola de Loomis",
           "source": "Andrew Loomis, «Drawing the Head and Hands»",
@@ -339,7 +339,7 @@
     {
       "title": "Manos y pies",
       "goal": "Simplificar manos y pies en bloques y dibujarlos con naturalidad.",
-      "weeks": [
+      "lessons": [
         {
           "title": "La mano en bloques",
           "source": "Andrew Loomis, «Drawing the Head and Hands»",
@@ -381,7 +381,7 @@
     {
       "title": "Ropa, animales y entornos",
       "goal": "Aplicar gesto y construcción a lo que rodea a la figura.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Los pliegues",
           "source": "Burne Hogarth, «Dynamic Wrinkles and Drapery»",
@@ -423,7 +423,7 @@
     {
       "title": "Composición y luz",
       "goal": "Organizar una imagen completa: dónde mira el espectador y cómo la luz lo guía.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Miniaturas de composición",
           "source": "Andrew Loomis, «Creative Illustration»",
@@ -465,7 +465,7 @@
     {
       "title": "Color y proyecto final",
       "goal": "Pasar del valor al color y comprobar cuánto has avanzado en el año.",
-      "weeks": [
+      "lessons": [
         {
           "title": "Valor antes que color",
           "source": "James Gurney, «Color and Light»",
@@ -487,15 +487,15 @@
         {
           "title": "Repite tus primeros estudios",
           "source": "La revisión del propio progreso",
-          "lesson": "Vuelve al diario, busca tus estudios del primer y del segundo mes y repite dos de ellos con la misma referencia y el mismo tiempo.\n\nCompara los dos dibujos lado a lado. No mires solo si el nuevo es «más bonito»: fíjate en qué ves ahora que antes no veías. Eso es el ojo crítico que has construido este año.",
+          "lesson": "Vuelve al diario, busca tus estudios de los dos primeros bloques y repite dos de ellos con la misma referencia y el mismo tiempo.\n\nCompara los dos dibujos lado a lado. No mires solo si el nuevo es «más bonito»: fíjate en qué ves ahora que antes no veías. Eso es el ojo crítico que has construido este año.",
           "warmup": ["lineas", "elipses"],
           "topic": "proportion",
-          "study": "Las mismas referencias de tus estudios del mes 1 y del mes 2 (están en la carpeta del diario).",
+          "study": "Las mismas referencias de tus estudios de los bloques 1 y 2 (están en la carpeta del diario).",
           "minutes": 25
         },
         {
           "title": "Proyecto final",
-          "source": "Todo el año",
+          "source": "Todo el recorrido",
           "lesson": "Elige un tema que te guste (un retrato, una escena, un personaje con su entorno) y hazlo con todo el proceso: referencias, miniaturas de composición y valor, construcción, valores y, si quieres, color.\n\nDedícale varias sesiones. Al terminar, haz la autocrítica completa y apunta qué vas a estudiar el año que viene.",
           "warmup": ["lineas", "valor"],
           "topic": "master",

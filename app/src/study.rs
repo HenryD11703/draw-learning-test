@@ -160,10 +160,16 @@ pub struct Entry {
     pub topic: Topic,
     pub minutes: f32,
     pub answers: Vec<Option<Answer>>,
+    /// Primera impresión: las respuestas antes de superponer y medir.
+    #[serde(default)]
+    pub first: Vec<Option<Answer>>,
     #[serde(default)]
     pub best: String,
     #[serde(default)]
     pub improve: String,
+    /// Dibujo de control: nombre del archivo de la referencia fija.
+    #[serde(default)]
+    pub control: Option<String>,
 }
 
 impl Entry {
@@ -173,6 +179,22 @@ impl Entry {
         let yes = self.answers.iter().flatten().filter(|a| **a == Answer::Yes).count();
         (yes, answered)
     }
+
+    /// Ojo crítico: de las preguntas respondidas antes y después de comprobar, en cuántas la primera
+    /// impresión ya era la respuesta final.
+    pub fn eye(&self) -> Option<(usize, usize)> {
+        let pairs: Vec<(Answer, Answer)> = self.first.iter().zip(&self.answers).filter_map(|(a, b)| Some(((*a)?, (*b)?))).collect();
+        if pairs.is_empty() {
+            return None;
+        }
+        Some((pairs.iter().filter(|(a, b)| a == b).count(), pairs.len()))
+    }
+}
+
+/// Porcentaje de aciertos de la primera impresión en un grupo de estudios.
+pub fn eye_rate<'a>(entries: impl Iterator<Item = &'a Entry>) -> Option<f32> {
+    let (hit, total) = entries.filter_map(|e| e.eye()).fold((0, 0), |(h, t), (a, b)| (h + a, t + b));
+    (total > 0).then(|| hit as f32 / total as f32)
 }
 
 impl Topic {
@@ -204,10 +226,35 @@ pub fn library_dir() -> PathBuf {
 
 /// Crea las carpetas de la biblioteca (si faltan) y devuelve la del tema.
 pub fn library_folder(topic: Topic) -> PathBuf {
+    create_library();
+    library_dir().join(topic.folder())
+}
+
+fn create_library() {
     for t in Topic::ALL {
         let _ = std::fs::create_dir_all(library_dir().join(t.folder()));
     }
-    library_dir().join(topic.folder())
+    let _ = std::fs::create_dir_all(control_dir());
+}
+
+/// Carpeta de las referencias de control: las mismas fotos para cada ronda.
+pub fn control_dir() -> PathBuf {
+    library_dir().join("control")
+}
+
+pub fn control_folder() -> PathBuf {
+    create_library();
+    control_dir()
+}
+
+/// Las referencias de control (como mucho tres, por orden de nombre).
+pub fn control_refs() -> Vec<PathBuf> {
+    images_in(&control_dir()).into_iter().take(3).collect()
+}
+
+/// Nombre de archivo de una ruta, para identificar una referencia de control.
+pub fn file_name(p: &Path) -> String {
+    p.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
 }
 
 /// Imágenes (PNG o JPG) de la carpeta de un tema, ordenadas por nombre.
@@ -333,9 +380,16 @@ mod tests {
             topic: Topic::Value,
             minutes: 12.5,
             answers: vec![Some(Answer::Yes), Some(Answer::No), None, Some(Answer::Partly)],
+            first: vec![Some(Answer::Yes), Some(Answer::Yes), Some(Answer::No), None],
             best: "Las masas de sombra".into(),
             improve: "Agrupar más".into(),
+            control: None,
         };
+        // Solo cuentan las preguntas con las dos respuestas: la 1 acertó y la 2 no.
+        assert_eq!(entry.eye(), Some((1, 2)));
+        assert_eq!(eye_rate([&entry, &entry].into_iter()), Some(0.5));
+        let old: Entry = serde_json::from_str(r#"{"when":1,"topic":"value","minutes":1.0,"answers":[]}"#).unwrap();
+        assert_eq!(old.eye(), None);
         let sub = dir.join("estudio-1");
         std::fs::create_dir_all(&sub).unwrap();
         std::fs::write(sub.join("estudio.json"), serde_json::to_string(&entry).unwrap()).unwrap();

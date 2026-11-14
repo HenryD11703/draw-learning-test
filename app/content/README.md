@@ -196,18 +196,21 @@ forma de Gurney: luz plena y medio tono, terminador, sombra propia con luz refle
 es la dirección hacia la luz en pantalla (x a la derecha, y hacia abajo); `steps` > 0 la pinta por
 planos.
 
-## Programa del año (`programa.json`)
+## Recorrido de lecciones (`programa.json`)
 
-No es un módulo: lo lee `src/program.rs`. Tiene `months`, y cada mes `title`, `goal` y `weeks`. Cada semana:
+No es un módulo: lo lee `src/program.rs`. Tiene `blocks`, y cada bloque `title`, `goal` y `lessons`. Los
+bloques no tienen fecha: el alumno cierra cada lección cuando quiere. Cada lección:
 
 | Campo | Qué es |
 |---|---|
-| `title` | Nombre de la semana |
-| `source` | Libro o método en el que se basa la lección |
-| `lesson` | Texto de la lección; los párrafos se separan con una línea en blanco (`\n\n`) |
-| `warmup` | Ids de los módulos del calentamiento (por ejemplo `["elipses", "perspectiva"]`) |
+| `title` | Nombre de la lección |
+| `source` | Libro o método en el que se basa |
+| `lesson` | Texto de la lección; los párrafos se separan con una línea en blanco (`
+
+`) |
+| `warmup` | Ids de los módulos del calentamiento (por ejemplo `["elipses", "perspectiva"]`); el repaso sale solo de los módulos de lecciones anteriores |
 | `topic` | Tema del estudio: `gesture`, `proportion`, `figure`, `value`, `head`, `hands`, `objects`, `landscape`, `master` o `color` |
-| `study` | Qué dibujar en los estudios de la semana |
+| `study` | Qué dibujar en los estudios de la lección |
 | `minutes` | Tiempo sugerido para cada estudio |
 
-Los tests comprueban que hay 12 meses y 48 semanas, y que los módulos de `warmup` existen.
+Los tests comprueban que hay 12 bloques y 48 lecciones, y que los módulos de `warmup` existen.
