@@ -50,10 +50,17 @@
     {"name": "brush sizes scaled to 960x640 canvas", "group": "brushes", "value": "Basic-5 20px, Airbrush 90px, Eraser 40px", "estimated": true},
     {"name": "airbrush flow", "group": "brushes", "value": 0.12, "estimated": true},
     {"name": "wet paint smudge strength", "group": "brushes", "value": 0.8, "estimated": true},
-    {"name": "grade precision", "group": "grading", "value": "1 - mean_dist/(2*tol)", "estimated": true},
+    {"name": "grade precision", "group": "grading", "value": "1 - mean_dist/(2*tol), averaged per 4px ink cell", "estimated": true},
+    {"name": "grade steadiness", "group": "grading", "value": "1 - (mean_sag_change - 0.15)/1.5, 6px arc samples, 2px cap, x0.85", "estimated": true},
+    {"name": "grade completeness gate", "group": "grading", "value": "quality metrics x min(1, coverage/0.5)", "estimated": true},
+    {"name": "grade transition", "group": "grading", "value": "1 - mean_step_diff/0.08, right and below neighbours", "estimated": true},
     {"name": "grade weights trace", "group": "grading", "value": "0.4 precision, 0.3 coverage, 0.3 steadiness", "estimated": true},
     {"name": "grade weights pressure", "group": "grading", "value": "0.3/0.25/0.15/0.3", "estimated": true},
     {"name": "magnet penalty", "group": "grading", "value": 0.25, "estimated": true},
-    {"name": "star thresholds", "group": "grading", "value": "60/75/90", "estimated": true}
+    {"name": "star thresholds", "group": "grading", "value": "60/75/90", "estimated": true},
+    {"name": "grade points", "group": "grading", "value": "done^1.5 x (0.4 aim + 0.35 precision + 0.25 steadiness)", "estimated": true},
+    {"name": "grade copy", "group": "grading", "value": "0.3 coverage + completeness x (0.5 shape + 0.1 proportion + 0.1 steadiness), ICP scale+shift", "estimated": true},
+    {"name": "grade perspective", "group": "grading", "value": "done^1.5 x (0.45 convergence + 0.3 aim + 0.25 steadiness); convergence 1 - mean_angle/8deg", "estimated": true},
+    {"name": "module unlock", "group": "grading", "value": "1 star in ceil(n/2) exercises of the previous module", "estimated": true}
   ]
 }

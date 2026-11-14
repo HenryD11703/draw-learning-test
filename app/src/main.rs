@@ -3,6 +3,7 @@
 mod app;
 mod brush;
 mod canvas;
+mod content;
 mod curve;
 mod grading;
 mod lessons;

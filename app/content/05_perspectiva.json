@@ -1,0 +1,317 @@
+{
+  "id": "perspectiva",
+  "title": "Perspectiva",
+  "subtitle": "Horizonte, puntos de fuga y cajas a uno, dos y tres puntos",
+  "lesson": "La perspectiva hace que lo plano parezca profundo. Tres ideas bastan para empezar:\n\n• La línea de horizonte está a la altura de tus ojos.\n• Las líneas paralelas que se alejan de ti se juntan en un punto de fuga (PF) sobre el horizonte.\n• En uno y dos puntos, las verticales siguen verticales; en tres puntos también se juntan, en un tercer PF arriba o abajo.\n\nEn el lienzo verás el horizonte, los puntos de fuga, las líneas que ya están dibujadas y puntos verdes de salida. Traza desde cada punto verde hacia donde corresponda. Se califica que tus líneas apunten al punto de fuga correcto y salgan del punto verde, no que calquen una guía. Cada intento cambia un poco la escena.",
+  "accent": [150, 170, 255],
+  "exercises": [
+    {
+      "id": "persp01",
+      "title": "Rayos hacia el punto de fuga",
+      "goal": "Traza una línea desde cada punto verde hacia el punto de fuga (PF). No hace falta llegar hasta él. Activa la ayuda si quieres ver el camino.",
+      "krita_tip": "En Krita, la herramienta de Asistentes tiene el asistente Punto de fuga: lo colocas sobre el horizonte y tus trazos se alinean hacia él.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "converge", "vp": [480, 250], "from": [[120, 520], [300, 590], [660, 590], [840, 520], [150, 330], [810, 330]], "reach": 0.75 }
+      }
+    },
+    {
+      "id": "persp02",
+      "title": "Rayos sin ayuda",
+      "goal": "Ahora sin ayuda: desde cada punto verde, una línea recta que apunte al PF. Imagina la línea antes de trazarla.",
+      "krita_tip": "Para que el pincel siga al asistente, activa Ajustar a asistentes en las Opciones de herramienta del Pincel a mano alzada.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "converge", "vp": [480, 300], "from": [[100, 560], [260, 610], [480, 610], [700, 610], [860, 560], [90, 120], [480, 50], [870, 120]], "reach": 0.7 }
+      }
+    },
+    {
+      "id": "persp03",
+      "title": "Calle en un punto",
+      "goal": "Traza los bordes de la calle y de los edificios: todas las líneas que se alejan van al mismo PF.",
+      "krita_tip": "Coloca el horizonte a la altura de los ojos del espectador: si lo subes ves más suelo, si lo bajas ves más cielo.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "converge", "vp": [480, 250], "from": [[70, 620], [330, 620], [630, 620], [890, 620], [40, 90], [40, 450], [920, 90], [920, 450]], "reach": 0.8 }
+      }
+    },
+    {
+      "id": "persp04",
+      "title": "Suelo en cuadrícula",
+      "goal": "Traza las líneas del suelo hacia el PF y luego las horizontales de cada fila. Fíjate en que las filas se juntan al alejarse.",
+      "krita_tip": "El asistente Perspectiva de Krita dibuja una rejilla de cuatro esquinas que puedes arrastrar hasta que encaje con tu suelo.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "grid1", "vp": [480, 200], "baseline": 600, "x0": 140, "x1": 820, "cols": 6, "rows": 4 }
+      }
+    },
+    {
+      "id": "persp05",
+      "title": "Caja en un punto (con ayuda)",
+      "goal": "La cara de delante ya está dibujada. Traza las aristas que se alejan, desde cada esquina hacia el PF.",
+      "krita_tip": "Dibuja la construcción en perspectiva en una capa propia y bájale la opacidad antes de dibujar encima.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "box1", "vp": [480, 180], "boxes": [{ "rect": [360, 340, 600, 530], "depth": 0.35 }] }
+      }
+    },
+    {
+      "id": "persp06",
+      "title": "Caja en un punto",
+      "goal": "Traza las aristas hacia el PF y cierra la cara de atrás: horizontales y verticales, como la de delante.",
+      "krita_tip": "En perspectiva a un punto, las caras que miran al espectador siguen siendo rectángulos: solo las aristas que se alejan van al PF.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box1", "vp": [520, 190], "boxes": [{ "rect": [300, 350, 560, 540], "depth": 0.4 }], "back": true }
+      }
+    },
+    {
+      "id": "persp07",
+      "title": "Cajas arriba y abajo del horizonte",
+      "goal": "Completa las tres cajas. Las que están sobre el horizonte se ven por debajo; las que están bajo él, por encima.",
+      "krita_tip": "Puedes mostrar u ocultar los asistentes de Krita desde el menú Ver, para comprobar tu dibujo sin ellos.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": {
+          "gen": "box1",
+          "vp": [480, 300],
+          "boxes": [
+            { "rect": [100, 60, 300, 190], "depth": 0.3 },
+            { "rect": [640, 440, 850, 590], "depth": 0.3 },
+            { "rect": [100, 430, 280, 590], "depth": 0.3 }
+          ],
+          "back": true
+        }
+      }
+    },
+    {
+      "id": "persp08",
+      "title": "Cajas cerca y lejos",
+      "goal": "Completa las cajas. Las grandes parecen cerca y las pequeñas lejos, pero todas comparten el mismo PF.",
+      "krita_tip": "Un solo punto de fuga sirve para todas las cajas alineadas igual. Coloca el asistente una vez y úsalo para toda la escena.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": {
+          "gen": "box1",
+          "vp": [480, 250],
+          "boxes": [
+            { "rect": [400, 400, 540, 490], "depth": 0.3 },
+            { "rect": [110, 440, 330, 600], "depth": 0.25 },
+            { "rect": [690, 80, 800, 160], "depth": 0.3 }
+          ],
+          "back": true
+        }
+      }
+    },
+    {
+      "id": "persp09",
+      "title": "Dos puntos: primeras aristas (con ayuda)",
+      "goal": "La arista de delante ya está. Traza desde sus extremos hacia PF1 y PF2, y luego las dos verticales de los lados.",
+      "krita_tip": "Krita tiene un asistente de Perspectiva de 2 puntos que coloca ambos puntos de fuga sobre el mismo horizonte.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "box2", "horizon": 220, "vps": [60, 900], "boxes": [{ "x": 480, "top": 300, "bottom": 520, "left": 0.35, "right": 0.35 }] }
+      }
+    },
+    {
+      "id": "persp10",
+      "title": "Caja en dos puntos (con ayuda)",
+      "goal": "Completa la caja y su cara de arriba: cada arista lejana va al punto de fuga contrario al de la arista de enfrente.",
+      "krita_tip": "Si los puntos de fuga están muy juntos, la caja se deforma. Sepáralos, aunque queden fuera del lienzo: en Krita puedes alejar la vista para colocarlos.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "box2", "horizon": 220, "vps": [80, 880], "boxes": [{ "x": 470, "top": 320, "bottom": 540, "left": 0.4, "right": 0.35 }], "far": true }
+      }
+    },
+    {
+      "id": "persp11",
+      "title": "Caja en dos puntos",
+      "goal": "Sin ayuda: aristas a PF1 y PF2, verticales, y cierra la cara de arriba.",
+      "krita_tip": "En dos puntos, todas las verticales del mundo siguen verticales en el dibujo. Si una se te inclina, la caja parece caerse.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 180, "vps": [40, 920], "boxes": [{ "x": 520, "top": 300, "bottom": 500, "left": 0.3, "right": 0.4 }], "far": true }
+      }
+    },
+    {
+      "id": "persp12",
+      "title": "Caja transparente",
+      "goal": "Dibuja la caja como si fuera de cristal: también las aristas de atrás y la vertical escondida.",
+      "krita_tip": "Dibujar las líneas ocultas es la mejor forma de comprobar que la caja es correcta. Luego, en Krita, las borras en la capa de tinta.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 200, "vps": [60, 900], "boxes": [{ "x": 480, "top": 300, "bottom": 520, "left": 0.35, "right": 0.35 }], "xray": true }
+      }
+    },
+    {
+      "id": "persp13",
+      "title": "Caja sobre el horizonte",
+      "goal": "Esta caja está por encima de tus ojos: completa sus aristas y la cara de abajo, que es la que se ve.",
+      "krita_tip": "Mover el horizonte cambia todo el ambiente: bajo da sensación de grandeza; alto, de mirar desde arriba.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 470, "vps": [60, 900], "boxes": [{ "x": 480, "top": 110, "bottom": 330, "left": 0.35, "right": 0.35 }], "far": true }
+      }
+    },
+    {
+      "id": "persp14",
+      "title": "Caja cortada por el horizonte",
+      "goal": "El horizonte atraviesa la caja: no se ve ni la cara de arriba ni la de abajo. Dibújala transparente para entenderla.",
+      "krita_tip": "Cuando el horizonte corta un objeto, la parte de arriba sube hacia los PF y la de abajo baja hacia ellos.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 320, "vps": [50, 910], "boxes": [{ "x": 480, "top": 170, "bottom": 490, "left": 0.3, "right": 0.3 }], "xray": true }
+      }
+    },
+    {
+      "id": "persp15",
+      "title": "Varias cajas en dos puntos",
+      "goal": "Completa las tres cajas con sus caras visibles. Todas usan los mismos dos puntos de fuga.",
+      "krita_tip": "Si las cajas no están alineadas entre sí, cada una necesita su propio par de PF sobre el mismo horizonte.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": {
+          "gen": "box2",
+          "horizon": 260,
+          "vps": [40, 920],
+          "boxes": [
+            { "x": 250, "top": 340, "bottom": 470, "left": 0.25, "right": 0.25 },
+            { "x": 700, "top": 370, "bottom": 560, "left": 0.2, "right": 0.3 },
+            { "x": 500, "top": 80, "bottom": 190, "left": 0.2, "right": 0.2 }
+          ],
+          "far": true
+        }
+      }
+    },
+    {
+      "id": "persp16",
+      "title": "Edificio alto",
+      "goal": "Un edificio visto desde la calle: la arista frontal es muy alta. Traza sus lados hacia los dos PF.",
+      "krita_tip": "Con el horizonte bajo, las aristas de arriba bajan con fuerza hacia los PF: así se ve la altura del edificio.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 520, "vps": [40, 920], "boxes": [{ "x": 480, "top": 60, "bottom": 600, "left": 0.3, "right": 0.3 }] }
+      }
+    },
+    {
+      "id": "persp17",
+      "title": "Vista de gusano (con ayuda)",
+      "goal": "Miras desde abajo: las verticales se juntan en un tercer PF por encima del lienzo. Traza las aristas y cierra la cara de abajo.",
+      "krita_tip": "Krita no tiene un asistente de tres puntos: se usan tres asistentes Punto de fuga, uno por cada PF.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "hints": true,
+        "scene": { "gen": "box3", "horizon": 560, "vps": [40, 920], "vp3": [480, -700], "boxes": [{ "x": 480, "y": 470, "height": 290, "left": 0.3, "right": 0.3 }], "far": true }
+      }
+    },
+    {
+      "id": "persp18",
+      "title": "Vista de gusano",
+      "goal": "Sin ayuda: las aristas que en dos puntos serían verticales ahora apuntan al PF3, fuera del lienzo por arriba.",
+      "krita_tip": "Cuanto más cerca está el tercer PF, más exagerada es la vista. Alejarlo da un efecto más suave.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box3", "horizon": 570, "vps": [60, 900], "vp3": [520, -600], "boxes": [{ "x": 500, "y": 480, "height": 280, "left": 0.28, "right": 0.33 }], "far": true }
+      }
+    },
+    {
+      "id": "persp19",
+      "title": "Vista de pájaro",
+      "goal": "Miras desde arriba: las verticales bajan hacia un PF3 por debajo del lienzo. Traza las aristas y la cara de arriba.",
+      "krita_tip": "La vista de pájaro funciona bien para mapas, ciudades y escenas en las que quieres mostrar mucho espacio.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box3", "horizon": 80, "vps": [40, 920], "vp3": [480, 1400], "boxes": [{ "x": 480, "y": 130, "height": 330, "left": 0.3, "right": 0.3 }], "far": true }
+      }
+    },
+    {
+      "id": "persp20",
+      "title": "Puntos de fuga de memoria",
+      "goal": "Mira dónde están el horizonte y los PF: se ocultarán en unos segundos. Luego completa la caja recordándolos.",
+      "krita_tip": "Cuando dibujas sin asistentes, ayuda marcar los PF con una cruz pequeña en una capa aparte, aunque queden fuera del dibujo final.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "memory": 5,
+      "kind": {
+        "type": "perspective",
+        "tol": 12,
+        "scene": { "gen": "box2", "horizon": 210, "vps": [70, 890], "boxes": [{ "x": 480, "top": 300, "bottom": 510, "left": 0.35, "right": 0.35 }], "far": true }
+      }
+    },
+    {
+      "id": "persp21",
+      "title": "Copia una caja en dos puntos",
+      "goal": "Copia la caja de la referencia, sin puntos de fuga visibles. Fíjate en los ángulos de las aristas y en lo alta que es frente a lo ancha.",
+      "krita_tip": "Al copiar de una foto en Krita, prolonga dos aristas paralelas en una capa aparte hasta que se crucen: ahí está su punto de fuga.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "kind": {
+        "type": "copy",
+        "tol": 14,
+        "scene": { "gen": "box2", "horizon": 200, "vps": [60, 900], "boxes": [{ "x": 480, "top": 290, "bottom": 510, "left": 0.35, "right": 0.3 }], "far": true }
+      }
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "id": "asistente",
+  "title": "Asistente de trazo",
+  "subtitle": "Básico, Ponderado y Estabilizador de Krita",
+  "lesson": "Krita puede suavizar tu trazo mientras dibujas. Está en el acoplable Opciones de herramienta del Pincel a mano alzada › Suavizado del pincel.\n\n• Básico: une los puntos con curvas.\n• Ponderado: promedia los últimos puntos; la línea va un poco detrás.\n• Estabilizador: el pincel persigue al cursor como atado con una cuerda; la Distancia controla cuánto.\n\nEn cada ejercicio prueba el modo propuesto y cambia la Distancia para notar la diferencia.",
+  "accent": [140, 220, 120],
+  "exercises": [
+    {
+      "id": "m3e1",
+      "title": "Espiral con Básico",
+      "goal": "Repasa la espiral desde el centro hacia afuera.",
+      "krita_tip": "Básico es el modo por defecto. Con Distancia 50 y velocidad lenta casi no notarás corrección.",
+      "brush": "fineliner",
+      "smoothing": "Basico",
+      "vary": { "shift": 30, "rotate": 180 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "spiral", "c": [480, 320], "r0": 12, "r1": 250, "turns": 3 }]
+      }
+    },
+    {
+      "id": "m3e2",
+      "title": "Espiral con Ponderado",
+      "goal": "La misma espiral, ahora con el modo Ponderado. Nota cómo la línea va detrás del cursor.",
+      "krita_tip": "En Ponderado, la Agresividad de cola recorta la punta cuando levantas el lápiz; la Distancia indica cuántos píxeles promedia.",
+      "brush": "fineliner",
+      "smoothing": "Ponderado",
+      "vary": { "shift": 30, "rotate": 180 },
+      "kind": {
+        "type": "trace",
+        "tol": 12,
+        "guides": [{ "shape": "spiral", "c": [480, 320], "r0": 12, "r1": 250, "turns": 3 }]
+      }
+    },
+    {
+      "id": "m3e3",
+      "title": "Lazos con Estabilizador",
+      "goal": "Repasa los lazos con el Estabilizador: mueve el cursor y deja que el pincel lo siga.",
+      "krita_tip": "Con Retardo activado, el pincel no se mueve hasta que te alejas la Distancia de retardo: así ignora temblores pequeños.",
+      "brush": "fineliner",
+      "smoothing": "Estabilizador",
+      "vary": { "shift": 30 },
+      "kind": {
+        "type": "trace",
+        "tol": 14,
+        "guides": [{ "shape": "loops", "x0": 170, "x1": 790, "y": 320, "rx": 55, "ry": 90, "turns": 4 }]
+      }
+    },
+    {
+      "id": "m3e4",
+      "title": "Contorno largo",
+      "goal": "Entinta el contorno de la hoja con un trazo por lado.",
+      "krita_tip": "Para entintar en Krita, crea una capa nueva encima del boceto y usa el Estabilizador con un fineliner.",
+      "brush": "fineliner",
+      "smoothing": "Estabilizador",
+      "vary": { "shift": 30, "rotate": 10 },
+      "kind": {
+        "type": "trace",
+        "tol": 13,
+        "guides": [
+          { "shape": "bezier", "p": [[250, 470], [300, 160], [600, 120], [730, 150]] },
+          { "shape": "bezier", "p": [[250, 470], [500, 470], [720, 380], [730, 150]] },
+          { "shape": "bezier", "p": [[250, 470], [400, 330], [560, 250], [700, 175]] }
+        ]
+      }
+    },
+    {
+      "id": "m3e5",
+      "title": "Pixel art",
+      "goal": "Repasa la escalera con el suavizado Pixel y el pincel Pixel art.",
+      "krita_tip": "Krita tiene un modo de suavizado Pixel que evita los píxeles de esquina en las diagonales.",
+      "brush": "pixel",
+      "smoothing": "Pixel",
+      "vary": { "shift": 40 },
+      "kind": {
+        "type": "trace",
+        "tol": 8,
+        "guides": [
+          { "shape": "poly", "pts": [[200, 480], [200, 400], [300, 400], [300, 320], [400, 320], [400, 240], [500, 240], [500, 160], [600, 160]] },
+          { "shape": "line", "a": [620, 480], "b": [780, 160] }
+        ]
+      }
+    }
+  ]
+}

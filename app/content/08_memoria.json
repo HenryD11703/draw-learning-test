@@ -1,0 +1,59 @@
+{
+  "id": "memoria",
+  "title": "Memoria y soltura",
+  "subtitle": "La guía desaparece: dibuja de memoria",
+  "lesson": "La guía se ve unos segundos y luego se oculta. Obsérvala, imagina el trazo y dibújalo sin referencia. Es el paso entre copiar y dibujar con confianza.",
+  "accent": [120, 220, 220],
+  "exercises": [
+    {
+      "id": "m7e1",
+      "title": "Círculo de memoria",
+      "goal": "Memoriza el círculo y dibújalo cuando desaparezca.",
+      "krita_tip": "En Krita puedes activar el modo espejo (M) para revisar tus proporciones con ojos frescos.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 3,
+      "vary": { "shift": 60, "scale": [0.75, 1.05] },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [{ "shape": "circle", "c": [480, 320], "r": 170 }]
+      }
+    },
+    {
+      "id": "m7e2",
+      "title": "Ola de memoria",
+      "goal": "Memoriza la ola y repítela sin guía.",
+      "krita_tip": "Usa el Estabilizador en Krita cuando necesites curvas largas muy limpias, pero entrena también sin él.",
+      "brush": "basico5",
+      "smoothing": "Basico",
+      "memory": 3,
+      "vary": { "shift": 40, "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 18,
+        "guides": [{ "shape": "wave", "x0": 140, "x1": 820, "y": 320, "amp": 110, "cycles": 1.5 }]
+      }
+    },
+    {
+      "id": "m7e3",
+      "title": "Cabeza simple",
+      "goal": "Círculo, eje vertical y línea de ojos: la base de un retrato.",
+      "krita_tip": "En Krita, dibuja la construcción en una capa y bájale la opacidad antes de detallar.",
+      "brush": "lapiz",
+      "smoothing": "Basico",
+      "memory": 4,
+      "vary": { "shift": 50, "scale": [0.85, 1.0], "rotate": 8 },
+      "kind": {
+        "type": "trace",
+        "tol": 16,
+        "guides": [
+          { "shape": "circle", "c": [480, 290], "r": 150 },
+          { "shape": "line", "a": [480, 140], "b": [480, 560] },
+          { "shape": "ellipse", "c": [480, 300], "rx": 150, "ry": 40, "a1": 180 },
+          { "shape": "bezier", "p": [[380, 400], [400, 520], [560, 520], [580, 400]] }
+        ]
+      }
+    }
+  ]
+}

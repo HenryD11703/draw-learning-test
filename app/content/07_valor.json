@@ -1,0 +1,49 @@
+{
+  "id": "valor",
+  "title": "Valor y pintura",
+  "subtitle": "Sombreado, volumen y mezcla de color",
+  "lesson": "El valor (lo claro u oscuro) da el volumen. Antes de pintar con color, entrena a ver y reproducir valores. A la derecha verás la referencia: compárala con tu pintura.\n\nConsejo de Krita: pinta en escala de grises en una capa y luego colorea con una capa en modo Color o Multiplicar.",
+  "accent": [255, 210, 80],
+  "exercises": [
+    {
+      "id": "m6e1",
+      "title": "Escala de valores",
+      "goal": "Pinta los 5 recuadros igualando los grises de la referencia.",
+      "krita_tip": "Con b) Basic-2 Opacity la presión decide lo oscuro del gris; prueba distintas presiones sobre el mismo recuadro.",
+      "brush": "basico2",
+      "smoothing": "Basico",
+      "color": [0.1, 0.1, 0.12],
+      "kind": { "type": "paint", "target": "ValueSteps" }
+    },
+    {
+      "id": "m6e2",
+      "title": "Sombrear una esfera",
+      "goal": "Pinta la esfera: luz arriba a la izquierda, sombra abajo a la derecha.",
+      "krita_tip": "En Krita usa el selector de color avanzado para elegir grises exactos, o el atajo para tomar color del lienzo (Ctrl + clic).",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [0.1, 0.1, 0.12],
+      "kind": { "type": "paint", "target": "Sphere" }
+    },
+    {
+      "id": "m6e3",
+      "title": "Cilindro sombreado",
+      "goal": "Sombrea el cilindro: el borde derecho es el más oscuro.",
+      "krita_tip": "Las luces suaves salen mejor con pinceles de borde difuso; los bordes nítidos, con uno duro.",
+      "brush": "aero",
+      "smoothing": "Ponderado",
+      "color": [0.1, 0.1, 0.12],
+      "kind": { "type": "paint", "target": "Cylinder" }
+    },
+    {
+      "id": "m6e4",
+      "title": "Mezcla húmeda",
+      "goal": "Funde el naranja con el azul para que pasen de uno a otro sin corte.",
+      "krita_tip": "i) Wet Paint arrastra el color del lienzo como pintura fresca. En Krita, los pinceles de mezcla usan la opción Pintura húmeda/Difuminar.",
+      "brush": "humedo",
+      "smoothing": "Basico",
+      "color": [0.55, 0.38, 0.5],
+      "kind": { "type": "paint", "target": "ColorBlend" }
+    }
+  ]
+}

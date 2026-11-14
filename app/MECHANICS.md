@@ -99,13 +99,39 @@ Curvas leídas de los archivos .kpp (XML comprimido dentro del PNG). "Dureza" = 
 
 ## 4. Calificación (diseño propio, no existe en Krita)
 - Contención: `pintado_fuera` = celdas pintadas fuera de la zona / celdas de la zona.
-- Precisión = `1 − distancia_media / (2·tolerancia)`.
+- Precisión = `1 − distancia_media / (2·tolerancia)`. La distancia se promedia por celda de tinta de 4 px,
+  no por mancha: repasar un tramo o pintar fino no le da más peso.
 - Cobertura = parte de la guía que queda a menos de la tolerancia de algún trazo.
-- Pulso (suavidad) = `1 − (desvío_medio − 0.15) / 1.5`, con el desvío de cada punto respecto al promedio de
-  sus vecinos (muestreo cada 6 px).
-- Presión = `1 − error_medio / 0.35` frente al perfil objetivo de la guía.
+- Pulso (suavidad) = `1 − (desvío_medio − 0.15) / 1.5`. El desvío es cuánto cambia la flecha (distancia con
+  signo del punto central a la cuerda de sus vecinos) entre muestras consecutivas, con muestreo cada 6 px
+  de arco, tope de 2 px por muestra y factor 0.85. Una curva limpia (círculo, espiral) no penaliza.
+- Presión = `1 − error_medio / 0.35` frente al perfil objetivo de la guía, también por celda de tinta.
 - Valor (pintura) = `1 − error_medio_de_luminancia / 0.3` en celdas de 16 px; contención = `1 − 3·pintado_fuera`.
+- Transición (pintura) = `1 − diferencia_media_de_saltos / 0.08`, comparando cada celda con la de su derecha
+  y la de abajo.
 - Total trazo: 40 % precisión, 30 % cobertura, 30 % pulso; con presión 30/25/15/30.
+- Completitud: precisión, pulso y presión se multiplican por `min(1, cobertura / 0.5)`; con menos de media
+  guía cubierta cuentan en proporción.
 - Total pintura: 60 % valor, 25 % contención, 15 % transición.
-- La guía magnética resta hasta un 25 % (`total × (1 − 0.25·fuerza)`).
-- Estrellas: 60 → 1, 75 → 2, 90 → 3. Una estrella desbloquea el siguiente ejercicio.
+- La guía magnética resta hasta un 25 % (`total × (1 − 0.25·fuerza)`). Solo existe en los ejercicios de calcar.
+- Punto a punto: cada guía se empareja con el trazo cuyos extremos quedan más cerca de los suyos (en
+  cualquier sentido, a menos de 4·tolerancia). Puntería = `1 − error_medio_de_extremos / (2.5·tolerancia)`;
+  precisión = `1 − distancia_media_a_la_guía / (2·tolerancia)`; completadas = pares unidos / pares.
+  Total = `completadas^1.5 × (40 % puntería + 35 % precisión + 25 % pulso)`.
+- Copia: se busca la escala y el desplazamiento que mejor llevan el dibujo sobre la referencia (ICP
+  simétrico, 25 iteraciones, sin giro) y luego se compara. Forma = `1 − (d(dibujo→ref) + d(ref→dibujo)) / 2 /
+  (2·tolerancia)`; cobertura = parte de la referencia a menos de 1.5·tolerancia del dibujo; proporción =
+  `1 − |ln(aspecto_dibujo / aspecto_ref)| / 0.4`. Total = `30 % cobertura + completitud × (50 % forma +
+  10 % proporción + 10 % pulso)`, con la misma completitud que en calcar.
+- Perspectiva: cada trazo de más de 20 px se ajusta a una recta. Convergencia = `1 − error_angular_medio / 8°`,
+  donde el error de cada recta es el ángulo con la dirección válida más cercana desde su centro (hacia un PF,
+  vertical u horizontal), ponderado por longitud y con tope de 20°. Cada tarea se empareja con la recta que
+  sale de su punto (a menos de 2.5·tolerancia) en su dirección (menos de 15°). Puntería = `1 − distancia_media_al_punto
+  / (2·tolerancia)`; completadas = media de `min(1, largo_cubierto / (0.8·largo_pedido))`.
+  Total = `completadas^1.5 × (45 % convergencia + 30 % puntería + 25 % pulso)`.
+- Estrellas: 60 → 1, 75 → 2, 90 → 3. Un módulo se abre al conseguir al menos una estrella en la mitad
+  (redondeada hacia arriba) de los ejercicios del anterior; dentro de un módulo abierto, todos los ejercicios
+  están disponibles.
+- Variaciones: cada intento construye el ejercicio con una semilla nueva (desplazamiento, escala y giro de
+  las guías; posición de los puntos de fuga y tamaño de las cajas en perspectiva). Las variaciones que se
+  salen del lienzo se descartan. El modo demostración usa siempre la versión de referencia.
