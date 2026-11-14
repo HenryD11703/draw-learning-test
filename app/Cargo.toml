@@ -1,6 +1,6 @@
 [package]
 name = "trazo_academia"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Aprende a dibujar en digital: ejercicios con nota, estudios con referencia y autocrítica, y un recorrido de 48 lecciones, con los pinceles y el suavizado de Krita."
 license = "GPL-3.0-or-later"
